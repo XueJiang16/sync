@@ -388,7 +388,7 @@ def sample_function(a, num_img=128000, m=1):
 
 def generate_dis_func(res):
     info = []
-    with open('/mapai/haowenguo/ILSVRC/Data/CLS-LOC/meta/train_labeled.txt', 'r') as f:
+    with open('./meta/train_labeled.txt', 'r') as f:
         ls = f.readlines()
         for l in ls:
             name, label = l.strip().split(' ')
