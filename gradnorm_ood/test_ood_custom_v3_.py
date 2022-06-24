@@ -233,12 +233,12 @@ def run_eval_custom(model, in_loader, out_loader, logger, args, num_classes):
         # in_scores, id_labels = iterate_data_newplus(in_loader, model, args.temperature_gradnorm, num_classes,target)
         # logger.info("Processing out-of-distribution data...")
         # out_scores, _ = iterate_data_newplus(out_loader, model, args.temperature_gradnorm, num_classes, target)
-        # in_scores, id_labels = iterate_data_cosine(in_loader, model,target)
-        # out_scores, _ = iterate_data_cosine(out_loader, model,target)
-        logger.info("Processing in-distribution data...")
-        in_scores, id_labels = iterate_data_cosnorm(in_loader, model, target)
-        logger.info("Processing out-of-distribution data...")
-        out_scores, _ = iterate_data_cosnorm(out_loader, model, target)
+        in_scores, id_labels = iterate_data_cosine(in_loader, model, target)
+        out_scores, _ = iterate_data_cosine(out_loader, model, target)
+        # logger.info("Processing in-distribution data...")
+        # in_scores, id_labels = iterate_data_cosnorm(in_loader, model, target)
+        # logger.info("Processing out-of-distribution data...")
+        # out_scores, _ = iterate_data_cosnorm(out_loader, model, target)
     else:
         raise ValueError("Unknown score type {}".format(args.score))
 
@@ -395,8 +395,8 @@ def run_eval_custom(model, in_loader, out_loader, logger, args, num_classes):
 def main(args):
     logger = log.setup_logger(args)
     torch.backends.cudnn.benchmark = True
-    if args.score == 'new' or args.score == 'GradNorm':
-        args.batch = 1
+    # if args.score == 'new' or args.score == 'GradNorm':
+    #     args.batch = 1
     # if args.score == 'ODIN':
     #     args.batch = 16
     # if args.score == 'Mahalanobis':
