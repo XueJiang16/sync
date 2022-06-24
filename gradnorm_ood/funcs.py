@@ -330,16 +330,18 @@ def iterate_data_cosine(data_loader, model, targets):
     targets = torch.tensor(targets).cuda()
     targets = targets.unsqueeze(0)
     m = torch.nn.Softmax(dim=-1).cuda()
+    logsoftmax = torch.nn.LogSoftmax(dim=-1).cuda()
     for b, (x, y) in enumerate(data_loader):
         with torch.no_grad():
             x = x.cuda()
             # compute output, measure accuracy and record loss.
             logits, _ = model_forward(model, x)
-            softmax_output = m(logits)
-
-            sim = -softmax_output * targets
-            sim = sim.sum(1) /(torch.norm(softmax_output, dim=1) * torch.norm(targets, dim=1))
-            sim = sim.unsqueeze(1)
+            # softmax_output = m(logits)
+            # sim = -softmax_output * targets
+            # sim = sim.sum(1) /(torch.norm(softmax_output, dim=1) * torch.norm(targets, dim=1))
+            # sim = sim.unsqueeze(1)
+            outputs = logits
+            sim = torch.sum(-targets * logsoftmax(outputs), dim=-1)
             conf = sim
             confs.extend(conf.data)
             cls.extend(y)
