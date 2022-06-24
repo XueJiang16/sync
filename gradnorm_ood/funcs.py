@@ -345,7 +345,7 @@ def iterate_data_new(data_loader, model, temperature, num_classes,target):
     # exit()
     return torch.tensor(confs).cuda(), torch.tensor(labels).cuda()
 
-def iterate_data_cosnorm(data_loader, model, temperature, num_classes,target):
+def iterate_data_cosnorm(data_loader, model, num_classes,target):
     pass
 
 def iterate_data_confidence(data_loader, model, isID=True):
