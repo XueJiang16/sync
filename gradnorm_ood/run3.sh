@@ -19,8 +19,8 @@ do
 #     --mahalanobis_param_path /mapai/haowenguo/code/SPL/jx/gradnorm_ood/ckpt_mahalanobis/LT_a8/tune_mahalanobis
 # ./custom_test_v3_.sh $method $dataset /mapai/haowenguo/ckpt/ood_ckpt/ckpt/inat/epoch_100.pth \
 #     checkpoint0512/inat_res101_plus2/$method /mapai/haowenguo/ILSVRC/Data/CLS-LOC/meta/train_LT_a8.txt 0 \
-./custom_test_v3_.sh $method $dataset ./ood_ckpt/ckpt/mobile_LT_a8/epoch_600.pth \
-    checkpoint0624/mobile/$method ./meta/train_LT_a8.txt 8 \
+bash ./custom_test_v3_.sh $method $dataset ./ood_ckpt/ckpt/mobile_LT_a8/epoch_600.pth \
+    test/mobile/$method ./meta/train_LT_a8.txt 8 \
 # done
 done
 done
