@@ -10,7 +10,7 @@ SAMPLE_A=$6
 
 python3 -m torch.distributed.launch --nproc_per_node=$HOST_GPU_NUM --master_port='29501' test_ood_custom_v3_.py \
 --name test_${METHOD}_${OUT_DATA} \
---in_datadir /mapai/haowenguo/ILSVRC/Data/CLS-LOC/val \
+--in_datadir dataset/id_data/imagenet_val \
 --out_datadir dataset/ood_data/${OUT_DATA} \
 --model_path ${CKPT}  \
 --batch 256 \

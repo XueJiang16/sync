@@ -103,8 +103,8 @@ def make_id_ood(args, logger):
         tv.transforms.Normalize([123.675/255, 116.28/255, 103.53/255],
                                 [58.395/255, 57.12/255, 57.375/255]),
     ])
-    id_ann = '/mapai/haowenguo/ILSVRC/Data/CLS-LOC/meta/val_labeled.txt'
-    # id_ann = '/mapai/haowenguo/data/ood_data/inat/val2018.json'
+    id_ann = './meta/val_labeled.txt'
+    # id_ann = './dataset/ood_data/inat/val2018.json'
     # in_set = tv.datasets.ImageFolder(args.in_datadir, val_tx)
     in_set = IDDataset(args.in_datadir, id_ann, val_tx)
     out_set = tv.datasets.ImageFolder(args.out_datadir, val_tx)

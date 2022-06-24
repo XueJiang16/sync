@@ -8,9 +8,9 @@ ID_CLS=$5
 SAMPLE_A=$6
 
 
-python3 -m torch.distributed.launch --nproc_per_node=$HOST_GPU_NUM --master_port='29504' test_ood_custom_v4.py \
+python3 -m torch.distributed.launch --nproc_per_node=2 --master_port='29504' test_ood_custom_v4.py \
 --name test_${METHOD}_${OUT_DATA} \
---in_datadir /mapai/haowenguo/data/ood_data/inat/ \
+--in_datadir dataset/ood_data/inat/ \
 --out_datadir dataset/ood_data/${OUT_DATA} \
 --model_path ${CKPT}  \
 --batch 256 \
