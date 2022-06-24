@@ -6,7 +6,7 @@
 
 #!/bin/bash  
 
-bash ./custom_test_v4.sh new SUN ood_ckpt/ckpt/inat/epoch_100.pth inat_test/ ./meta/train_LT_a8.txt 0
+bash ./custom_test_v4.sh new SUN ood_ckpt/ckpt/inat/epoch_100.pth inat_test/ ./dataset/ood_data/inat/train2018.json 0
 # ./custom_test_v4.sh new Places /mapai/haowenguo/ckpt/ood_ckpt/resnet101_imagnet_LT_100e.pth new0408_v4/imagenet_LT /mapai/haowenguo/data/ood_data/ImageNet-LT/ImageNet_LT_train.txt 0
 # ./custom_test_v4.sh new Textures /mapai/haowenguo/ckpt/ood_ckpt/resnet101_imagnet_LT_100e.pth new0408_v4/imagenet_LT /mapai/haowenguo/data/ood_data/ImageNet-LT/ImageNet_LT_train.txt 0
 # ./custom_test_v4.sh new iNaturalist /mapai/haowenguo/ckpt/ood_ckpt/resnet101_imagnet_LT_100e.pth new0408_v4/imagenet_LT /mapai/haowenguo/data/ood_data/ImageNet-LT/ImageNet_LT_train.txt 0
