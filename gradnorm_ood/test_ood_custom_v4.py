@@ -106,7 +106,7 @@ def make_id_ood(args, logger):
     # id_ann = '/mapai/haowenguo/ILSVRC/Data/CLS-LOC/meta/val_labeled.txt'
     id_ann = 'dataset/ood_data/inat/val2018.json'
     # in_set = tv.datasets.ImageFolder(args.in_datadir, val_tx)
-    in_set = IDDataset(args.in_datadir, id_ann, val_tx)
+    in_set = IDDataset2(args.in_datadir, id_ann, val_tx)
     out_set = tv.datasets.ImageFolder(args.out_datadir, val_tx)
 
     logger.info(f"Using an in-distribution set with {len(in_set)} images.")
