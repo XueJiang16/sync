@@ -69,28 +69,7 @@ def iterate_data_msp_custom(data_loader, model, targets):
             print('{} batches processed'.format(b))
     return torch.tensor(confs).cuda(), torch.tensor(cls).cuda()
 
-def iterate_data_cosine(data_loader, model, targets):
-    confs = []
-    cls = []
-    targets = torch.tensor(targets).cuda()
-    targets = targets.unsqueeze(0)
-    m = torch.nn.Softmax(dim=-1).cuda()
-    for b, (x, y) in enumerate(data_loader):
-        with torch.no_grad():
-            x = x.cuda()
-            # compute output, measure accuracy and record loss.
-            logits, _ = model_forward(model, x)
-            softmax_output = m(logits)
 
-            sim = -softmax_output * targets
-            sim = sim.sum(1) /(torch.norm(softmax_output, dim=1) * torch.norm(targets, dim=1))
-            sim = sim.unsqueeze(1)
-            conf = sim
-            confs.extend(conf.data)
-            cls.extend(y)
-        if b % 100 == 0:
-            print('{} batches processed'.format(b))
-    return torch.tensor(confs).cuda(), torch.tensor(cls).cuda()
 
 def iterate_data_odin(data_loader, model, epsilon, temper):
     criterion = torch.nn.CrossEntropyLoss().cuda()
@@ -345,9 +324,60 @@ def iterate_data_new(data_loader, model, temperature, num_classes,target):
     # exit()
     return torch.tensor(confs).cuda(), torch.tensor(labels).cuda()
 
-def iterate_data_cosnorm(data_loader, model, num_classes,target):
+def iterate_data_cosine(data_loader, model, targets):
+    confs = []
+    cls = []
+    targets = torch.tensor(targets).cuda()
+    targets = targets.unsqueeze(0)
+    m = torch.nn.Softmax(dim=-1).cuda()
+    for b, (x, y) in enumerate(data_loader):
+        with torch.no_grad():
+            x = x.cuda()
+            # compute output, measure accuracy and record loss.
+            logits, _ = model_forward(model, x)
+            softmax_output = m(logits)
 
-    pass
+            sim = -softmax_output * targets
+            sim = sim.sum(1) /(torch.norm(softmax_output, dim=1) * torch.norm(targets, dim=1))
+            sim = sim.unsqueeze(1)
+            conf = sim
+            confs.extend(conf.data)
+            cls.extend(y)
+        if b % 100 == 0:
+            print('{} batches processed'.format(b))
+    return torch.tensor(confs).cuda(), torch.tensor(cls).cuda()
+
+def iterate_data_cosnorm(data_loader, model, targets):
+    confs = []
+    labels = []
+    targets = torch.tensor(targets).cuda()
+    targets = targets.unsqueeze(0)
+    m = torch.nn.Softmax(dim=-1).cuda()
+    for b, (x, y) in enumerate(data_loader):
+        if b % 100 == 0:
+            print('{} batches processed'.format(b))
+        inputs = Variable(x.cuda(), requires_grad=True)
+
+        model.zero_grad()
+        logits, _ = model_forward(model, inputs)
+        softmax_output = m(logits)
+        sim = -softmax_output * targets
+        sim = sim.sum(1) / (torch.norm(softmax_output, dim=1) * torch.norm(targets, dim=1))
+        loss = sim.unsqueeze(1)
+        loss.backward()
+
+        # layer_grad = model.head.conv.weight.grad.data
+        if isinstance(model, mmcls.models.classifiers.image.ImageClassifier):
+            layer_grad = model.head.layers[1].fc.weight.grad.data
+        else:
+            layer_grad = model.fc.weight.grad.data
+
+        layer_grad_norm = torch.sum(torch.abs(layer_grad))
+        confs.append(layer_grad_norm)
+        label = y.clone().detach()
+        labels.append(label)
+        # print('original:',layer_grad_norm)
+    return torch.tensor(confs).cuda(), torch.tensor(labels).cuda()
 
 def iterate_data_confidence(data_loader, model, isID=True):
     confs = []
