@@ -1,0 +1,14 @@
+{
+    "readable_name": "htc",
+    "Token":"Ohh1ajut6bkdgHDgnX1Y6Q",
+    "business_flag": "map_pic_auto",
+    "model_local_file_path": "/mapai/haowenguo/code/SPL/jx/start_here",
+    "host_num": 1,
+    "host_gpu_num": 4,
+    "image_full_name": "mirrors.tencent.com/haowen/mmdet214_taiji:v3",
+    "dataset_id": "91FD1E4DD9C14AAA9067E98E177F1820",
+    "keep_alive": true,
+    "exec_start_in_all_mpi_pods": true,
+    "priority_level": "LOW",
+    "elastic_level": 1
+}

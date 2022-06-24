@@ -1,0 +1,7 @@
+.idea/*
+__pycache__*
+dataset/id_data/*
+dataset/ood_data/*
+checkpoints
+*.pth
+*.pdf

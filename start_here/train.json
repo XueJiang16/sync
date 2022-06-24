@@ -1,0 +1,15 @@
+{
+    "readable_name": "htc",
+    "Token":"Ohh1ajut6bkdgHDgnX1Y6Q",
+    "business_flag": "map_pic_auto",
+    "model_local_file_path": "/mapai/haowenguo/code/SPL/jx/start_here",
+    "host_num": 1,
+    "host_gpu_num": 8,
+    "image_full_name": "mirrors.tencent.com/taiji_light/python3.6-cuda11.0-tf2.4.0-torch1.7.1-lightcc3.0.0-light:v4",
+    "dataset_id": "91FD1E4DD9C14AAA9067E98E177F1820",
+    "keep_alive": true,
+    "exec_start_in_all_mpi_pods": true,
+    "priority_level": "HIGH",
+    "GPUName": "V100",
+    "elastic_level": 1
+}
