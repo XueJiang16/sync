@@ -101,7 +101,7 @@ if __name__ == '__main__':
         sheet.write(ptr , 2, "Overall")
         parse_single(log_path, log_target, (ptr, 3), sheet)
         ptr += 4
-    wbk.save(os.path.join(log_path, "collate.xls"))
+    wbk.save(os.path.join(log_path, "collate.xlsx"))
 
 
 
