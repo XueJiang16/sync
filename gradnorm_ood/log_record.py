@@ -68,7 +68,7 @@ def parse_single(log_path, log_target, orig, excel_pointer):
 
 
 if __name__ == '__main__':
-    log_path = "/mapai/haowenguo/code/SPL/jx/gradnorm_ood/checkpoint0521/a2_repeat10"
+    log_path = "./checkpoint0624/LT_a8"
     log_folder = os.listdir(log_path)
     # log_folder_ = []
     # for item in log_folder:
