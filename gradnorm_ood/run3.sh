@@ -21,8 +21,8 @@ do
 #     checkpoint0512/inat_res101_plus2/$method /mapai/haowenguo/ILSVRC/Data/CLS-LOC/meta/train_LT_a8.txt 0 \
 #bash ./custom_test_v3_.sh $method $dataset ./ood_ckpt/ckpt/mobile_LT_a8/epoch_600.pth \
 #    test/mobile/$method ./meta/train_LT_a8.txt 8 \
-bash ./custom_test_v3_.sh $method $dataset ./ood_ckpt/ood_ckpt_other/LT_a8/epoch_100.pth \
-    checkpoint0624/LT_a8/$method ./meta/train_LT_a8.txt 8
+bash ./custom_test_v3_.sh $method $dataset ./ood_ckpt/ckpt/resnet50_LT_a8/epoch_100.pth \
+    checkpoint0624/res50/$method ./meta/train_LT_a8.txt 8
 # done
 done
 done
