@@ -241,12 +241,13 @@ def iterate_data_gradnorm(data_loader, model, temperature, num_classes):
             S = U * V / 2048 / num_classes
             confs.extend(S)
             cls.extend(y)
-            filename2score[name[0]] = float(S[0].cpu().data)
+            filename2score[name[0]] = float(outputs.cpu().mean().data)
             if b == 1000:
                 break
-    with open("dump.pkl", "wb") as f:
+    with open("dump_output.pkl", "wb") as f:
         pickle.dump(filename2score, f)
     return torch.tensor(confs).cuda(), torch.tensor(cls).cuda()
+
 
 
 def iterate_data_newplus2(data_loader, model, temperature, num_classes, targets):
