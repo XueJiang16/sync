@@ -52,7 +52,8 @@ class IDDataset(torch.utils.data.Dataset):
         label = self.label_list[item]
         if self.transform is not None:
             sample = self.transform(sample)
-        return sample, label, os.path.basename(path)
+        return sample, label
+        # return sample, label, os.path.basename(path)
 
 class IDDataset2(torch.utils.data.Dataset):
     #INaturalist
