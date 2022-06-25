@@ -208,19 +208,39 @@ def iterate_data_mahalanobis(data_loader, model, num_classes, sample_mean, preci
         # assert len(confs) == len(cls), print(b)
     return torch.tensor(confs).cuda(), torch.tensor(cls).cuda()
 
+# def iterate_data_gradnorm(data_loader, model, temperature, num_classes):
+#     confs = []
+#     cls = []
+#     with torch.no_grad():
+#         for b, (x, y) in enumerate(data_loader):
+#             if b % 10 == 0:
+#                 print('{} batches processed'.format(b))
+#             inputs = Variable(x.cuda(), requires_grad=False)
+#             outputs, features = model_forward(model, inputs)
+#             U = torch.norm(features, p=1, dim=1)
+#             out_softmax = torch.nn.functional.softmax(outputs, dim=1)
+#             V = torch.norm((1 - num_classes * out_softmax), p=1, dim=1)
+#             S = U * V / 2048 / num_classes
+#             confs.extend(S)
+#             cls.extend(y)
+#     return torch.tensor(confs).cuda(), torch.tensor(cls).cuda()
 def iterate_data_gradnorm(data_loader, model, temperature, num_classes):
     confs = []
     cls = []
     with torch.no_grad():
-        for b, (x, y) in enumerate(data_loader):
+        for b, (x, y, name) in enumerate(data_loader):
             if b % 10 == 0:
                 print('{} batches processed'.format(b))
+            print(name)
             inputs = Variable(x.cuda(), requires_grad=False)
             outputs, features = model_forward(model, inputs)
             U = torch.norm(features, p=1, dim=1)
             out_softmax = torch.nn.functional.softmax(outputs, dim=1)
             V = torch.norm((1 - num_classes * out_softmax), p=1, dim=1)
             S = U * V / 2048 / num_classes
+            print("output_mean: ", outputs.mean())
+            print("conf: ", S)
+            assert False
             confs.extend(S)
             cls.extend(y)
     return torch.tensor(confs).cuda(), torch.tensor(cls).cuda()

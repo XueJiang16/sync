@@ -13,7 +13,7 @@ python3 -m torch.distributed.launch --nproc_per_node=2 --master_port='29501' tes
 --in_datadir dataset/id_data/imagenet_val \
 --out_datadir dataset/ood_data/${OUT_DATA} \
 --model_path ${CKPT}  \
---batch 256 \
+--batch 1 \
 --logdir ${OUT_DIR} \
 --score ${METHOD} \
 --id_cls ${ID_CLS} \
