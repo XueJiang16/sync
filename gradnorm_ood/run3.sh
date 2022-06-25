@@ -4,7 +4,7 @@
 
 
 # list_method=( 'MSP' 'ODIN' 'Energy' 'new' 'GradNorm' 'Mahalanobis')
-list_method=('new')
+list_method=('GradNorm')
 
 list_dataset=('SUN' 'Places' 'Textures' 'iNaturalist')
 # # list_ckpt=('mobile_LT_a8/epoch_600' 'resnet152_LT_a8/epoch_100' 'resnet50_LT_a8/epoch_100')
@@ -22,7 +22,7 @@ do
 #bash ./custom_test_v3_.sh $method $dataset ./ood_ckpt/ckpt/mobile_LT_a8/epoch_600.pth \
 #    test/mobile/$method ./meta/train_LT_a8.txt 8 \
 bash ./custom_test_v3_.sh $method $dataset ./ood_ckpt/ood_ckpt_other/LT_a8/epoch_100.pth \
-    checkpoint0624/LT_a8_kl/$method ./meta/train_LT_a8.txt 8
+    checkpoint0624/LT_a8/$method ./meta/train_LT_a8.txt 8
 # done
 done
 done
