@@ -78,7 +78,7 @@ class JsonDataset(OODBaseDataset):
 
 @DATASETS.register_module()
 class FolderDataset(OODBaseDataset):
-    def __init__(self, path, pipeline):
+    def __init__(self, path, pipeline, data_ann=None):
         super().__init__(pipeline)
         # self.file_list = glob.glob(os.path.join(path, '*'))
         self.data_prefix = path
