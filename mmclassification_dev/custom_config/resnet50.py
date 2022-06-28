@@ -33,7 +33,7 @@ data = dict(
     #     ]),
     id_data=dict(
         type='JsonDataset',
-        path='/data/csxjiang/ood_data/inat/inat_id_val',
+        path='/data/csxjiang/train_val2018',
         data_ann='/data/csxjiang/ood_data/inat/val2018.json',
         pipeline=[
             dict(type='LoadImageFromFile'),
