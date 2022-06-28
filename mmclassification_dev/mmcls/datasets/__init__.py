@@ -21,5 +21,5 @@ __all__ = [
     'DistributedSampler', 'ConcatDataset', 'RepeatDataset',
     'ClassBalancedDataset', 'DATASETS', 'PIPELINES', 'ImageNet21k', 'SAMPLERS',
     'build_sampler', 'RepeatAugSampler', 'KFoldDataset', 'CUB', 'CustomDataset',
-    'FolderDataset', 'JsonDataset', TxtDataset
+    'FolderDataset', 'JsonDataset', 'TxtDataset'
 ]
