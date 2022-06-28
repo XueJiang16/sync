@@ -19,7 +19,7 @@ data = dict(
     id_data=dict(
         type='TxtDataset',
         path='/data/csxjiang/val',
-        data_ann='/data/csxjiang/meta/train_LT_a8.txt',
+        data_ann='/data/csxjiang/meta/val_labeled.txt',
         pipeline=[
             dict(type='LoadImageFromFile'),
             dict(type='Resize', size=480),
