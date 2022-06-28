@@ -100,10 +100,6 @@ def parse_args():
     args = parser.parse_args()
     if 'LOCAL_RANK' not in os.environ:
         os.environ['LOCAL_RANK'] = str(args.local_rank)
-
-    assert args.metrics or args.out, \
-        'Please specify at least one of output path and evaluation metrics.'
-
     return args
 
 
