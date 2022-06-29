@@ -127,6 +127,8 @@ def main():
         data_loader_ood.append(build_dataloader(ood_set, **test_loader_cfg))
 
     model = build_ood_model(cfg.model)
+    print(cfg.gpu_ids)
+    assert False
     model = MMDataParallel(model, device_ids=cfg.gpu_ids)
 
     outputs_id = single_gpu_test_ood(model, data_loader_id)
