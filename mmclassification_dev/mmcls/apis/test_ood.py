@@ -37,7 +37,7 @@ def single_gpu_test_ood(model,
     dist.barrier()
     for i, data in enumerate(data_loader):
         img_metas = data["img_metas"]
-        print(img_metas)
+        print(rank, img_metas)
         assert False
         result = model.forward(**data)
         if rank == 0:
