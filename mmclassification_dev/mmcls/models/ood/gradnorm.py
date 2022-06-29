@@ -15,7 +15,7 @@ class GradNorm(BaseModule):
         self.classifier.eval()
         self.num_classes = num_classes
         self.temperature = temperature
-        self.logsoftmax = torch.nn.LogSoftmax(dim=-1).to("cuda{}".format(self.local_rank))
+        self.logsoftmax = torch.nn.LogSoftmax(dim=-1).to("cuda:{}".format(self.local_rank))
 
     def forward(self, **input):
         self.classifier.zero_grad()
@@ -23,7 +23,7 @@ class GradNorm(BaseModule):
         assert img.shape[0] == 1, "GradNorm backward implementation only supports batch = 1."
         outputs = self.classifier.simple_test(softmax=False, post_process=False, **input)
         # outputs, _ = self.classifier.simple_test(softmax=False, **input)
-        targets = torch.ones((img.shape[0], self.num_classes)).to("cuda{}".format(self.local_rank))
+        targets = torch.ones((img.shape[0], self.num_classes)).to("cuda:{}".format(self.local_rank))
         outputs = outputs / self.temperature
         loss = torch.sum(torch.mean(-targets * self.logsoftmax(outputs), dim=-1))
 
