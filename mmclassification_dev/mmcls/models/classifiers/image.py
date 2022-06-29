@@ -149,7 +149,5 @@ class ImageClassifier(BaseClassifier):
                 'Please use `sigmoid` instead of `softmax` '
                 'in multi-label tasks.')
         res = self.head.simple_test(x, **kwargs)
-        print(res)
-        assert False
 
         return res
