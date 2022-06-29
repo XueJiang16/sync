@@ -23,8 +23,8 @@ model = dict(
 #     type="GradNormHook"
 # )]
 data = dict(
-    samples_per_gpu=32,
-    workers_per_gpu=2,
+    samples_per_gpu=1,
+    workers_per_gpu=1,
     # id_data=dict(
     #     type='TxtDataset',
     #     path='/data/csxjiang/val',
