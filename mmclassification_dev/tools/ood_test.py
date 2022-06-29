@@ -87,7 +87,7 @@ def main():
     #                   'non-distributed testing. Use the first GPU '
     #                   'in `gpu_ids` now.')
     # else:
-    cfg.gpu_ids = [os.environ['LOCAL_RANK']]
+    cfg.gpu_ids = [int(os.environ['LOCAL_RANK'])]
 
     # init distributed env first, since logger depends on the dist info.
     if args.launcher == 'none':
