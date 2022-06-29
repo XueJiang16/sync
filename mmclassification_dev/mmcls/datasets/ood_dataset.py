@@ -30,7 +30,8 @@ class OODBaseDataset(Dataset):
             self.data_infos.append(info)
 
     def __len__(self):
-        return len(self.file_list)
+        return 100
+        # return len(self.file_list)
 
     def prepare_data(self, idx):
         results = copy.deepcopy(self.data_infos[idx])
