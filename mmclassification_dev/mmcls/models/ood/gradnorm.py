@@ -14,7 +14,6 @@ class GradNorm(BaseModule):
         self.num_classes = num_classes
         self.temperature = temperature
         self.logsoftmax = torch.nn.LogSoftmax(dim=-1).cuda()
-        print(self.classifier)
 
     def forward(self, **input):
         self.classifier.zero_grad()
