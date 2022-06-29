@@ -1,5 +1,6 @@
 from mmcv.runner import BaseModule
 import torch
+import os
 
 from ..builder import OOD
 from mmcls.models import build_classifier
@@ -9,11 +10,12 @@ from mmcls.models import build_classifier
 class GradNorm(BaseModule):
     def __init__(self, classifier, num_classes, temperature, **kwargs):
         super(GradNorm, self).__init__()
+        self.local_rank = os.environ['LOCAL_RANK']
         self.classifier = build_classifier(classifier)
         self.classifier.eval()
         self.num_classes = num_classes
         self.temperature = temperature
-        self.logsoftmax = torch.nn.LogSoftmax(dim=-1).cuda(self.classifier.device)
+        self.logsoftmax = torch.nn.LogSoftmax(dim=-1).cuda(self.local_rank)
 
     def forward(self, **input):
         self.classifier.zero_grad()
@@ -21,7 +23,7 @@ class GradNorm(BaseModule):
         assert img.shape[0] == 1, "GradNorm backward implementation only supports batch = 1."
         outputs = self.classifier.simple_test(softmax=False, post_process=False, **input)
         # outputs, _ = self.classifier.simple_test(softmax=False, **input)
-        targets = torch.ones((img.shape[0], self.num_classes)).cuda(self.classifier.device)
+        targets = torch.ones((img.shape[0], self.num_classes)).cuda(self.local_rank)
         outputs = outputs / self.temperature
         loss = torch.sum(torch.mean(-targets * self.logsoftmax(outputs), dim=-1))
 
