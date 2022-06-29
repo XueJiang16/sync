@@ -10,6 +10,7 @@ NECKS = MODELS
 HEADS = MODELS
 LOSSES = MODELS
 CLASSIFIERS = MODELS
+OOD = MODELS
 
 ATTENTION = Registry('attention', parent=MMCV_ATTENTION)
 
@@ -36,3 +37,7 @@ def build_loss(cfg):
 
 def build_classifier(cfg):
     return CLASSIFIERS.build(cfg)
+
+
+def build_ood_model(cfg):
+    return OOD.build(cfg)

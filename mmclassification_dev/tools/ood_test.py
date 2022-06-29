@@ -12,17 +12,16 @@ from mmcv.parallel import MMDataParallel, MMDistributedDataParallel
 from mmcv.runner import (get_dist_info, init_dist, load_checkpoint,
                          wrap_fp16_model)
 
-from mmcls.apis import multi_gpu_test, single_gpu_test
+from mmcls.apis import single_gpu_test_ood
 from mmcls.datasets import build_dataloader, build_dataset
-from mmcls.models import build_classifier
+from mmcls.models import build_ood_model
 from mmcls.utils import get_root_logger, setup_multi_processes
 
 
 def parse_args():
-    parser = argparse.ArgumentParser(description='mmcls test model')
+    parser = argparse.ArgumentParser(description='ood test')
     parser.add_argument('config', help='test config file path')
     parser.add_argument('checkpoint', help='checkpoint file')
-    parser.add_argument('--out', help='output result file')
     out_options = ['class_scores', 'pred_score', 'pred_label', 'pred_class']
     parser.add_argument(
         '--out-items',
@@ -35,45 +34,10 @@ def parse_args():
         'above. Defaults to output all.',
         metavar='')
     parser.add_argument(
-        '--metrics',
-        type=str,
-        nargs='+',
-        help='evaluation metrics, which depends on the dataset, e.g., '
-        '"accuracy", "precision", "recall", "f1_score", "support" for single '
-        'label dataset, and "mAP", "CP", "CR", "CF1", "OP", "OR", "OF1" for '
-        'multi-label dataset')
-    parser.add_argument('--show', action='store_true', help='show results')
-    parser.add_argument(
-        '--show-dir', help='directory where painted images will be saved')
-    parser.add_argument(
         '--gpu-collect',
         action='store_true',
         help='whether to use gpu to collect results')
     parser.add_argument('--tmpdir', help='tmp dir for writing some results')
-    parser.add_argument(
-        '--cfg-options',
-        nargs='+',
-        action=DictAction,
-        help='override some settings in the used config, the key-value pair '
-        'in xxx=yyy format will be merged into config file. If the value to '
-        'be overwritten is a list, it should be like key="[a,b]" or key=a,b '
-        'It also allows nested list/tuple values, e.g. key="[(a,b),(c,d)]" '
-        'Note that the quotation marks are necessary and that no white space '
-        'is allowed.')
-    parser.add_argument(
-        '--metric-options',
-        nargs='+',
-        action=DictAction,
-        default={},
-        help='custom options for evaluation, the key-value pair in xxx=yyy '
-        'format will be parsed as a dict metric_options for dataset.evaluate()'
-        ' function.')
-    parser.add_argument(
-        '--show-options',
-        nargs='+',
-        action=DictAction,
-        help='custom options for show_result. key-value pair in xxx=yyy.'
-        'Check available options in `model.show_result`.')
     parser.add_argument(
         '--gpu-ids',
         type=int,
@@ -101,15 +65,12 @@ def parse_args():
     if 'LOCAL_RANK' not in os.environ:
         os.environ['LOCAL_RANK'] = str(args.local_rank)
     return args
-    return args
 
 
 def main():
     args = parse_args()
 
     cfg = mmcv.Config.fromfile(args.config)
-    if args.cfg_options is not None:
-        cfg.merge_from_dict(args.cfg_options)
 
     # set multi-process settings
     setup_multi_processes(cfg)
@@ -136,7 +97,7 @@ def main():
         init_dist(args.launcher, **cfg.dist_params)
 
     dataset_id = build_dataset(cfg.data.id_data)
-    # dataset_ood = [build_dataset(d) for d in cfg.data.ood_data]
+    dataset_ood = [build_dataset(d) for d in cfg.data.ood_data]
 
     # build the dataloader
     # The default loader config
@@ -160,11 +121,21 @@ def main():
         **cfg.data.get('test_dataloader', {}),
     }
     # the extra round_up data will be removed during gpu/cpu collect
-    data_loader = build_dataloader(dataset_id, **test_loader_cfg)
+    data_loader_id = build_dataloader(dataset_id, **test_loader_cfg)
+    data_loader_ood = []
+    for ood_set in dataset_ood:
+        data_loader_ood.append(build_dataloader(ood_set, **test_loader_cfg))
 
-    for i, data in enumerate(data_loader):
-        print(data)
-        assert False
+    model = build_ood_model(cfg.model)
+    model = MMDataParallel(model, device_ids=cfg.gpu_ids)
+
+    outputs_id = single_gpu_test_ood(model, data_loader_id)
+
+
+
+    # for i, data in enumerate(data_loader):
+    #     print(data)
+    #     assert False
 
     # build the model and load checkpoint
     # model = build_classifier(cfg.model)
@@ -185,13 +156,6 @@ def main():
     # if not distributed:
     #     if args.device == 'cpu':
     #         model = model.cpu()
-    #     elif args.device == 'ipu':
-    #         from mmcv.device.ipu import cfg2options, ipu_model_wrapper
-    #         opts = cfg2options(cfg.runner.get('options_cfg', {}))
-    #         if fp16_cfg is not None:
-    #             model.half()
-    #         model = ipu_model_wrapper(model, opts, fp16_cfg=fp16_cfg)
-    #         data_loader.init(opts['inference'])
     #     else:
     #         model = MMDataParallel(model, device_ids=cfg.gpu_ids)
     #         if not model.device_ids:
