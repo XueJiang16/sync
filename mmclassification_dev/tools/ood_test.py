@@ -117,6 +117,7 @@ def main():
     test_loader_cfg = {
         **loader_cfg,
         'shuffle': False,  # Not shuffle by default
+        'drop_last': True,
         'sampler_cfg': None,  # Not use sampler by default
         **cfg.data.get('test_dataloader', {}),
     }
