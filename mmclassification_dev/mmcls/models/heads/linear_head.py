@@ -62,6 +62,8 @@ class LinearClsHead(ClsHead):
         """
         x = self.pre_logits(x)
         cls_score = self.fc(x)
+        print(cls_score)
+        assert False
 
         if softmax:
             pred = (

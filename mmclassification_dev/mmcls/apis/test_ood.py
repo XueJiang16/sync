@@ -13,8 +13,8 @@ from mmcv.runner import get_dist_info
 
 
 def single_gpu_test_ood(model,
-                    data_loader
-                    ):
+                        data_loader
+                        ):
     """Test model with local single gpu.
 
     This method tests model with a single gpu and supports showing results.
