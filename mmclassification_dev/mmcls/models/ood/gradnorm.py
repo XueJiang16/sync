@@ -20,6 +20,8 @@ class GradNorm(BaseModule):
         self.classifier.zero_grad()
         img = input['img']
         outputs = self.classifier.simple_test(softmax=False, **input)
+        print(outputs)
+        assert False
         # outputs, _ = self.classifier.simple_test(softmax=False, **input)
         targets = torch.ones((img.shape[0], self.num_classes)).cuda()
         outputs = outputs / self.temperature
