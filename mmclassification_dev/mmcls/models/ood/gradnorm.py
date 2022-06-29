@@ -14,7 +14,7 @@ class GradNorm(BaseModule):
         self.num_classes = num_classes
         self.temperature = temperature
         self.logsoftmax = torch.nn.LogSoftmax(dim=-1).cuda()
-        print(kwargs)
+        print(self.classifier)
 
     def forward(self, **input):
         self.classifier.zero_grad()
@@ -27,7 +27,7 @@ class GradNorm(BaseModule):
         loss = torch.sum(torch.mean(-targets * self.logsoftmax(outputs), dim=-1))
 
         loss.backward()
-        layer_grad = self.classifier.head.layers[1].fc.weight.grad.data
+        layer_grad = self.classifier.head.fc.weight.grad.data
         layer_grad_norm = torch.sum(torch.abs(layer_grad))
         return layer_grad_norm
 
