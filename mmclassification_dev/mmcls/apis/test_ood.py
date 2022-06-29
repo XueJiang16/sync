@@ -36,12 +36,12 @@ def single_gpu_test_ood(model,
     rank, world_size = get_dist_info()
     dist.barrier()
     for i, data in enumerate(data_loader):
-        img_metas = data["img_metas"]
-        print(rank, img_metas)
-        assert False
         result = model.forward(**data)
+        results.append(result)
         if rank == 0:
             batch_size = data['img'].size(0)
             for _ in range(batch_size * world_size):
                 prog_bar.update()
+    dist.barrier()
+    results = torch.cat(results).cpu().numpy()
     return results

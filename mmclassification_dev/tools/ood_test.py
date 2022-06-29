@@ -15,7 +15,7 @@ from mmcv.runner import (get_dist_info, init_dist, load_checkpoint,
 from mmcls.apis import single_gpu_test_ood
 from mmcls.datasets import build_dataloader, build_dataset
 from mmcls.models import build_ood_model
-from mmcls.utils import get_root_logger, setup_multi_processes
+from mmcls.utils import get_root_logger, setup_multi_processes, gather_tensors
 
 
 def parse_args():
@@ -130,7 +130,13 @@ def main():
     model = MMDataParallel(model, device_ids=cfg.gpu_ids)
     # model.to("cuda:{}".format(os.environ['LOCAL_RANK']))
     outputs_id = single_gpu_test_ood(model, data_loader_id)
-
+    in_scores = gather_tensors(outputs_id)
+    print(in_scores.shape)
+    assert False
+    # gather_in_scores = [torch.zeros_like(outputs_id) - 1 for _ in range(torch.distributed.get_world_size())]
+    # torch.distributed.all_gather(gather_in_scores, outputs_id)
+    # in_scores = torch.stack(gather_in_scores)
+    # in_scores = in_scores[in_scores != -1]
 
 
     # for i, data in enumerate(data_loader):
