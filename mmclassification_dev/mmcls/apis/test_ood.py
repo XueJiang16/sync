@@ -46,4 +46,6 @@ def single_gpu_test_ood(model,
                 prog_bar.update()
     dist.barrier()
     results = torch.cat(results).cpu().numpy()
+    print(rank, results)
+    assert False
     return results
