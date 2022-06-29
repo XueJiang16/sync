@@ -22,8 +22,8 @@ class GradNorm(BaseModule):
         img = input['img']
         assert img.shape[0] == 1, "GradNorm backward implementation only supports batch = 1."
         outputs = self.classifier.simple_test(softmax=False, post_process=False, **input)
-        print("Self rank: {}, output device = {}".format(self.local_rank, outputs.device))
-        assert False
+        # print("Self rank: {}, output device = {}".format(self.local_rank, outputs.device))
+        # assert False
         # outputs, _ = self.classifier.simple_test(softmax=False, **input)
         targets = torch.ones((img.shape[0], self.num_classes)).to("cuda:{}".format(self.local_rank))
         outputs = outputs / self.temperature
