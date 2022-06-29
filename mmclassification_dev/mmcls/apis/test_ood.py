@@ -36,6 +36,8 @@ def single_gpu_test_ood(model,
     rank, world_size = get_dist_info()
     dist.barrier()
     for i, data in enumerate(data_loader):
+        img_metas = data["img_metas"]
+        print(rank, img_metas["filename"])
         result = model.forward(**data)
         if len(result.shape) == 0:  # handle the situation of batch = 1
             result = result.unsqueeze(0)

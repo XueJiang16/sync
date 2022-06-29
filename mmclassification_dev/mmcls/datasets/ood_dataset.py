@@ -30,7 +30,7 @@ class OODBaseDataset(Dataset):
             self.data_infos.append(info)
 
     def __len__(self):
-        return 11
+        return 3
         # return len(self.file_list)
 
     def prepare_data(self, idx):
