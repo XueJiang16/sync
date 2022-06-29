@@ -131,7 +131,8 @@ def main():
     # model.to("cuda:{}".format(os.environ['LOCAL_RANK']))
     outputs_id = single_gpu_test_ood(model, data_loader_id)
     in_scores = gather_tensors(outputs_id)
-    print(in_scores)
+    in_scores = np.concatenate(in_scores, axis=0)
+    print(in_scores.shape)
     assert False
     # gather_in_scores = [torch.zeros_like(outputs_id) - 1 for _ in range(torch.distributed.get_world_size())]
     # torch.distributed.all_gather(gather_in_scores, outputs_id)
