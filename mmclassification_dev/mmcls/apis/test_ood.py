@@ -34,7 +34,7 @@ def single_gpu_test_ood(model,
     dataset = data_loader.dataset
     prog_bar = mmcv.ProgressBar(len(dataset))
     for i, data in enumerate(data_loader):
-        result = model(**data)
+        result = model.forward(**data)
         print(result)
         assert False
         batch_size = data['img'].size(0)
