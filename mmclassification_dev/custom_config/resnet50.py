@@ -55,6 +55,7 @@ data = dict(
             dict(type='ImageToTensor', keys=['img']),
             dict(type='Collect', keys=['img'])
         ]),
+    ood_data=[],
     # ood_data=dict(
     #     type='TxtDataset',
     #     path='',
