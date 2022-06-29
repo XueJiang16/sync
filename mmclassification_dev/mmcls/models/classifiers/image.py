@@ -142,6 +142,7 @@ class ImageClassifier(BaseClassifier):
 
     def simple_test(self, img, img_metas=None, **kwargs):
         """Test without augmentation."""
+        assert False
         x = self.extract_feat(img)
 
         if isinstance(self.head, MultiLabelClsHead):
