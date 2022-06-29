@@ -16,9 +16,10 @@ class GradNorm(BaseModule):
         self.logsoftmax = torch.nn.LogSoftmax(dim=-1).cuda()
         print(kwargs)
 
-    def simple_test(self, img, img_metas=None, **kwargs):
+    def forward(self, **input):
         self.classifier.zero_grad()
-        outputs, _ = self.classifier(img)
+        img = input['img']
+        outputs, _ = self.classifier(**input)
         targets = torch.ones((img.shape[0], self.num_classes)).cuda()
         outputs = outputs / self.temperature
         loss = torch.sum(torch.mean(-targets * self.logsoftmax(outputs), dim=-1))
