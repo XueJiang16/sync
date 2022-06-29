@@ -43,5 +43,7 @@ def single_gpu_test_ood(model,
             for _ in range(batch_size * world_size):
                 prog_bar.update()
     dist.barrier()
-    results = torch.cat(results).cpu().numpy()
+    print(results)
+    assert False
+    # results = torch.cat(results).cpu().numpy()
     return results
