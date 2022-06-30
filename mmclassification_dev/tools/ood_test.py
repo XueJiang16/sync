@@ -131,6 +131,7 @@ def main():
     model.init_weights()
     model = MMDataParallel(model, device_ids=cfg.gpu_ids)
     # model.to("cuda:{}".format(os.environ['LOCAL_RANK']))
+    print()
     print("Processing in-distribution data...")
     outputs_id = single_gpu_test_ood(model, data_loader_id)
     in_scores = gather_tensors(outputs_id)
@@ -138,6 +139,7 @@ def main():
 
     # out_scores_list = []
     for ood_set, ood_name in zip(data_loader_ood, name_ood):
+        print()
         print("Processing out-of-distribution data ({})...".format(ood_name))
         outputs_ood = single_gpu_test_ood(model, ood_set)
         out_scores = gather_tensors(outputs_ood)
@@ -145,6 +147,7 @@ def main():
         # out_scores_list.append(out_scores)
         if os.environ['LOCAL_RANK'] == '0':
             auroc, aupr_in, aupr_out, fpr95 = evaluate_all(in_scores, out_scores)
+            print()
             print('============Overall Results for {}============'.format(ood_name))
             print('AUROC: {}'.format(auroc))
             print('AUPR (In): {}'.format(aupr_in))
