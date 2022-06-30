@@ -15,7 +15,7 @@ from mmcv.runner import (get_dist_info, init_dist, load_checkpoint,
 from mmcls.apis import single_gpu_test_ood
 from mmcls.datasets import build_dataloader, build_dataset
 from mmcls.models import build_ood_model
-from mmcls.utils import get_root_logger, setup_multi_processes, gather_tensors
+from mmcls.utils import get_root_logger, setup_multi_processes, gather_tensors, evaluate_all
 
 
 def parse_args():
@@ -135,100 +135,21 @@ def main():
     in_scores = gather_tensors(outputs_id)
     in_scores = np.concatenate(in_scores, axis=0)
 
-    out_scores_list = []
+    # out_scores_list = []
     for ood_set, ood_name in zip(data_loader_ood, name_ood):
         print("Processing out-of-distribution data ({})...".format(ood_name))
         outputs_ood = single_gpu_test_ood(model, ood_set)
         out_scores = gather_tensors(outputs_ood)
         out_scores = np.concatenate(out_scores, axis=0)
-        out_scores_list.append(out_scores)
-        print(out_scores.shape)
-    assert False
-    # gather_in_scores = [torch.zeros_like(outputs_id) - 1 for _ in range(torch.distributed.get_world_size())]
-    # torch.distributed.all_gather(gather_in_scores, outputs_id)
-    # in_scores = torch.stack(gather_in_scores)
-    # in_scores = in_scores[in_scores != -1]
-
-
-    # for i, data in enumerate(data_loader):
-    #     print(data)
-    #     assert False
-
-    # build the model and load checkpoint
-    # model = build_classifier(cfg.model)
-    # fp16_cfg = cfg.get('fp16', None)
-    # if fp16_cfg is not None:
-    #     wrap_fp16_model(model)
-    # checkpoint = load_checkpoint(model, args.checkpoint, map_location='cpu')
-    #
-    # if 'CLASSES' in checkpoint.get('meta', {}):
-    #     CLASSES = checkpoint['meta']['CLASSES']
-    # else:
-    #     from mmcls.datasets import ImageNet
-    #     warnings.simplefilter('once')
-    #     warnings.warn('Class names are not saved in the checkpoint\'s '
-    #                   'meta data, use imagenet by default.')
-    #     CLASSES = ImageNet.CLASSES
-    #
-    # if not distributed:
-    #     if args.device == 'cpu':
-    #         model = model.cpu()
-    #     else:
-    #         model = MMDataParallel(model, device_ids=cfg.gpu_ids)
-    #         if not model.device_ids:
-    #             assert mmcv.digit_version(mmcv.__version__) >= (1, 4, 4), \
-    #                 'To test with CPU, please confirm your mmcv version ' \
-    #                 'is not lower than v1.4.4'
-    #     model.CLASSES = CLASSES
-    #     show_kwargs = {} if args.show_options is None else args.show_options
-    #     outputs = single_gpu_test(model, data_loader, args.show, args.show_dir,
-    #                               **show_kwargs)
-    # else:
-    #     model = MMDistributedDataParallel(
-    #         model.cuda(),
-    #         device_ids=[torch.cuda.current_device()],
-    #         broadcast_buffers=False)
-    #     outputs = multi_gpu_test(model, data_loader, args.tmpdir,
-    #                              args.gpu_collect)
-    #
-    # rank, _ = get_dist_info()
-    # if rank == 0:
-    #     results = {}
-    #     logger = get_root_logger()
-    #     if args.metrics:
-    #         eval_results = dataset.evaluate(
-    #             results=outputs,
-    #             metric=args.metrics,
-    #             metric_options=args.metric_options,
-    #             logger=logger)
-    #         results.update(eval_results)
-    #         for k, v in eval_results.items():
-    #             if isinstance(v, np.ndarray):
-    #                 v = [round(out, 2) for out in v.tolist()]
-    #             elif isinstance(v, Number):
-    #                 v = round(v, 2)
-    #             else:
-    #                 raise ValueError(f'Unsupport metric type: {type(v)}')
-    #             print(f'\n{k} : {v}')
-    #     if args.out:
-    #         if 'none' not in args.out_items:
-    #             scores = np.vstack(outputs)
-    #             pred_score = np.max(scores, axis=1)
-    #             pred_label = np.argmax(scores, axis=1)
-    #             pred_class = [CLASSES[lb] for lb in pred_label]
-    #             res_items = {
-    #                 'class_scores': scores,
-    #                 'pred_score': pred_score,
-    #                 'pred_label': pred_label,
-    #                 'pred_class': pred_class
-    #             }
-    #             if 'all' in args.out_items:
-    #                 results.update(res_items)
-    #             else:
-    #                 for key in args.out_items:
-    #                     results[key] = res_items[key]
-    #         print(f'\ndumping results to {args.out}')
-    #         mmcv.dump(results, args.out)
+        # out_scores_list.append(out_scores)
+        if os.environ['LOCAL_RANK'] == 0:
+            auroc, aupr_in, aupr_out, fpr95 = evaluate_all(in_scores, out_scores)
+            print('============Overall Results for {}============'.format(ood_name))
+            print('AUROC: {}'.format(auroc))
+            print('AUPR (In): {}'.format(aupr_in))
+            print('AUPR (Out): {}'.format(aupr_out))
+            print('FPR95: {}'.format(fpr95))
+            print('quick data: {},{},{},{}'.format(auroc, aupr_in, aupr_out, fpr95))
 
 
 if __name__ == '__main__':
