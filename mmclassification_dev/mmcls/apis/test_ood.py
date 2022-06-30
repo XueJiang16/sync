@@ -39,7 +39,8 @@ def single_gpu_test_ood(model,
         prog_bar = mmcv.ProgressBar(len(dataset))
     dist.barrier()
     for i, data in enumerate(data_loader):
-        result = model.forward(**data)
+        with torch.no_grad():
+            result = model.forward(**data)
         if len(result.shape) == 0:  # handle the situation of batch = 1
             result = result.unsqueeze(0)
         results.append(result)
