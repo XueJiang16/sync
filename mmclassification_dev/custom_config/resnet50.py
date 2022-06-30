@@ -22,24 +22,26 @@ model = dict(
 # ood_hooks = [dict(
 #     type="GradNormHook"
 # )]
+pipline =[
+          dict(type='LoadImageFromFile'),
+          dict(type='Resize', size=480),
+          dict(
+              type='Normalize',
+              mean=[123.675, 116.28, 103.53],
+              std=[58.395, 57.12, 57.375],
+              to_rgb=True),
+          dict(type='ImageToTensor', keys=['img']),
+          dict(type='Collect', keys=['img'])
+]
 data = dict(
     samples_per_gpu=1,
     workers_per_gpu=1,
     id_data=dict(
+        name='ImageNet',
         type='TxtDataset',
         path='/data/csxjiang/val',
         data_ann='/data/csxjiang/meta/val_labeled.txt',
-        pipeline=[
-            dict(type='LoadImageFromFile'),
-            dict(type='Resize', size=480),
-            dict(
-                type='Normalize',
-                mean=[123.675, 116.28, 103.53],
-                std=[58.395, 57.12, 57.375],
-                to_rgb=True),
-            dict(type='ImageToTensor', keys=['img']),
-            dict(type='Collect', keys=['img'])
-        ]),
+        pipeline=pipline),
     # id_data=dict(
     #     type='JsonDataset',
     #     path='/data/csxjiang/',
@@ -55,13 +57,29 @@ data = dict(
     #         dict(type='ImageToTensor', keys=['img']),
     #         dict(type='Collect', keys=['img'])
     #     ]),
-    ood_data=[],
-    # ood_data=dict(
-    #     type='TxtDataset',
-    #     path='',
-    #     data_ann='',
-    #     transform=''
-    # )
+    ood_data=[
+        dict(
+            name='iNaturalist',
+            type='FolderDataset',
+            path='/data/csxjiang/ood_data/iNaturalist',
+            pipeline=pipline),
+        dict(
+            name='SUN',
+            type='FolderDataset',
+            path='/data/csxjiang/ood_data/SUN',
+            pipeline=pipline),
+        dict(
+            name='Places',
+            type='FolderDataset',
+            path='/data/csxjiang/ood_data/Places',
+            pipeline=pipline),
+        dict(
+            name='Textures',
+            type='FolderDataset',
+            path='/data/csxjiang/ood_data/Textures',
+            pipeline=pipline),
+    ],
+
 )
 dist_params = dict(backend='nccl')
 log_level = 'INFO'

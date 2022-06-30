@@ -16,11 +16,12 @@ from .builder import DATASETS
 from .pipelines import Compose
 
 class OODBaseDataset(Dataset):
-    def __init__(self, pipeline):
+    def __init__(self, name, pipeline):
         super().__init__()
         self.pipeline = Compose(pipeline)
         self.file_list = []
         self.data_prefix = None
+        self.name = name
 
     def parse_datainfo(self):
         self.data_infos = []
@@ -43,8 +44,8 @@ class OODBaseDataset(Dataset):
 
 @DATASETS.register_module()
 class TxtDataset(OODBaseDataset):
-    def __init__(self, path, data_ann, pipeline):
-        super().__init__(pipeline)
+    def __init__(self, name, path, data_ann, pipeline):
+        super().__init__(name, pipeline)
         self.data_prefix = path
         # self.file_list = glob.glob(os.path.join(path, '*'))
         self.data_ann = data_ann
@@ -57,8 +58,8 @@ class TxtDataset(OODBaseDataset):
 @DATASETS.register_module()
 class JsonDataset(OODBaseDataset):
     # INaturalist
-    def __init__(self, path, data_ann, pipeline):
-        super().__init__(pipeline)
+    def __init__(self, name, path, data_ann, pipeline):
+        super().__init__(name, pipeline)
         # self.file_list = glob.glob(os.path.join(path, '*'))
         self.data_prefix = path
         self.data_ann = data_ann
@@ -79,8 +80,8 @@ class JsonDataset(OODBaseDataset):
 
 @DATASETS.register_module()
 class FolderDataset(OODBaseDataset):
-    def __init__(self, path, pipeline, data_ann=None):
-        super().__init__(pipeline)
+    def __init__(self, name, path, pipeline, data_ann=None):
+        super().__init__(name, pipeline)
         # self.file_list = glob.glob(os.path.join(path, '*'))
         self.data_prefix = path
         images = os.listdir(path)

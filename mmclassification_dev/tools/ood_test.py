@@ -98,6 +98,7 @@ def main():
 
     dataset_id = build_dataset(cfg.data.id_data)
     dataset_ood = [build_dataset(d) for d in cfg.data.ood_data]
+    name_ood = [d['name'] for d in cfg.data.ood_data]
 
     # build the dataloader
     # The default loader config
@@ -132,7 +133,14 @@ def main():
     outputs_id = single_gpu_test_ood(model, data_loader_id)
     in_scores = gather_tensors(outputs_id)
     in_scores = np.concatenate(in_scores, axis=0)
-    print(in_scores.shape)
+
+    out_scores_list = []
+    for ood_set in data_loader_ood:
+        outputs_ood = single_gpu_test_ood(model, ood_set)
+        out_scores = gather_tensors(outputs_ood)
+        out_scores = np.concatenate(out_scores, axis=0)
+        out_scores_list.append(out_scores)
+        print(out_scores.shape)
     assert False
     # gather_in_scores = [torch.zeros_like(outputs_id) - 1 for _ in range(torch.distributed.get_world_size())]
     # torch.distributed.all_gather(gather_in_scores, outputs_id)
