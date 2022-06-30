@@ -448,7 +448,8 @@ def main(args):
                 loss=dict(type='CrossEntropyLoss', loss_weight=1.0),
                 topk=(1, 5)))
         model = build_classifier(config)
-        load_checkpoint(model, args.model_path)
+        model.init_weights()
+        # load_checkpoint(model, args.model_path)
     elif 'mobile' in args.model_path:
         config = dict(
             type='ImageClassifier',
