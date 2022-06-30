@@ -143,6 +143,7 @@ class ImageClassifier(BaseClassifier):
     def simple_test(self, img, img_metas=None, **kwargs):
         """Test without augmentation."""
         x = self.extract_feat(img)
+        print(x[0].sum())
 
         if isinstance(self.head, MultiLabelClsHead):
             assert 'softmax' not in kwargs, (
