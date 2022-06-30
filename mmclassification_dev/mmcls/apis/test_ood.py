@@ -39,7 +39,7 @@ def single_gpu_test_ood(model,
         prog_bar = mmcv.ProgressBar(len(dataset))
     dist.barrier()
     for i, data in enumerate(data_loader):
-        print(data['img'].shape)
+        print(data['img'].sum())
         result = model.forward(**data)
         if len(result.shape) == 0:  # handle the situation of batch = 1
             result = result.unsqueeze(0)
