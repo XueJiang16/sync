@@ -22,7 +22,7 @@ class GradNorm(BaseModule):
         self.classifier.zero_grad()
         img = input['img']
         assert img.shape[0] == 1, "GradNorm backward implementation only supports batch = 1."
-        outputs = self.classifier.simple_test(softmax=False, post_process=False, **input)
+        outputs = self.classifier(return_loss=False, softmax=False, post_process=False, **input)
         # print("Self rank: {}, output device = {}".format(self.local_rank, outputs.device))
         # assert False
         # outputs, _ = self.classifier.simple_test(softmax=False, **input)
