@@ -468,12 +468,12 @@ def main(args):
         load_checkpoint(model, args.model_path)
     else:
         model = resnet.resnet101()
-    if 'mobile' not in args.model_path:
-        b = dict()
-        a = torch.load(args.model_path)
-        for k, v in a["state_dict"].items():
-            b[".".join(k.split(".")[1:])] = v
-        model.load_state_dict(b)
+    # if 'mobile' not in args.model_path:
+    #     b = dict()
+    #     a = torch.load(args.model_path)
+    #     for k, v in a["state_dict"].items():
+    #         b[".".join(k.split(".")[1:])] = v
+    #     model.load_state_dict(b)
 
     # if args.score != 'GradNorm' and args.score != 'new':
     #     model = torch.nn.DataParallel(model)
