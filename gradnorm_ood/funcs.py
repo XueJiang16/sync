@@ -22,7 +22,7 @@ import mmcls.models
 
 def model_forward(model, data):
     if isinstance(model, mmcls.models.classifiers.image.ImageClassifier):
-        return model(return_loss=False, img=data, img_metas=None)
+        return model(return_loss=False, img=data, img_metas=None, softmax=False, post_process=False)
     return model(data)
 
 def iterate_data_msp(data_loader, model):
