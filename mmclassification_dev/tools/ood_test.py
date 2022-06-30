@@ -130,12 +130,14 @@ def main():
     model = build_ood_model(cfg.model)
     model = MMDataParallel(model, device_ids=cfg.gpu_ids)
     # model.to("cuda:{}".format(os.environ['LOCAL_RANK']))
+    print("Processing in-distribution data...")
     outputs_id = single_gpu_test_ood(model, data_loader_id)
     in_scores = gather_tensors(outputs_id)
     in_scores = np.concatenate(in_scores, axis=0)
 
     out_scores_list = []
-    for ood_set in data_loader_ood:
+    for ood_set, ood_name in zip(data_loader_ood, name_ood):
+        print("Processing out-of-distribution data ({})...".format(ood_name))
         outputs_ood = single_gpu_test_ood(model, ood_set)
         out_scores = gather_tensors(outputs_ood)
         out_scores = np.concatenate(out_scores, axis=0)
