@@ -28,6 +28,8 @@ class GradNorm(BaseModule):
         # outputs, _ = self.classifier.simple_test(softmax=False, **input)
         targets = torch.ones((img.shape[0], self.num_classes)).to("cuda:{}".format(self.local_rank))
         outputs = outputs / self.temperature
+        print(outputs)
+        assert False
         loss = torch.sum(torch.mean(-targets * self.logsoftmax(outputs), dim=-1))
 
         loss.backward()
