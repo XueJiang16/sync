@@ -39,10 +39,12 @@ class IDDataset(torch.utils.data.Dataset):
         for filename, gt_label in samples:
             self.file_list.append(os.path.join(path, filename))
             self.label_list.append(int(gt_label))
+        self.file_list.sort()
+        print(self.file_list[:2])
 
     def __len__(self):
-        return len(self.file_list)
-        # return 32
+        # return len(self.file_list)
+        return 2
 
     def __getitem__(self, item):
         path = self.file_list[item]
@@ -217,9 +219,9 @@ def run_eval_custom(model, in_loader, out_loader, logger, args, num_classes):
         #         out_scores.append(line)
         # out_scores = np.array(out_scores, dtype='float32')
         logger.info("Processing in-distribution data...")
-        in_scores, id_labels = iterate_data_gradnorm(in_loader, model, args.temperature_gradnorm, num_classes)
+        in_scores, id_labels = iterate_data_gradnorm_o(in_loader, model, args.temperature_gradnorm, num_classes)
         logger.info("Processing out-of-distribution data...")
-        out_scores, _ = iterate_data_gradnorm(out_loader, model, args.temperature_gradnorm, num_classes)
+        out_scores, _ = iterate_data_gradnorm_o(out_loader, model, args.temperature_gradnorm, num_classes)
 
     elif args.score == 'new':
         # in_confs, labels = iterate_data_confidence(in_loader, model, isID=True)
@@ -396,8 +398,8 @@ def run_eval_custom(model, in_loader, out_loader, logger, args, num_classes):
 def main(args):
     logger = log.setup_logger(args)
     torch.backends.cudnn.benchmark = True
-    # if args.score == 'new' or args.score == 'GradNorm':
-    #     args.batch = 1
+    if args.score == 'new' or args.score == 'GradNorm':
+        args.batch = 1
     # if args.score == 'ODIN':
     #     args.batch = 16
     # if args.score == 'Mahalanobis':

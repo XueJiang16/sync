@@ -31,7 +31,7 @@ class OODBaseDataset(Dataset):
             self.data_infos.append(info)
 
     def __len__(self):
-        return 1000
+        return 2
         # return len(self.file_list)
 
     def prepare_data(self, idx):
@@ -53,6 +53,8 @@ class TxtDataset(OODBaseDataset):
             samples = [x.strip().rsplit(' ', 1)[0] for x in f.readlines()]
         for filename in samples:
             self.file_list.append(filename)
+        self.file_list.sort()
+        print(self.file_list[:2])
         self.parse_datainfo()
 
 @DATASETS.register_module()
