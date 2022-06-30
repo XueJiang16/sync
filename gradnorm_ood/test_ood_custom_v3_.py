@@ -261,8 +261,9 @@ def run_eval_custom(model, in_loader, out_loader, logger, args, num_classes):
     out_scores = out_scores.cpu().numpy()
     labels = labels.cpu().numpy()
     if args.local_rank == 0:
-        print(in_scores.shape)
-        print(labels.shape)
+        print(in_scores)
+        assert False
+        # print(labels.shape)
         id_cls = []
         cls_idx = []
         label_filename = args.id_cls

@@ -136,6 +136,8 @@ def main():
     outputs_id = single_gpu_test_ood(model, data_loader_id)
     in_scores = gather_tensors(outputs_id)
     in_scores = np.concatenate(in_scores, axis=0)
+    print(in_scores)
+    assert False
 
     # out_scores_list = []
     for ood_set, ood_name in zip(data_loader_ood, name_ood):
