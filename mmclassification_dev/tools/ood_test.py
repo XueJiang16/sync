@@ -142,7 +142,7 @@ def main():
         out_scores = gather_tensors(outputs_ood)
         out_scores = np.concatenate(out_scores, axis=0)
         # out_scores_list.append(out_scores)
-        if os.environ['LOCAL_RANK'] == 0:
+        if os.environ['LOCAL_RANK'] == '0':
             auroc, aupr_in, aupr_out, fpr95 = evaluate_all(in_scores, out_scores)
             print('============Overall Results for {}============'.format(ood_name))
             print('AUROC: {}'.format(auroc))
