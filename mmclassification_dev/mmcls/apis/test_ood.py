@@ -31,6 +31,7 @@ def single_gpu_test_ood(model,
     Returns:
         list: The prediction results.
     """
+    model.eval()
     results = []
     dataset = data_loader.dataset
     rank, world_size = get_dist_info()
