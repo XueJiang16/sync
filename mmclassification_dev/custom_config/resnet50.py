@@ -76,7 +76,7 @@ data = dict(
         dict(
             name='Textures',
             type='FolderDataset',
-            path='/data/csxjiang/ood_data/Textures/dtd/images',
+            path='/data/csxjiang/ood_data/Textures/dtd/images_collate',
             pipeline=pipline),
     ],
 
