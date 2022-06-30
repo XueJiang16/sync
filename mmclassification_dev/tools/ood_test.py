@@ -128,6 +128,7 @@ def main():
         data_loader_ood.append(build_dataloader(ood_set, **test_loader_cfg))
 
     model = build_ood_model(cfg.model)
+    model.init_weights()
     model = MMDataParallel(model, device_ids=cfg.gpu_ids)
     # model.to("cuda:{}".format(os.environ['LOCAL_RANK']))
     print("Processing in-distribution data...")
