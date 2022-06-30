@@ -430,7 +430,25 @@ def main(args):
     if 'resnet152' in args.model_path:
         model = resnet.resnet152()
     elif 'resnet50' in args.model_path:
-        model = resnet.resnet50()
+        # model = resnet.resnet50()
+        config = dict(
+            type='ImageClassifier',
+            init_cfg=dict(type='Pretrained', checkpoint='/data/csxjiang/ood_ckpt/ckpt/resnet50_LT_a8/epoch_100.pth'),
+            backbone=dict(
+                type='ResNet',
+                depth=50,
+                num_stages=4,
+                out_indices=(3,),
+                style='pytorch'),
+            neck=dict(type='GlobalAveragePooling'),
+            head=dict(
+                type='LinearClsHead',
+                num_classes=1000,
+                in_channels=2048,
+                loss=dict(type='CrossEntropyLoss', loss_weight=1.0),
+                topk=(1, 5)))
+        model = build_classifier(config)
+        load_checkpoint(model, args.model_path)
     elif 'mobile' in args.model_path:
         config = dict(
             type='ImageClassifier',
