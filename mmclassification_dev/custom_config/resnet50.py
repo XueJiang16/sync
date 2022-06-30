@@ -61,22 +61,22 @@ data = dict(
         dict(
             name='iNaturalist',
             type='FolderDataset',
-            path='/data/csxjiang/ood_data/iNaturalist',
+            path='/data/csxjiang/ood_data/iNaturalist/images',
             pipeline=pipline),
         dict(
             name='SUN',
             type='FolderDataset',
-            path='/data/csxjiang/ood_data/SUN',
+            path='/data/csxjiang/ood_data/SUN/images',
             pipeline=pipline),
         dict(
             name='Places',
             type='FolderDataset',
-            path='/data/csxjiang/ood_data/Places',
+            path='/data/csxjiang/ood_data/Places/images',
             pipeline=pipline),
         dict(
             name='Textures',
             type='FolderDataset',
-            path='/data/csxjiang/ood_data/Textures',
+            path='/data/csxjiang/ood_data/Textures/dtd/images',
             pipeline=pipline),
     ],
 
