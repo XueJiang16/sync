@@ -300,7 +300,8 @@ def iterate_data_gradnorm_o(data_loader, model, temperature, num_classes):
         if b % 100 == 0:
             print('{} batches processed'.format(b))
         inputs = Variable(x.cuda(), requires_grad=True)
-
+        print(x)
+        assert False
         model.zero_grad()
         outputs, _ = model_forward(model, inputs)
         targets = torch.ones((inputs.shape[0], num_classes)).cuda()
