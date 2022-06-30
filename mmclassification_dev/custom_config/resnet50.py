@@ -4,6 +4,7 @@ model = dict(
     temperature=1,
     classifier=dict(
         type='ImageClassifier',
+        init_cfg=dict(type='Pretrained', checkpoint='./ood_ckpt/ckpt/resnet50_LT_a8/epoch_100.pth'),
         backbone=dict(
             type='ResNet',
             depth=50,
