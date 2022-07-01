@@ -434,7 +434,6 @@ def main(args):
         model = resnet.resnet152()
     elif 'resnet50' in args.model_path:
         model = resnet.resnet50()
-        load_checkpoint(model, args.model_path)
     elif 'mobile' in args.model_path:
         config = dict(
             type='ImageClassifier',
