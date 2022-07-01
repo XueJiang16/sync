@@ -221,8 +221,6 @@ def run_eval_custom(model, in_loader, out_loader, logger, args, num_classes):
         # out_scores = np.array(out_scores, dtype='float32')
         logger.info("Processing in-distribution data...")
         in_scores, id_labels = iterate_data_gradnorm_o(in_loader, model, args.temperature_gradnorm, num_classes)
-        print(in_scores)
-        assert False
         logger.info("Processing out-of-distribution data...")
         out_scores, _ = iterate_data_gradnorm_o(out_loader, model, args.temperature_gradnorm, num_classes)
 
