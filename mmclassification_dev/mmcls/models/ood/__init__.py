@@ -1,5 +1,5 @@
-from .gradnorm import GradNorm
+from .gradnorm import GradNorm, GradNormBatch
 
 __all__ = [
-    'GradNorm',
+    'GradNorm', 'GradNormBatch'
 ]

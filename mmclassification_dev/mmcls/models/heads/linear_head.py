@@ -22,6 +22,7 @@ class LinearClsHead(ClsHead):
                  num_classes,
                  in_channels,
                  init_cfg=dict(type='Normal', layer='Linear', std=0.01),
+                 require_features=False,
                  *args,
                  **kwargs):
         super(LinearClsHead, self).__init__(init_cfg=init_cfg, *args, **kwargs)
@@ -34,6 +35,7 @@ class LinearClsHead(ClsHead):
                 f'num_classes={num_classes} must be a positive integer')
 
         self.fc = nn.Linear(self.in_channels, self.num_classes)
+        self.require_features = require_features
 
     def pre_logits(self, x):
         if isinstance(x, tuple):
@@ -61,6 +63,9 @@ class LinearClsHead(ClsHead):
                   float and the dimensions are ``(num_samples, num_classes)``.
         """
         x = self.pre_logits(x)
+        if self.require_features:
+            assert softmax is False
+            f = x.detach().clone()
         cls_score = self.fc(x)
 
         if softmax:
@@ -72,7 +77,10 @@ class LinearClsHead(ClsHead):
         if post_process:
             return self.post_process(pred)
         else:
-            return pred
+            if self.require_features:
+                return pred, f
+            else:
+                return pred
 
     def forward_train(self, x, gt_label, **kwargs):
         x = self.pre_logits(x)
