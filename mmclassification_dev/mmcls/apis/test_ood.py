@@ -40,6 +40,8 @@ def single_gpu_test_ood(model,
     dist.barrier()
     for i, data in enumerate(data_loader):
         print(data['img'].sum())
+        print(data['img'].shape)
+        assert False
         result = model.forward(**data)
         if len(result.shape) == 0:  # handle the situation of batch = 1
             result = result.unsqueeze(0)

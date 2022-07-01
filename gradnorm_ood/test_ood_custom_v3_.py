@@ -101,7 +101,7 @@ def make_id_ood(args, logger):
     crop = 480
 
     val_tx = tv.transforms.Compose([
-        tv.transforms.Resize((crop, crop)),
+        # tv.transforms.Resize((crop, crop)),
         tv.transforms.ToTensor(),
         # tv.transforms.Normalize([123.675/255, 116.28/255, 103.53/255],
         #                         [58.395/255, 57.12/255, 57.375/255]),
