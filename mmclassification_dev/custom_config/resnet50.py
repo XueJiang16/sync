@@ -72,5 +72,5 @@ data = dict(
 
 )
 dist_params = dict(backend='nccl')
-log_level = 'INFO'
+log_level = 'CRITICAL'
 work_dir = './results/resnet_LT_8'
