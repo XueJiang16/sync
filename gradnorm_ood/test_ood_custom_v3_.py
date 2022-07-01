@@ -18,6 +18,7 @@ import matplotlib.pyplot as plt
 from collections import Counter
 from PIL import Image
 from funcs import *
+import cv2
 
 from mmcls.apis import multi_gpu_test, single_gpu_test
 from mmcls.models import build_classifier
@@ -49,12 +50,11 @@ class IDDataset(torch.utils.data.Dataset):
     def __getitem__(self, item):
         path = self.file_list[item]
         sample = Image.open(path)
-        print("before")
-        print(np.array(sample))
+        sample_np = np.array(sample, dtype=np.uint8)
+        cv2.imwrite(os.path.basename(path), cv2.cvtColor(sample_np, cv2.COLOR_RGB2BGR))
+        assert False
         if sample.mode != 'RGB':
             sample = sample.convert('RGB')
-        print("after")
-        print(np.array(sample))
         label = self.label_list[item]
         if self.transform is not None:
             sample = self.transform(sample)
@@ -105,10 +105,10 @@ def make_id_ood(args, logger):
     crop = 480
 
     val_tx = tv.transforms.Compose([
-        # tv.transforms.Resize((crop, crop)),
+        tv.transforms.Resize((crop, crop)),
         tv.transforms.ToTensor(),
-        # tv.transforms.Normalize([123.675/255, 116.28/255, 103.53/255],
-        #                         [58.395/255, 57.12/255, 57.375/255]),
+        tv.transforms.Normalize([123.675/255, 116.28/255, 103.53/255],
+                                [58.395/255, 57.12/255, 57.375/255]),
     ])
     id_ann = './meta/val_labeled.txt'
     # id_ann = './dataset/ood_data/inat/val2018.json'
