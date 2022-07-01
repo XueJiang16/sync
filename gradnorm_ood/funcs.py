@@ -301,8 +301,7 @@ def iterate_data_gradnorm_o(data_loader, model, temperature, num_classes):
             print('{} batches processed'.format(b))
         inputs = Variable(x.cuda(), requires_grad=True)
         model.zero_grad()
-        outputs = model_forward(model, inputs)
-        # outputs, _ = model_forward(model, inputs)
+        outputs, _ = model_forward(model, inputs)
         targets = torch.ones((inputs.shape[0], num_classes)).cuda()
         outputs = outputs / temperature
 
