@@ -50,12 +50,8 @@ class IDDataset(torch.utils.data.Dataset):
     def __getitem__(self, item):
         path = self.file_list[item]
         sample = Image.open(path)
-        sample_np = np.array(sample, dtype=np.uint8)
-        print(sample_np)
-        # cv2.imwrite(os.path.basename(path), cv2.cvtColor(sample_np, cv2.COLOR_RGB2BGR))
-        assert False
-        if sample.mode != 'RGB':
-            sample = sample.convert('RGB')
+        if sample.mode != 'BGR':
+            sample = sample.convert('BGR')
         label = self.label_list[item]
         if self.transform is not None:
             sample = self.transform(sample)
