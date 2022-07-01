@@ -49,8 +49,12 @@ class IDDataset(torch.utils.data.Dataset):
     def __getitem__(self, item):
         path = self.file_list[item]
         sample = Image.open(path)
+        print("before")
+        print(np.array(sample))
         if sample.mode != 'RGB':
             sample = sample.convert('RGB')
+        print("after")
+        print(np.array(sample))
         label = self.label_list[item]
         if self.transform is not None:
             sample = self.transform(sample)
