@@ -1,5 +1,5 @@
 model = dict(
-    type='GradNorm',
+    type='GradNormBatch',
     num_classes=1000,
     temperature=1,
     classifier=dict(
@@ -20,23 +20,12 @@ model = dict(
             topk=(1, 5))
     )
 )
-# ood_hooks = [dict(
-#     type="GradNormHook"
-# )]
 pipline =[
-          # dict(type='LoadImageFromFile'),
-          # dict(type='Resize', size=480),
-          # dict(
-          #     type='Normalize',
-          #     mean=[123.675, 116.28, 103.53],
-          #     std=[58.395, 57.12, 57.375],
-          #     to_rgb=True),
-          # dict(type='ImageToTensor', keys=['img']),
           dict(type='Collect', keys=['img'])
 ]
 data = dict(
-    samples_per_gpu=1,
-    workers_per_gpu=1,
+    samples_per_gpu=256,
+    workers_per_gpu=4,
     id_data=dict(
         name='ImageNet',
         type='TxtDataset',
