@@ -7,6 +7,7 @@ from numbers import Number
 import mmcv
 import numpy as np
 import torch
+import time
 from mmcv import DictAction
 from mmcv.parallel import MMDataParallel, MMDistributedDataParallel
 from mmcv.runner import (get_dist_info, init_dist, load_checkpoint,
@@ -146,14 +147,16 @@ def main():
         out_scores = np.concatenate(out_scores, axis=0)
         # out_scores_list.append(out_scores)
         if os.environ['LOCAL_RANK'] == '0':
+            timestamp = time.strftime('%Y%m%d_%H%M%S', time.localtime())
+            log_file = os.path.join(cfg.work_dir, f'{timestamp}.log')
+            logger = get_root_logger(log_file=log_file, log_level=cfg.log_level)
             auroc, aupr_in, aupr_out, fpr95 = evaluate_all(in_scores, out_scores)
-            print()
-            print('============Overall Results for {}============'.format(ood_name))
-            print('AUROC: {}'.format(auroc))
-            print('AUPR (In): {}'.format(aupr_in))
-            print('AUPR (Out): {}'.format(aupr_out))
-            print('FPR95: {}'.format(fpr95))
-            print('quick data: {},{},{},{}'.format(auroc, aupr_in, aupr_out, fpr95))
+            logger.info('============Overall Results for {}============'.format(ood_name))
+            logger.info('AUROC: {}'.format(auroc))
+            logger.info('AUPR (In): {}'.format(aupr_in))
+            logger.info('AUPR (Out): {}'.format(aupr_out))
+            logger.info('FPR95: {}'.format(fpr95))
+            logger.info('quick data: {},{},{},{}'.format(auroc, aupr_in, aupr_out, fpr95))
 
 
 if __name__ == '__main__':
