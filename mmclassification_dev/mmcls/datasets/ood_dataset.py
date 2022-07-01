@@ -66,7 +66,6 @@ class TxtDataset(OODBaseDataset):
         for filename in samples:
             self.file_list.append(filename)
         self.file_list.sort()
-        print(self.file_list[:2])
         self.parse_datainfo()
 
 @DATASETS.register_module()
