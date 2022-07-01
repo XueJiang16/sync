@@ -97,6 +97,12 @@ def main():
         distributed = True
         init_dist(args.launcher, **cfg.dist_params)
 
+    if os.environ['LOCAL_RANK'] == '0':
+        timestamp = time.strftime('%Y%m%d_%H%M%S', time.localtime())
+        log_file = os.path.join(cfg.work_dir, f'{timestamp}.log')
+        os.makedirs(cfg.work_dir, exist_ok=True)
+        logger = get_root_logger(log_file=log_file, log_level=cfg.log_level)
+
     dataset_id = build_dataset(cfg.data.id_data)
     dataset_ood = [build_dataset(d) for d in cfg.data.ood_data]
     name_ood = [d['name'] for d in cfg.data.ood_data]
@@ -147,9 +153,6 @@ def main():
         out_scores = np.concatenate(out_scores, axis=0)
         # out_scores_list.append(out_scores)
         if os.environ['LOCAL_RANK'] == '0':
-            timestamp = time.strftime('%Y%m%d_%H%M%S', time.localtime())
-            log_file = os.path.join(cfg.work_dir, f'{timestamp}.log')
-            logger = get_root_logger(log_file=log_file, log_level=cfg.log_level)
             auroc, aupr_in, aupr_out, fpr95 = evaluate_all(in_scores, out_scores)
             logger.info('============Overall Results for {}============'.format(ood_name))
             logger.info('AUROC: {}'.format(auroc))
