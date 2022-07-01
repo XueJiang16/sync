@@ -51,7 +51,8 @@ class IDDataset(torch.utils.data.Dataset):
         path = self.file_list[item]
         sample = Image.open(path)
         sample_np = np.array(sample, dtype=np.uint8)
-        cv2.imwrite(os.path.basename(path), cv2.cvtColor(sample_np, cv2.COLOR_RGB2BGR))
+        print(sample_np)
+        # cv2.imwrite(os.path.basename(path), cv2.cvtColor(sample_np, cv2.COLOR_RGB2BGR))
         assert False
         if sample.mode != 'RGB':
             sample = sample.convert('RGB')
