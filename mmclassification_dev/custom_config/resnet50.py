@@ -2,6 +2,7 @@ model = dict(
     type='GradNormBatch',
     num_classes=1000,
     temperature=1,
+    target_file='/data/csxjiang/meta/train_LT_a8.txt',
     classifier=dict(
         type='ImageClassifier',
         init_cfg=dict(type='Pretrained', checkpoint='/data/csxjiang/ood_ckpt/ckpt/resnet50_LT_a8/epoch_100.pth'),
