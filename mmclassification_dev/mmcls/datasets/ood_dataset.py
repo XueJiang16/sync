@@ -7,7 +7,7 @@ from mmcv import FileClient
 from torch.utils.data import Dataset
 import json
 from PIL import Image
-import torchvision
+import torchvision as tv
 import os
 import copy
 
@@ -22,6 +22,12 @@ class OODBaseDataset(Dataset):
         self.file_list = []
         self.data_prefix = None
         self.name = name
+        self.transform = tv.transforms.Compose([
+        tv.transforms.Resize((480, 480)),
+        tv.transforms.ToTensor(),
+        tv.transforms.Normalize([123.675/255, 116.28/255, 103.53/255],
+                                [58.395/255, 57.12/255, 57.375/255]),
+    ])
 
     def parse_datainfo(self):
         self.data_infos = []
@@ -36,6 +42,12 @@ class OODBaseDataset(Dataset):
 
     def prepare_data(self, idx):
         results = copy.deepcopy(self.data_infos[idx])
+        sample = Image.open(os.path.join(results['img_prefix'], results['img_info']['filename']))
+        if sample.mode != 'RGB':
+            sample = sample.convert('RGB')
+        if self.transform is not None:
+            sample = self.transform(sample)
+        results['img'] = sample
         return self.pipeline(results)
 
     def __getitem__(self, idx):
