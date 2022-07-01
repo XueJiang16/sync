@@ -433,26 +433,8 @@ def main(args):
     if 'resnet152' in args.model_path:
         model = resnet.resnet152()
     elif 'resnet50' in args.model_path:
-        # model = resnet.resnet50()
-        config = dict(
-            type='ImageClassifier',
-            init_cfg=dict(type='Pretrained', checkpoint='/data/csxjiang/ood_ckpt/ckpt/resnet50_LT_a8/epoch_100.pth'),
-            backbone=dict(
-                type='ResNet',
-                depth=50,
-                num_stages=4,
-                out_indices=(3,),
-                style='pytorch'),
-            neck=dict(type='GlobalAveragePooling'),
-            head=dict(
-                type='LinearClsHead',
-                num_classes=1000,
-                in_channels=2048,
-                loss=dict(type='CrossEntropyLoss', loss_weight=1.0),
-                topk=(1, 5)))
-        model = build_classifier(config)
-        model.init_weights()
-        # load_checkpoint(model, args.model_path)
+        model = resnet.resnet50()
+        load_checkpoint(model, args.model_path)
     elif 'mobile' in args.model_path:
         config = dict(
             type='ImageClassifier',
@@ -471,12 +453,12 @@ def main(args):
         load_checkpoint(model, args.model_path)
     else:
         model = resnet.resnet101()
-    # if 'mobile' not in args.model_path:
-    #     b = dict()
-    #     a = torch.load(args.model_path)
-    #     for k, v in a["state_dict"].items():
-    #         b[".".join(k.split(".")[1:])] = v
-    #     model.load_state_dict(b)
+    if 'mobile' not in args.model_path:
+        b = dict()
+        a = torch.load(args.model_path)
+        for k, v in a["state_dict"].items():
+            b[".".join(k.split(".")[1:])] = v
+        model.load_state_dict(b)
 
     # if args.score != 'GradNorm' and args.score != 'new':
     #     model = torch.nn.DataParallel(model)
