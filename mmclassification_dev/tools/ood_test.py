@@ -99,7 +99,7 @@ def main():
 
     if os.environ['LOCAL_RANK'] == '0':
         timestamp = time.strftime('%Y%m%d_%H%M%S', time.localtime())
-        log_file = os.path.join(cfg.work_dir, f'{timestamp}.log')
+        log_file = os.path.join(cfg.work_dir, '{}_{}.log'.format(cfg.readable_name, timestamp))
         os.makedirs(cfg.work_dir, exist_ok=True)
         logger = get_root_logger(log_file=log_file, log_level=cfg.log_level)
 
@@ -160,6 +160,8 @@ def main():
             logger.critical('AUPR (Out): {}'.format(aupr_out))
             logger.critical('FPR95: {}'.format(fpr95))
             logger.critical('quick data: {},{},{},{}'.format(auroc, aupr_in, aupr_out, fpr95))
+            # logger.critical('target distribution file: {}'.format(cfg.model['target_file']))
+            # logger.critical('pretrained model: {}'.format(cfg.classifier['init_cfg']['checkpoints']))
 
 
 if __name__ == '__main__':

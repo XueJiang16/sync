@@ -1,5 +1,9 @@
+method_name = 'GradNormBatch'
+model_name = 'resnet50'
+train_dataset = 'LT_a8'
+readable_name ='{}_{}_{}'.format(method_name, model_name, train_dataset)
 model = dict(
-    type='GradNormBatch',
+    type=method_name,
     num_classes=1000,
     temperature=1,
     target_file='/data/csxjiang/meta/train_LT_a8.txt',
@@ -74,4 +78,4 @@ data = dict(
 )
 dist_params = dict(backend='nccl')
 log_level = 'CRITICAL'
-work_dir = './results/resnet_LT_8'
+work_dir = './results/'
