@@ -154,12 +154,12 @@ def main():
         # out_scores_list.append(out_scores)
         if os.environ['LOCAL_RANK'] == '0':
             auroc, aupr_in, aupr_out, fpr95 = evaluate_all(in_scores, out_scores)
-            logger.critical('============Overall Results for {}============'.format(ood_name))
-            logger.critical('AUROC: {}'.format(auroc))
-            logger.critical('AUPR (In): {}'.format(aupr_in))
-            logger.critical('AUPR (Out): {}'.format(aupr_out))
-            logger.critical('FPR95: {}'.format(fpr95))
-            logger.critical('quick data: {},{},{},{}'.format(auroc, aupr_in, aupr_out, fpr95))
+            logger.info('============Overall Results for {}============'.format(ood_name))
+            logger.info('AUROC: {}'.format(auroc))
+            logger.info('AUPR (In): {}'.format(aupr_in))
+            logger.info('AUPR (Out): {}'.format(aupr_out))
+            logger.info('FPR95: {}'.format(fpr95))
+            logger.info('quick data: {},{},{},{}'.format(auroc, aupr_in, aupr_out, fpr95))
             # logger.critical('target distribution file: {}'.format(cfg.model['target_file']))
             # logger.critical('pretrained model: {}'.format(cfg.classifier['init_cfg']['checkpoints']))
 
