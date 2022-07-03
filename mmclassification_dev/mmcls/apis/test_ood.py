@@ -36,7 +36,8 @@ def single_gpu_test_ood(model,
     dataset = data_loader.dataset
     rank, world_size = get_dist_info()
     if rank == 0:
-        prog_bar = mmcv.ProgressBar(len(dataset))
+        prog = 0
+        # prog_bar = mmcv.ProgressBar(len(dataset))
     if world_size > 1:
         dist.barrier()
     for i, data in enumerate(data_loader):
@@ -46,8 +47,8 @@ def single_gpu_test_ood(model,
         results.append(result)
         if rank == 0:
             batch_size = data['img'].size(0)
-            for _ in range(batch_size * world_size):
-                prog_bar.update()
+            prog += batch_size * world_size
+            print("{} / {}".format(prog, len(dataset)))
     if world_size > 1:
         dist.barrier()
     results = torch.cat(results).cpu().numpy()
