@@ -55,7 +55,7 @@ def single_gpu_test_ood(model,
             fps = 1 / inf_speed
             eta = max(0, (len(dataset) - prog)) * inf_speed
             print("[{} @ {}] {} / {}, fps = {}, eta = {}"
-                  .format(name, passed_time, prog, len(dataset), round(fps, 2), round(eta, 2)))
+                  .format(name, int(passed_time), prog, len(dataset), round(fps, 2), round(eta, 2)))
     if world_size > 1:
         dist.barrier()
     results = torch.cat(results).cpu().numpy()
