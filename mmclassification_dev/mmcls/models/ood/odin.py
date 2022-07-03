@@ -10,31 +10,45 @@ from mmcls.models import build_classifier
 
 @OOD.register_module()
 class ODIN(BaseModule):
-    def __init__(self, classifier, num_classes, **kwargs):
+    def __init__(self, classifier, num_classes, temperature, epsilon, **kwargs):
         super(ODIN, self).__init__()
         self.local_rank = os.environ['LOCAL_RANK']
         self.classifier = build_classifier(classifier)
         self.classifier.eval()
         self.num_classes = num_classes
-        self.logsoftmax = torch.nn.CrossEntropyLoss().to("cuda:{}".format(self.local_rank))
+        self.temperature = temperature
+        self.epsilon = epsilon
+        self.criterion = torch.nn.CrossEntropyLoss().to("cuda:{}".format(self.local_rank))
 
 
     def forward(self, **input):
-        self.classifier.zero_grad()
-        img = input['img']
-        assert img.shape[0] == 1, "GradNorm backward implementation only supports batch = 1."
+        x = input['img']
+        # self.classifier.zero_grad()
         outputs = self.classifier(return_loss=False, softmax=False, post_process=False, **input)
-        # print("Self rank: {}, output device = {}".format(self.local_rank, outputs.device))
-        # assert False
-        # outputs, _ = self.classifier.simple_test(softmax=False, **input)
-        targets = self.target
+        maxIndexTemp = np.argmax(outputs.data.cpu().numpy(), axis=1)
         outputs = outputs / self.temperature
-        loss = torch.sum(torch.mean(-targets * self.logsoftmax(outputs), dim=-1))
-
+        labels = torch.LongTensor(maxIndexTemp).cuda()
+        loss = self.criterion(outputs, labels)
         loss.backward()
-        layer_grad = self.classifier.head.fc.weight.grad.data
-        layer_grad_norm = torch.sum(torch.abs(layer_grad))
-        return layer_grad_norm
+
+        # Normalizing the gradient to binary in {0, 1}
+        gradient = torch.ge(x.grad.data, 0)
+        gradient = (gradient.float() - 0.5) * 2
+
+        # Adding small perturbations to images
+        tempInputs = torch.add(x.data, -self.epsilon, gradient)
+        outputs = self.classifier(tempInputs)
+        outputs = outputs / self.temperature
+
+        # Calculating the confidence after adding perturbations
+        nnOutputs = outputs.data.cpu()
+        nnOutputs = nnOutputs.numpy()
+        nnOutputs = nnOutputs - np.max(nnOutputs, axis=1, keepdims=True)
+        nnOutputs = np.exp(nnOutputs) / np.sum(np.exp(nnOutputs), axis=1, keepdims=True)
+
+        confs = np.max(nnOutputs, axis=1)
+        confs = torch.tensor(confs)
+        return confs
 
 @OOD.register_module()
 class ODINCustom(BaseModule):
