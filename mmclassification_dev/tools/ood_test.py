@@ -111,6 +111,7 @@ def main():
             os.makedirs(cfg.work_dir, exist_ok=True)
             print("**************************")
             print(cfg.log_level)
+            print(log_file)
             print("**************************")
             logger = get_root_logger(log_file=log_file, log_level=cfg.log_level)
 
