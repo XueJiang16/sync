@@ -99,3 +99,4 @@ for train_data, target_file, ckpt in zip(*multi_cfg_list):
         # log_level = 'INFO'
         work_dir = './results/'
     )
+    multi_cfg.append(temp_cfg)
