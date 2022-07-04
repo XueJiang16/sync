@@ -1,10 +1,10 @@
 method_name = 'MSPCustom'
-model_name = 'resnet50'
+model_name = 'resnet101'
 pipline = [dict(type='Collect', keys=['img'])]
 
 train_dataset_list = ['LT_a{}'.format(x) for x in range(2, 9)]
 target_file_list = ['/data/csxjiang/meta/train_LT_a{}.txt'.format(x) for x in range(2, 9)]
-checkpoint_list = ['/data/csxjiang/ood_ckpt/ckpt/resnet50_LT_a{}/epoch_100.pth'.format(x)
+checkpoint_list = ['/data/csxjiang/ood_ckpt/ood_ckpt_other/LT_a{}/epoch_100.pth'.format(x)
                    for x in range(2, 9)]
 multi_cfg_list = [train_dataset_list, target_file_list, checkpoint_list]
 len_var_cfg = None
@@ -33,7 +33,7 @@ for train_data, target_file, ckpt in multi_cfg_list:
                 init_cfg=dict(type='Pretrained', checkpoint=ckpt),
                 backbone=dict(
                     type='ResNet',
-                    depth=50,
+                    depth=101,
                     num_stages=4,
                     out_indices=(3,),
                     style='pytorch'),
