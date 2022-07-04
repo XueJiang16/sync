@@ -16,7 +16,7 @@ for item in multi_cfg_list:
 
 multi_cfg = []
 
-for train_data, target_file, ckpt in multi_cfg_list:
+for train_data, target_file, ckpt in zip(*multi_cfg_list):
     train_dataset = train_data
     temp_cfg = dict(
         method_name = method_name,
