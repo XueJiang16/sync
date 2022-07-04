@@ -67,12 +67,7 @@ def parse_args():
         os.environ['LOCAL_RANK'] = str(args.local_rank)
     return args
 
-
-def main():
-    args = parse_args()
-
-    cfg = mmcv.Config.fromfile(args.config)
-
+def init_eval(cfg, args):
     # set multi-process settings
     setup_multi_processes(cfg)
 
@@ -80,88 +75,101 @@ def main():
     if cfg.get('cudnn_benchmark', False):
         torch.backends.cudnn.benchmark = True
     cfg.model.pretrained = None
-    #
-    # if args.gpu_ids is not None:
-    #     cfg.gpu_ids = args.gpu_ids[0:1]
-    #     warnings.warn('`--gpu-ids` is deprecated, please use `--gpu-id`. '
-    #                   'Because we only support single GPU mode in '
-    #                   'non-distributed testing. Use the first GPU '
-    #                   'in `gpu_ids` now.')
-    # else:
-    cfg.gpu_ids = [int(os.environ['LOCAL_RANK'])]
 
-    # init distributed env first, since logger depends on the dist info.
     if args.launcher == 'none':
         distributed = False
     else:
         distributed = True
         init_dist(args.launcher, **cfg.dist_params)
 
-    if os.environ['LOCAL_RANK'] == '0':
-        timestamp = time.strftime('%Y%m%d_%H%M%S', time.localtime())
-        log_file = os.path.join(cfg.work_dir, '{}_{}.log'.format(cfg.readable_name, timestamp))
-        os.makedirs(cfg.work_dir, exist_ok=True)
-        logger = get_root_logger(log_file=log_file, log_level=cfg.log_level)
+    return cfg, distributed
 
-    dataset_id = build_dataset(cfg.data.id_data)
-    dataset_ood = [build_dataset(d) for d in cfg.data.ood_data]
-    name_ood = [d['name'] for d in cfg.data.ood_data]
+def main():
+    args = parse_args()
 
-    # build the dataloader
-    # The default loader config
-    loader_cfg = dict(
-        # cfg.gpus will be ignored if distributed
-        num_gpus=1 if args.device == 'ipu' else len(cfg.gpu_ids),
-        dist=distributed,
-        round_up=True,
-    )
-    # The overall dataloader settings
-    loader_cfg.update({
-        k: v
-        for k, v in cfg.data.items() if k not in [
-            'id_data', 'ood_data'
-        ]
-    })
-    test_loader_cfg = {
-        **loader_cfg,
-        'shuffle': False,  # Not shuffle by default
-        'sampler_cfg': None,  # Not use sampler by default
-        **cfg.data.get('test_dataloader', {}),
-    }
-    # the extra round_up data will be removed during gpu/cpu collect
-    data_loader_id = build_dataloader(dataset_id, **test_loader_cfg)
-    data_loader_ood = []
-    for ood_set in dataset_ood:
-        data_loader_ood.append(build_dataloader(ood_set, **test_loader_cfg))
+    cfg = mmcv.Config.fromfile(args.config)
 
-    model = build_ood_model(cfg.model)
-    model.init_weights()
-    model = MMDataParallel(model, device_ids=cfg.gpu_ids)
-    # model.to("cuda:{}".format(os.environ['LOCAL_RANK']))
-    print()
-    print("Processing in-distribution data...")
-    outputs_id = single_gpu_test_ood(model, data_loader_id, 'ID')
-    in_scores = gather_tensors(outputs_id)
-    in_scores = np.concatenate(in_scores, axis=0)
+    if "multi_cfg" in cfg:
+        multi_cfg = cfg.multi_cfg
+    else:
+        multi_cfg = [cfg]
+    is_init = False
 
-    # out_scores_list = []
-    for ood_set, ood_name in zip(data_loader_ood, name_ood):
-        print()
-        print("Processing out-of-distribution data ({})...".format(ood_name))
-        outputs_ood = single_gpu_test_ood(model, ood_set, ood_name)
-        out_scores = gather_tensors(outputs_ood)
-        out_scores = np.concatenate(out_scores, axis=0)
-        # out_scores_list.append(out_scores)
+    for cfg in multi_cfg:
+        print("Evaluating {}...".format(cfg.readable_name))
+        if not is_init:
+            cfg, distributed = init_eval(cfg, args)
+            is_init = True
+
+        cfg.gpu_ids = [int(os.environ['LOCAL_RANK'])]
+
+        # init distributed env first, since logger depends on the dist info.
+
         if os.environ['LOCAL_RANK'] == '0':
-            auroc, aupr_in, aupr_out, fpr95 = evaluate_all(in_scores, out_scores)
-            logger.critical('============Overall Results for {}============'.format(ood_name))
-            logger.critical('AUROC: {}'.format(auroc))
-            logger.critical('AUPR (In): {}'.format(aupr_in))
-            logger.critical('AUPR (Out): {}'.format(aupr_out))
-            logger.critical('FPR95: {}'.format(fpr95))
-            logger.critical('quick data: {},{},{},{}'.format(auroc, aupr_in, aupr_out, fpr95))
-            # logger.critical('target distribution file: {}'.format(cfg.model['target_file']))
-            # logger.critical('pretrained model: {}'.format(cfg.classifier['init_cfg']['checkpoints']))
+            timestamp = time.strftime('%Y%m%d_%H%M%S', time.localtime())
+            log_file = os.path.join(cfg.work_dir, '{}_{}.log'.format(cfg.readable_name, timestamp))
+            os.makedirs(cfg.work_dir, exist_ok=True)
+            logger = get_root_logger(log_file=log_file, log_level=cfg.log_level)
+
+        dataset_id = build_dataset(cfg.data.id_data)
+        dataset_ood = [build_dataset(d) for d in cfg.data.ood_data]
+        name_ood = [d['name'] for d in cfg.data.ood_data]
+
+        # build the dataloader
+        # The default loader config
+        loader_cfg = dict(
+            # cfg.gpus will be ignored if distributed
+            num_gpus=1 if args.device == 'ipu' else len(cfg.gpu_ids),
+            dist=distributed,
+            round_up=True,
+        )
+        # The overall dataloader settings
+        loader_cfg.update({
+            k: v
+            for k, v in cfg.data.items() if k not in [
+                'id_data', 'ood_data'
+            ]
+        })
+        test_loader_cfg = {
+            **loader_cfg,
+            'shuffle': False,  # Not shuffle by default
+            'sampler_cfg': None,  # Not use sampler by default
+            **cfg.data.get('test_dataloader', {}),
+        }
+        # the extra round_up data will be removed during gpu/cpu collect
+        data_loader_id = build_dataloader(dataset_id, **test_loader_cfg)
+        data_loader_ood = []
+        for ood_set in dataset_ood:
+            data_loader_ood.append(build_dataloader(ood_set, **test_loader_cfg))
+
+        model = build_ood_model(cfg.model)
+        model.init_weights()
+        model = MMDataParallel(model, device_ids=cfg.gpu_ids)
+        # model.to("cuda:{}".format(os.environ['LOCAL_RANK']))
+        print()
+        print("Processing in-distribution data...")
+        outputs_id = single_gpu_test_ood(model, data_loader_id, 'ID')
+        in_scores = gather_tensors(outputs_id)
+        in_scores = np.concatenate(in_scores, axis=0)
+
+        # out_scores_list = []
+        for ood_set, ood_name in zip(data_loader_ood, name_ood):
+            print()
+            print("Processing out-of-distribution data ({})...".format(ood_name))
+            outputs_ood = single_gpu_test_ood(model, ood_set, ood_name)
+            out_scores = gather_tensors(outputs_ood)
+            out_scores = np.concatenate(out_scores, axis=0)
+            # out_scores_list.append(out_scores)
+            if os.environ['LOCAL_RANK'] == '0':
+                auroc, aupr_in, aupr_out, fpr95 = evaluate_all(in_scores, out_scores)
+                logger.critical('============Overall Results for {}============'.format(ood_name))
+                logger.critical('AUROC: {}'.format(auroc))
+                logger.critical('AUPR (In): {}'.format(aupr_in))
+                logger.critical('AUPR (Out): {}'.format(aupr_out))
+                logger.critical('FPR95: {}'.format(fpr95))
+                logger.critical('quick data: {},{},{},{}'.format(auroc, aupr_in, aupr_out, fpr95))
+                # logger.critical('target distribution file: {}'.format(cfg.model['target_file']))
+                # logger.critical('pretrained model: {}'.format(cfg.classifier['init_cfg']['checkpoints']))
 
 
 if __name__ == '__main__':
