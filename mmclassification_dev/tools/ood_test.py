@@ -109,6 +109,9 @@ def main():
             timestamp = time.strftime('%Y%m%d_%H%M%S', time.localtime())
             log_file = os.path.join(cfg.work_dir, '{}_{}.log'.format(cfg.readable_name, timestamp))
             os.makedirs(cfg.work_dir, exist_ok=True)
+            print("**************************")
+            print(cfg.log_level)
+            print("**************************")
             logger = get_root_logger(log_file=log_file, log_level=cfg.log_level)
 
         dataset_id = build_dataset(cfg.data.id_data)
