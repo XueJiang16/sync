@@ -109,11 +109,8 @@ def main():
             timestamp = time.strftime('%Y%m%d_%H%M%S', time.localtime())
             log_file = os.path.join(cfg.work_dir, '{}_{}.log'.format(cfg.readable_name, timestamp))
             os.makedirs(cfg.work_dir, exist_ok=True)
-            print("**************************")
-            print(cfg.log_level)
-            print(log_file)
-            print("**************************")
-            logger = get_root_logger(log_file=log_file, log_level=cfg.log_level)
+            logger = get_root_logger(log_file=log_file, log_level=cfg.log_level,
+                                     logger_name='mmcls' if len(multi_cfg) == 1 else cfg.readable_name)
 
         dataset_id = build_dataset(cfg.data.id_data)
         dataset_ood = [build_dataset(d) for d in cfg.data.ood_data]
