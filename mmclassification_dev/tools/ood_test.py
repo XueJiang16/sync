@@ -103,15 +103,6 @@ def main():
 
         cfg.gpu_ids = [int(os.environ['LOCAL_RANK'])]
 
-        # init distributed env first, since logger depends on the dist info.
-
-        if os.environ['LOCAL_RANK'] == '0':
-            timestamp = time.strftime('%Y%m%d_%H%M%S', time.localtime())
-            log_file = os.path.join(cfg.work_dir, '{}_{}.log'.format(cfg.readable_name, timestamp))
-            os.makedirs(cfg.work_dir, exist_ok=True)
-            logger = get_root_logger(log_file=log_file, log_level=cfg.log_level,
-                                     logger_name='mmcls' if len(multi_cfg) == 1 else cfg.readable_name)
-
         dataset_id = build_dataset(cfg.data.id_data)
         dataset_ood = [build_dataset(d) for d in cfg.data.ood_data]
         name_ood = [d['name'] for d in cfg.data.ood_data]
@@ -147,6 +138,16 @@ def main():
         model.init_weights()
         model = MMDataParallel(model, device_ids=cfg.gpu_ids)
         # model.to("cuda:{}".format(os.environ['LOCAL_RANK']))
+
+        # init distributed env first, since logger depends on the dist info.
+        # logger setup
+        if os.environ['LOCAL_RANK'] == '0':
+            timestamp = time.strftime('%Y%m%d_%H%M%S', time.localtime())
+            log_file = os.path.join(cfg.work_dir, '{}_{}.log'.format(cfg.readable_name, timestamp))
+            os.makedirs(cfg.work_dir, exist_ok=True)
+            logger = get_root_logger(log_file=log_file, log_level=cfg.log_level,
+                                     logger_name='mmcls' if len(multi_cfg) == 1 else cfg.readable_name)
+
         print()
         print("Processing in-distribution data...")
         outputs_id = single_gpu_test_ood(model, data_loader_id, 'ID')
