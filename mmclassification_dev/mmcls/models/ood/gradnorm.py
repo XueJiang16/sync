@@ -6,6 +6,7 @@ from collections import Counter
 
 from ..builder import OOD
 from mmcls.models import build_classifier
+from .utils import print_category
 
 
 @OOD.register_module()
@@ -54,7 +55,7 @@ class GradNorm(BaseModule):
 
 @OOD.register_module()
 class GradNormBatch(BaseModule):
-    def __init__(self, classifier, num_classes, temperature, target_file=None,**kwargs):
+    def __init__(self, classifier, num_classes, temperature, target_file=None, debug_mode=False,**kwargs):
         super(GradNormBatch, self).__init__()
         self.local_rank = os.environ['LOCAL_RANK']
         classifier['head']['require_features'] = True
@@ -62,6 +63,10 @@ class GradNormBatch(BaseModule):
         self.classifier.eval()
         self.num_classes = num_classes
         self.temperature = temperature
+        self.debug_mode = debug_mode
+        if self.debug_mode:
+            if os.environ['LOCAL_RANK'] == '0':
+                print("*******DEBUG MODE********")
         if target_file is not None:
             cls_idx = []
             with open(target_file, 'r') as f:
@@ -82,6 +87,8 @@ class GradNormBatch(BaseModule):
     def forward(self, **input):
         with torch.no_grad():
             outputs, features = self.classifier(return_loss=False, softmax=False, post_process=False, **input)
+            if self.debug_mode:
+                print_category(outputs, softmax=True)
             U = torch.norm(features, p=1, dim=1)
             out_softmax = torch.nn.functional.softmax(outputs, dim=1)
             targets = self.target
