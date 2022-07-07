@@ -1,7 +1,7 @@
 method_name = 'GradNormBatch'
 model_name = 'resnet50'
 train_dataset = 'LT_a8'
-custom_name = "NoiseUniform"
+custom_name = "NoiseUniformNoTarget"
 if custom_name is not None:
     readable_name = '{}_{}_{}_{}'.format(method_name, model_name, train_dataset, custom_name)
 else:
@@ -10,7 +10,7 @@ model = dict(
     type=method_name,
     num_classes=1000,
     temperature=1,
-    target_file='/data/csxjiang/meta/train_LT_a8.txt',
+    # target_file='/data/csxjiang/meta/train_LT_a8.txt',
     classifier=dict(
         type='ImageClassifier',
         init_cfg=dict(type='Pretrained', checkpoint='/data/csxjiang/ood_ckpt/ckpt/resnet50_LT_a8/epoch_100.pth'),

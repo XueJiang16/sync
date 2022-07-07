@@ -18,7 +18,6 @@ from mmcls.datasets import build_dataloader, build_dataset
 from mmcls.models import build_ood_model
 from mmcls.utils import get_root_logger, setup_multi_processes, gather_tensors, evaluate_all
 
-
 def parse_args():
     parser = argparse.ArgumentParser(description='ood test')
     parser.add_argument('config', help='test config file path')
@@ -166,7 +165,7 @@ def main():
             out_scores = gather_tensors(outputs_ood)
             out_scores = np.concatenate(out_scores, axis=0)
             if os.environ['LOCAL_RANK'] == '0':
-                print("Average OOD score:", out_scores.mean())
+                print("Average OOD {} score:".format(ood_name), out_scores.mean())
             # out_scores_list.append(out_scores)
             if os.environ['LOCAL_RANK'] == '0':
                 auroc, aupr_in, aupr_out, fpr95 = evaluate_all(in_scores, out_scores)
