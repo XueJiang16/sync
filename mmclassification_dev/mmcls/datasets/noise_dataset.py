@@ -34,7 +34,7 @@ class NoiseDataset(Dataset):
 
     def parse_datainfo(self):
         self.data_infos = []
-        for _ in self.length:
+        for _ in range(self.length):
             info = {'img_prefix': ""}
             info['img_info'] = {'filename': ""}
             self.data_infos.append(info)
