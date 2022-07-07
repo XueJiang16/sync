@@ -1,4 +1,4 @@
-method_name = 'GradNormBatch'
+method_name = 'GradNormBatchScore'
 model_name = 'resnet50'
 train_dataset = 'LT_a8'
 readable_name ='{}_{}_{}'.format(method_name, model_name, train_dataset)

@@ -96,6 +96,45 @@ class GradNormBatch(BaseModule):
             S = U * V / 2048
         return S
 
+@OOD.register_module()
+class GradNormBatchScore(BaseModule):
+    def __init__(self, classifier, num_classes, temperature, target_file=None, debug_mode=False,**kwargs):
+        super(GradNormBatchScore, self).__init__()
+        self.local_rank = os.environ['LOCAL_RANK']
+        classifier['head']['require_features'] = True
+        self.classifier = build_classifier(classifier)
+        self.classifier.eval()
+        self.num_classes = num_classes
+        self.temperature = temperature
+        self.debug_mode = debug_mode
+        if self.debug_mode:
+            if os.environ['LOCAL_RANK'] == '0':
+                print("*******DEBUG MODE********")
+        if target_file is not None:
+            cls_idx = []
+            with open(target_file, 'r') as f:
+                for line in f.readlines():
+                    segs = line.strip().split(' ')
+                    cls_idx.append(int(segs[-1]))
+            cls_idx = np.array(cls_idx, dtype='int')
+            label_stat = Counter(cls_idx)
+            cls_num = [-1 for _ in range(num_classes)]
+            for i in range(num_classes):
+                cat_num = int(label_stat[i])
+                cls_num[i] = cat_num
+            target = cls_num / np.sum(cls_num)
+            self.target = torch.tensor(target).to("cuda:{}".format(self.local_rank)).unsqueeze(0)
+        else:
+            self.target = torch.ones((1, self.num_classes)).to("cuda:{}".format(self.local_rank)) / self.num_classes
 
+    def forward(self, **input):
+        with torch.no_grad():
+            outputs, features = self.classifier(return_loss=False, softmax=False, post_process=False, **input)
+            U = torch.norm(features, p=1, dim=1)
+            out_softmax = torch.nn.functional.softmax(outputs, dim=1)
+            targets = self.target
+            V = torch.norm((targets - out_softmax), p=1, dim=1)
+            S = U * V / 2048
+        return S, out_softmax.clone()
 
 

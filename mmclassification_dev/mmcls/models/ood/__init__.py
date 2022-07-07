@@ -1,6 +1,6 @@
-from .gradnorm import GradNorm, GradNormBatch
+from .gradnorm import GradNorm, GradNormBatch, GradNormBatchScore
 from .msp import MSP, MSPCustom
 
 __all__ = [
-    'GradNorm', 'GradNormBatch', 'MSP', 'MSPCustom'
+    'GradNorm', 'GradNormBatch', 'GradNormBatchScore', 'MSP', 'MSPCustom'
 ]

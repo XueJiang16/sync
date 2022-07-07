@@ -13,7 +13,7 @@ from mmcv.parallel import MMDataParallel, MMDistributedDataParallel
 from mmcv.runner import (get_dist_info, init_dist, load_checkpoint,
                          wrap_fp16_model)
 
-from mmcls.apis import single_gpu_test_ood
+from mmcls.apis import single_gpu_test_ood, single_gpu_test_ood_score
 from mmcls.datasets import build_dataloader, build_dataset
 from mmcls.models import build_ood_model
 from mmcls.utils import get_root_logger, setup_multi_processes, gather_tensors, evaluate_all
@@ -150,7 +150,7 @@ def main():
         if os.environ['LOCAL_RANK'] == '0':
             print()
             print("Processing in-distribution data...")
-        outputs_id = single_gpu_test_ood(model, data_loader_id, 'ID')
+        outputs_id = single_gpu_test_ood_score(model, data_loader_id, 'ID')
         in_scores = gather_tensors(outputs_id)
         in_scores = np.concatenate(in_scores, axis=0)
         if os.environ['LOCAL_RANK'] == '0':
@@ -161,7 +161,7 @@ def main():
             if os.environ['LOCAL_RANK'] == '0':
                 print()
                 print("Processing out-of-distribution data ({})...".format(ood_name))
-            outputs_ood = single_gpu_test_ood(model, ood_set, ood_name)
+            outputs_ood = single_gpu_test_ood_score(model, ood_set, ood_name)
             out_scores = gather_tensors(outputs_ood)
             out_scores = np.concatenate(out_scores, axis=0)
             if os.environ['LOCAL_RANK'] == '0':
