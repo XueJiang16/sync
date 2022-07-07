@@ -64,7 +64,7 @@ class NoiseDatasetUniform(NoiseDataset):
     def __init__(self, name, pipeline, length, img_size=480):
         super().__init__(name, pipeline, length, img_size)
         self.random_engine = partial(np.random.randint,
-                                     low=0, high=256, size=(img_size, img_size, 3), dtype=np.uint8)
+                                     low=0, high=128, size=(img_size, img_size, 3), dtype=np.uint8)
         self.parse_datainfo()
 
 @DATASETS.register_module()
