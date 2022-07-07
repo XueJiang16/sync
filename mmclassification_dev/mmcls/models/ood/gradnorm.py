@@ -122,7 +122,7 @@ class GradNormBatchScore(BaseModule):
             for i in range(num_classes):
                 cat_num = int(label_stat[i])
                 cls_num[i] = cat_num
-            cls_num[109] += 20000
+            cls_num[109] += 10000
             target = cls_num / np.sum(cls_num)
             self.target = torch.tensor(target).to("cuda:{}".format(self.local_rank)).unsqueeze(0)
         else:
