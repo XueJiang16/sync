@@ -1,7 +1,7 @@
 method_name = 'GradNormBatchScore'
 model_name = 'resnet50'
 train_dataset = 'LT_a8'
-custom_name = "NoiseUniform_0_127"
+custom_name = "NoiseUniform_128_255"
 if custom_name is not None:
     readable_name = '{}_{}_{}_{}'.format(method_name, model_name, train_dataset, custom_name)
 else:
