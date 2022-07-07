@@ -1,0 +1,67 @@
+import warnings
+from typing import Callable, Dict, List, Optional, Sequence, Tuple, Union
+
+import mmcv
+import numpy as np
+from mmcv import FileClient
+from torch.utils.data import Dataset
+import json
+from PIL import Image
+import torchvision as tv
+import os
+import copy
+from functools import partial
+
+# from .base_dataset import BaseDataset
+from .builder import DATASETS
+from .pipelines import Compose
+
+
+class NoiseDataset(Dataset):
+    def __init__(self, name, pipeline, length, img_size=480):
+        super().__init__()
+        self.pipeline = Compose(pipeline)
+        self.data_prefix = None
+        self.name = name
+        self.length = length
+        self.random_engine = None
+        self.transform = tv.transforms.Compose([
+            tv.transforms.Resize((img_size, img_size)),
+            tv.transforms.ToTensor(),
+            tv.transforms.Normalize([123.675/255, 116.28/255, 103.53/255],
+                                    [58.395/255, 57.12/255, 57.375/255]),
+        ])
+
+    def parse_datainfo(self):
+        self.data_infos = []
+        for _ in self.length:
+            info = {'img_prefix': ""}
+            info['img_info'] = {'filename': ""}
+            self.data_infos.append(info)
+
+    def __len__(self):
+        return self.length
+
+    def prepare_data(self, idx):
+        results = copy.deepcopy(self.data_infos[idx])
+        assert self.random_engine, "Random engine has not been configured!"
+        sample = self.random_engine()
+        assert type(sample) is np.ndarray, "Expect type(sample) = np.ndarray, but got {}".format(type(sample))
+        sample = Image.fromarray(sample)
+        if sample.mode != 'RGB':
+            sample = sample.convert('RGB')
+        if self.transform is not None:
+            sample = self.transform(sample)
+        results['img'] = sample
+        return self.pipeline(results)
+
+    def __getitem__(self, idx):
+        return self.prepare_data(idx)
+
+@DATASETS.register_module()
+class NoiseDatasetUniform(NoiseDataset):
+    def __init__(self, name, pipeline, length, img_size=480):
+        super().__init__(name, pipeline, length, img_size)
+        self.random_engine = partial(np.random.randint,
+                                     low=0, high=256, size=(img_size, img_size, 3), dtype=np.uint8)
+        self.parse_datainfo()
