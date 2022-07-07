@@ -1,4 +1,4 @@
-method_name = 'GradNormBatchScore'
+method_name = 'GradNormBatch'
 model_name = 'resnet50'
 train_dataset = 'LT_a8'
 custom_name = "NoiseGaussian"
