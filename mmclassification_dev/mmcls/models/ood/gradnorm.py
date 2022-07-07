@@ -88,7 +88,7 @@ class GradNormBatch(BaseModule):
         with torch.no_grad():
             outputs, features = self.classifier(return_loss=False, softmax=False, post_process=False, **input)
             if self.debug_mode:
-                print_category(outputs, softmax=True)
+                print_topk(outputs, softmax=True)
             U = torch.norm(features, p=1, dim=1)
             out_softmax = torch.nn.functional.softmax(outputs, dim=1)
             targets = self.target
