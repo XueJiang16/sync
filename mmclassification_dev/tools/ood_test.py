@@ -96,7 +96,8 @@ def main():
     is_init = False
 
     for cfg in multi_cfg:
-        print("Evaluating {}...".format(cfg.readable_name))
+        if os.environ['LOCAL_RANK'] == '0':
+            print("Evaluating {}...".format(cfg.readable_name))
         if not is_init:
             cfg, distributed = init_eval(cfg, args)
             is_init = True
@@ -147,22 +148,25 @@ def main():
             os.makedirs(cfg.work_dir, exist_ok=True)
             logger = get_root_logger(log_file=log_file, log_level=cfg.log_level,
                                      logger_name='mmcls' if len(multi_cfg) == 1 else cfg.readable_name)
-
-        print()
-        print("Processing in-distribution data...")
+        if os.environ['LOCAL_RANK'] == '0':
+            print()
+            print("Processing in-distribution data...")
         outputs_id = single_gpu_test_ood(model, data_loader_id, 'ID')
         in_scores = gather_tensors(outputs_id)
         in_scores = np.concatenate(in_scores, axis=0)
-        print("Average ID score:", in_scores.mean())
+        if os.environ['LOCAL_RANK'] == '0':
+            print("Average ID score:", in_scores.mean())
 
         # out_scores_list = []
         for ood_set, ood_name in zip(data_loader_ood, name_ood):
-            print()
-            print("Processing out-of-distribution data ({})...".format(ood_name))
+            if os.environ['LOCAL_RANK'] == '0':
+                print()
+                print("Processing out-of-distribution data ({})...".format(ood_name))
             outputs_ood = single_gpu_test_ood(model, ood_set, ood_name)
             out_scores = gather_tensors(outputs_ood)
             out_scores = np.concatenate(out_scores, axis=0)
-            print("Average OOD score:", out_scores.mean())
+            if os.environ['LOCAL_RANK'] == '0':
+                print("Average OOD score:", out_scores.mean())
             # out_scores_list.append(out_scores)
             if os.environ['LOCAL_RANK'] == '0':
                 auroc, aupr_in, aupr_out, fpr95 = evaluate_all(in_scores, out_scores)
