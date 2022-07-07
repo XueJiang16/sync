@@ -25,6 +25,7 @@ class NoiseDataset(Dataset):
         self.name = name
         self.length = length
         self.random_engine = None
+        self.img_size = img_size
         self.transform = tv.transforms.Compose([
             tv.transforms.Resize((img_size, img_size)),
             tv.transforms.ToTensor(),
@@ -65,3 +66,18 @@ class NoiseDatasetUniform(NoiseDataset):
         self.random_engine = partial(np.random.randint,
                                      low=0, high=256, size=(img_size, img_size, 3), dtype=np.uint8)
         self.parse_datainfo()
+
+@DATASETS.register_module()
+class NoiseDatasetGaussian(NoiseDataset):
+    def __init__(self, name, pipeline, length, img_size=480):
+        super().__init__(name, pipeline, length, img_size)
+        self.parse_datainfo()
+
+    def random_engine(self):
+        r = np.random.normal(123.675, 58.395, size=(self.img_size, self.img_size, 1))
+        g = np.random.normal(116.28, 57.12, size=(self.img_size, self.img_size, 1))
+        b = np.random.normal(103.53, 57.375, size=(self.img_size, self.img_size, 1))
+        sample = np.concatenate([r, g, b], axis=-1)
+        assert sample.shape == (self.img_size, self.img_size, 3)
+        sample = sample.astype(np.uint8)
+        return sample

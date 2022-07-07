@@ -153,6 +153,7 @@ def main():
         outputs_id = single_gpu_test_ood(model, data_loader_id, 'ID')
         in_scores = gather_tensors(outputs_id)
         in_scores = np.concatenate(in_scores, axis=0)
+        print("Average ID score:", in_scores.mean())
 
         # out_scores_list = []
         for ood_set, ood_name in zip(data_loader_ood, name_ood):
@@ -161,6 +162,7 @@ def main():
             outputs_ood = single_gpu_test_ood(model, ood_set, ood_name)
             out_scores = gather_tensors(outputs_ood)
             out_scores = np.concatenate(out_scores, axis=0)
+            print("Average OOD score:", out_scores.mean())
             # out_scores_list.append(out_scores)
             if os.environ['LOCAL_RANK'] == '0':
                 auroc, aupr_in, aupr_out, fpr95 = evaluate_all(in_scores, out_scores)
