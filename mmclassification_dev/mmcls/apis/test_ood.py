@@ -10,6 +10,7 @@ import torch
 import torch.distributed as dist
 from mmcv.image import tensor2imgs
 from mmcv.runner import get_dist_info
+import matplotlib.pyplot as plt
 
 
 def single_gpu_test_ood(model,
@@ -110,7 +111,10 @@ def single_gpu_test_ood_score(model,
     if world_size > 1:
         dist.barrier()
     if rank == 0:
+        x = np.arange(1, 1001, 1)
         cat_scores = torch.cat(cat_scores).mean(dim=0).cpu().numpy()
-        print(cat_scores.shape)
+        plt.figure(figsize=(20, 20))
+        plt.plot(x, cat_scores)
+        plt.savefig("{}_score.png".format(name))
     results = torch.cat(results).cpu().numpy()
     return results
