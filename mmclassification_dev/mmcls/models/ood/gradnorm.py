@@ -124,9 +124,6 @@ class GradNormBatchScore(BaseModule):
                 cls_num[i] = cat_num
             # cls_num[109] += 30000
             target = cls_num / np.sum(cls_num)
-            if os.environ['LOCAL_RANK'] == '0':
-                print(target.tolist())
-            assert False
             self.target = torch.tensor(target).to("cuda:{}".format(self.local_rank)).unsqueeze(0)
         else:
             self.target = torch.ones((1, self.num_classes)).to("cuda:{}".format(self.local_rank)) / self.num_classes
