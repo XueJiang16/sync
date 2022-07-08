@@ -1,4 +1,4 @@
-method_name = 'GradNormBatch'
+method_name = 'GradNormCos'
 model_name = 'resnet50'
 train_dataset = 'LT_a8'
 readable_name ='{}_{}_{}'.format(method_name, model_name, train_dataset)
@@ -30,8 +30,8 @@ pipline =[
           dict(type='Collect', keys=['img'])
 ]
 data = dict(
-    samples_per_gpu=256,
-    workers_per_gpu=4,
+    samples_per_gpu=1,
+    workers_per_gpu=1,
     id_data=dict(
         name='ImageNet',
         type='TxtDataset',
