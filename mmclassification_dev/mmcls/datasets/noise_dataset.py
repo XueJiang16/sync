@@ -11,6 +11,7 @@ import torchvision as tv
 import os
 import copy
 from functools import partial
+import random
 
 # from .base_dataset import BaseDataset
 from .builder import DATASETS
@@ -76,6 +77,29 @@ class NoiseDatasetGaussian(NoiseDataset):
             r = np.random.normal(123.675, 58.395, size=(self.img_size, self.img_size, 1))
             g = np.random.normal(116.28, 57.12, size=(self.img_size, self.img_size, 1))
             b = np.random.normal(103.53, 57.375, size=(self.img_size, self.img_size, 1))
+            sample = np.concatenate([r, g, b], axis=-1)
+            assert sample.shape == (self.img_size, self.img_size, 3)
+            sample = sample.astype(np.uint8)
+            return sample
+        self.random_engine = random_engine
+
+@DATASETS.register_module()
+class NoiseDatasetColorBand(NoiseDataset):
+    def __init__(self, name, pipeline, length, img_size=480, band_length=(10, 100)):
+        super().__init__(name, pipeline, length, img_size)
+        self.parse_datainfo()
+        self.band_length = band_length
+        def random_engine():
+            r = np.zeros((self.img_size, self.img_size, 1), dtype=np.uint8)
+            g = np.zeros((self.img_size, self.img_size, 1), dtype=np.uint8)
+            b = np.zeros((self.img_size, self.img_size, 1), dtype=np.uint8)
+            ptr = 0
+            while ptr < self.img_size:
+                step = random.randint(*self.band_length)
+                r[ptr: ptr+step, :, :] = random.randint(0, 255)
+                g[ptr: ptr+step, :, :] = random.randint(0, 255)
+                b[ptr: ptr+step, :, :] = random.randint(0, 255)
+                ptr += step
             sample = np.concatenate([r, g, b], axis=-1)
             assert sample.shape == (self.img_size, self.img_size, 3)
             sample = sample.astype(np.uint8)

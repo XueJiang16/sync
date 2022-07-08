@@ -32,6 +32,7 @@ class GradNorm(BaseModule):
                 cat_num = int(label_stat[i])
                 cls_num[i] = cat_num
             target = cls_num / np.sum(cls_num)
+            # target[109] += 30000
             self.target = torch.tensor(target).to("cuda:{}".format(self.local_rank)).unsqueeze(0)
         else:
             self.target = torch.ones((1, self.num_classes)).to("cuda:{}".format(self.local_rank))
