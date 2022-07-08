@@ -16,7 +16,7 @@ from .builder import DATASETS
 from .pipelines import Compose
 
 class OODBaseDataset(Dataset):
-    def __init__(self, name, pipeline):
+    def __init__(self, name, pipeline, len_limit=-1):
         super().__init__()
         self.pipeline = Compose(pipeline)
         self.file_list = []
@@ -28,6 +28,7 @@ class OODBaseDataset(Dataset):
             tv.transforms.Normalize([123.675/255, 116.28/255, 103.53/255],
                                     [58.395/255, 57.12/255, 57.375/255]),
         ])
+        self.len_limit = len_limit
 
     def parse_datainfo(self):
         self.data_infos = []
@@ -37,7 +38,7 @@ class OODBaseDataset(Dataset):
             self.data_infos.append(info)
 
     def __len__(self):
-        return 1024
+        return self.len_limit if self.len_limit!=-1 else len(self.file_list)
         # return len(self.file_list)
 
     def prepare_data(self, idx):
