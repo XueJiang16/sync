@@ -57,8 +57,8 @@ class OODBaseDataset(Dataset):
 
 @DATASETS.register_module()
 class TxtDataset(OODBaseDataset):
-    def __init__(self, name, path, data_ann, pipeline):
-        super().__init__(name, pipeline)
+    def __init__(self, name, path, data_ann, pipeline, **kwargs):
+        super().__init__(name, pipeline, **kwargs)
         self.data_prefix = path
         # self.file_list = glob.glob(os.path.join(path, '*'))
         self.data_ann = data_ann
@@ -72,8 +72,8 @@ class TxtDataset(OODBaseDataset):
 @DATASETS.register_module()
 class JsonDataset(OODBaseDataset):
     # INaturalist
-    def __init__(self, name, path, data_ann, pipeline):
-        super().__init__(name, pipeline)
+    def __init__(self, name, path, data_ann, pipeline, **kwargs):
+        super().__init__(name, pipeline, **kwargs)
         # self.file_list = glob.glob(os.path.join(path, '*'))
         self.data_prefix = path
         self.data_ann = data_ann
@@ -94,8 +94,8 @@ class JsonDataset(OODBaseDataset):
 
 @DATASETS.register_module()
 class FolderDataset(OODBaseDataset):
-    def __init__(self, name, path, pipeline, data_ann=None):
-        super().__init__(name, pipeline)
+    def __init__(self, name, path, pipeline, data_ann=None, **kwargs):
+        super().__init__(name, pipeline, **kwargs)
         # self.file_list = glob.glob(os.path.join(path, '*'))
         self.data_prefix = path
         images = os.listdir(path)
