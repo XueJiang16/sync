@@ -10,7 +10,7 @@ from mmcls.models import build_classifier
 
 @OOD.register_module()
 class ODIN(BaseModule):
-    def __init__(self, classifier, num_classes, temperature, epsilon, **kwargs):
+    def __init__(self, classifier, num_classes, temperature=1000, epsilon=0, **kwargs):
         super(ODIN, self).__init__()
         self.local_rank = os.environ['LOCAL_RANK']
         self.classifier = build_classifier(classifier)
