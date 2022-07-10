@@ -36,17 +36,18 @@ class ODIN(BaseModule):
         gradient = (gradient.float() - 0.5) * 2
 
         # Adding small perturbations to images
-        tempInputs = torch.add(x.data, -self.epsilon, gradient)
-        input['img'] = tempInputs
-        outputs = self.classifier(return_loss=False, softmax=False, post_process=False, **input)
-        outputs = outputs / self.temperature
+        with torch.no_grad():
+            tempInputs = torch.add(x.data, -self.epsilon, gradient)
+            input['img'] = tempInputs
+            outputs = self.classifier(return_loss=False, softmax=False, post_process=False, **input)
+            outputs = outputs / self.temperature
 
-        # Calculating the confidence after adding perturbations
-        nnOutputs = outputs
-        nnOutputs = nnOutputs - torch.max(nnOutputs, dim=1, keepdim=True)[0]
-        torch.exp(nnOutputs) / torch.sum(torch.exp(nnOutputs), dim=1, keepdim=True)
-        confs, _ = torch.max(nnOutputs, dim=1)
-        confs = confs.detach().clone()
+            # Calculating the confidence after adding perturbations
+            nnOutputs = outputs
+            nnOutputs = nnOutputs - torch.max(nnOutputs, dim=1, keepdim=True)[0]
+            torch.exp(nnOutputs) / torch.sum(torch.exp(nnOutputs), dim=1, keepdim=True)
+            confs, _ = torch.max(nnOutputs, dim=1)
+            confs = confs.detach().clone()
         return confs
 
 @OOD.register_module()
