@@ -23,7 +23,7 @@ class ODIN(BaseModule):
 
     def forward(self, **input):
         x = input['img'].requires_grad_(True)
-        self.classifier.zero_grad()
+        # self.classifier.zero_grad()
         outputs = self.classifier(return_loss=False, softmax=False, post_process=False, **input)
         maxIndexTemp = torch.argmax(outputs, dim=1)
         outputs = outputs / self.temperature
@@ -45,7 +45,7 @@ class ODIN(BaseModule):
             # Calculating the confidence after adding perturbations
             nnOutputs = outputs
             nnOutputs = nnOutputs - torch.max(nnOutputs, dim=1, keepdim=True)[0]
-            torch.exp(nnOutputs) / torch.sum(torch.exp(nnOutputs), dim=1, keepdim=True)
+            nnOutputs = torch.exp(nnOutputs) / torch.sum(torch.exp(nnOutputs), dim=1, keepdim=True)
             confs, _ = torch.max(nnOutputs, dim=1)
             confs = confs.detach().clone()
         return confs
