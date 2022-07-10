@@ -27,7 +27,7 @@ class ODIN(BaseModule):
         outputs = self.classifier(return_loss=False, softmax=False, post_process=False, **input)
         maxIndexTemp = torch.argmax(outputs, dim=1)
         outputs = outputs / self.temperature
-        labels = torch.LongTensor(maxIndexTemp).cuda()
+        labels = maxIndexTemp.to(torch.long)
         loss = self.criterion(outputs, labels)
         loss.backward()
 
