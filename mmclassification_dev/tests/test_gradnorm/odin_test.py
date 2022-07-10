@@ -29,4 +29,5 @@ nnOutputs_torch = torch.exp(nnOutputs_torch) / torch.sum(torch.exp(nnOutputs_tor
 confs_torch, _ = torch.max(nnOutputs_torch, dim=1)
 bias2 = np.allclose(confs, confs_torch.numpy())
 assert bias2
+print('success!')
 
