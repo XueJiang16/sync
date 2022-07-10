@@ -23,9 +23,9 @@ class ODIN(BaseModule):
 
     def forward(self, **input):
         x = input['img']
-        # self.classifier.zero_grad()
+        self.classifier.zero_grad()
         outputs = self.classifier(return_loss=False, softmax=False, post_process=False, **input)
-        maxIndexTemp = np.argmax(outputs.data.cpu().numpy(), axis=1)
+        maxIndexTemp = torch.argmax(outputs, dim=1)
         outputs = outputs / self.temperature
         labels = torch.LongTensor(maxIndexTemp).cuda()
         loss = self.criterion(outputs, labels)
@@ -41,13 +41,10 @@ class ODIN(BaseModule):
         outputs = outputs / self.temperature
 
         # Calculating the confidence after adding perturbations
-        nnOutputs = outputs.data.cpu()
-        nnOutputs = nnOutputs.numpy()
-        nnOutputs = nnOutputs - np.max(nnOutputs, axis=1, keepdims=True)
-        nnOutputs = np.exp(nnOutputs) / np.sum(np.exp(nnOutputs), axis=1, keepdims=True)
-
-        confs = np.max(nnOutputs, axis=1)
-        confs = torch.tensor(confs)
+        nnOutputs = outputs
+        nnOutputs = nnOutputs - torch.max(nnOutputs, dim=1, keepdim=True)[0]
+        torch.exp(nnOutputs) / torch.sum(torch.exp(nnOutputs), dim=1, keepdim=True)
+        confs, _ = torch.max(nnOutputs, dim=1)
         return confs
 
 @OOD.register_module()
