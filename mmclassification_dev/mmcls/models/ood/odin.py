@@ -22,7 +22,7 @@ class ODIN(BaseModule):
 
 
     def forward(self, **input):
-        x = input['img']
+        x = input['img'].requires_grad_(True)
         self.classifier.zero_grad()
         outputs = self.classifier(return_loss=False, softmax=False, post_process=False, **input)
         maxIndexTemp = torch.argmax(outputs, dim=1)
