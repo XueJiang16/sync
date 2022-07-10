@@ -37,7 +37,8 @@ class ODIN(BaseModule):
 
         # Adding small perturbations to images
         tempInputs = torch.add(x.data, -self.epsilon, gradient)
-        outputs = self.classifier(tempInputs)
+        input['img'] = tempInputs
+        outputs = self.classifier(return_loss=False, softmax=False, post_process=False, **input)
         outputs = outputs / self.temperature
 
         # Calculating the confidence after adding perturbations
