@@ -52,14 +52,15 @@ class ODIN(BaseModule):
 
 @OOD.register_module()
 class ODINCustom(BaseModule):
-    def __init__(self, classifier, num_classes, temperature, target_file=None,**kwargs):
+    def __init__(self, classifier, num_classes, temperature=1000, epsilon=0, target_file=None,**kwargs):
         super(ODINCustom, self).__init__()
         self.local_rank = os.environ['LOCAL_RANK']
-        classifier['head']['require_features'] = True
         self.classifier = build_classifier(classifier)
         self.classifier.eval()
         self.num_classes = num_classes
         self.temperature = temperature
+        self.epsilon = epsilon
+        self.criterion = torch.nn.CrossEntropyLoss().to("cuda:{}".format(self.local_rank))
         if target_file is not None:
             cls_idx = []
             with open(target_file, 'r') as f:
@@ -78,14 +79,39 @@ class ODINCustom(BaseModule):
             self.target = torch.ones((1, self.num_classes)).to("cuda:{}".format(self.local_rank)) / self.num_classes
 
     def forward(self, **input):
+        x = input['img'].requires_grad_(True)
+        self.classifier.zero_grad()
+        outputs = self.classifier(return_loss=False, softmax=False, post_process=False, **input)
+        maxIndexTemp = torch.argmax(outputs, dim=1)
+        outputs = outputs / self.temperature
+        labels = maxIndexTemp.to(torch.long)
+        loss = self.criterion(outputs, labels)
+        loss.backward()
+
+        # Normalizing the gradient to binary in {0, 1}
+        gradient = torch.ge(x.grad.data, 0)
+        gradient = (gradient.float() - 0.5) * 2
+
+        # Adding small perturbations to images
         with torch.no_grad():
-            outputs, features = self.classifier(return_loss=False, softmax=False, post_process=False, **input)
-            U = torch.norm(features, p=1, dim=1)
-            out_softmax = torch.nn.functional.softmax(outputs, dim=1)
+            tempInputs = torch.add(x.data, -self.epsilon, gradient)
+            input['img'] = tempInputs
+            outputs = self.classifier(return_loss=False, softmax=False, post_process=False, **input)
+            outputs = outputs / self.temperature
+
+            # Calculating the confidence after adding perturbations
+            nnOutputs = outputs
+            nnOutputs = nnOutputs - torch.max(nnOutputs, dim=1, keepdim=True)[0]
+            nnOutputs = torch.exp(nnOutputs) / torch.sum(torch.exp(nnOutputs), dim=1, keepdim=True)
+
             targets = self.target
-            V = torch.norm((targets - out_softmax), p=1, dim=1)
-            S = U * V / 2048
-        return S
+            out_softmax = torch.nn.functional.softmax(outputs, dim=1)
+            sim = -out_softmax * targets
+            sim = torch.sum(sim, dim=1, keepdim=True) / (torch.norm(out_softmax, dim=1) * torch.norm(targets, dim=1))
+            nnOutputs = sim * nnOutputs
+            confs, _ = torch.max(nnOutputs, dim=1)
+            confs = confs.detach().clone()
+        return confs
 
 
 
