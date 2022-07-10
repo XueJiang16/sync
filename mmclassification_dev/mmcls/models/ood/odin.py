@@ -109,7 +109,7 @@ class ODINCustom(BaseModule):
             out_softmax = torch.nn.functional.softmax(outputs, dim=1)
             sim = - out_softmax * targets
             sim = torch.sum(sim, dim=1, keepdim=True) / (torch.norm(out_softmax, dim=1) * torch.norm(targets, dim=1))
-            print('sim:', sim)
+            print('sim:', sim.shape)
             nnOutputs = sim * nnOutputs
             confs, _ = torch.max(nnOutputs, dim=1)
             confs = confs.detach().clone()
