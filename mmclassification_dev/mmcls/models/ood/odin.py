@@ -46,6 +46,7 @@ class ODIN(BaseModule):
         nnOutputs = nnOutputs - torch.max(nnOutputs, dim=1, keepdim=True)[0]
         torch.exp(nnOutputs) / torch.sum(torch.exp(nnOutputs), dim=1, keepdim=True)
         confs, _ = torch.max(nnOutputs, dim=1)
+        confs = confs.detach().clone()
         return confs
 
 @OOD.register_module()
