@@ -88,13 +88,15 @@ class GradNormBatch(BaseModule):
     def forward(self, **input):
         with torch.no_grad():
             outputs, features = self.classifier(return_loss=False, softmax=False, post_process=False, **input)
-            if self.debug_mode:
-                print_topk(outputs, softmax=True)
             U = torch.norm(features, p=1, dim=1)
             out_softmax = torch.nn.functional.softmax(outputs, dim=1)
             targets = self.target
             V = torch.norm((targets - out_softmax), p=1, dim=1)
             S = U * V / 2048
+            if self.debug_mode:
+                # print_topk(outputs, softmax=True)
+                print(input.keys())
+                assert False
         return S
 
 @OOD.register_module()
