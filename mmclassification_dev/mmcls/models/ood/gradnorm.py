@@ -11,7 +11,7 @@ from .utils import print_category, print_topk
 
 @OOD.register_module()
 class GradNorm(BaseModule):
-    def __init__(self, classifier, num_classes, temperature, target_file=None, **kwargs):
+    def __init__(self, classifier, num_classes, temperature=1, target_file=None, **kwargs):
         super(GradNorm, self).__init__()
         self.local_rank = os.environ['LOCAL_RANK']
         self.classifier = build_classifier(classifier)
@@ -56,7 +56,7 @@ class GradNorm(BaseModule):
 
 @OOD.register_module()
 class GradNormBatch(BaseModule):
-    def __init__(self, classifier, num_classes, temperature, target_file=None, debug_mode=False,**kwargs):
+    def __init__(self, classifier, num_classes, temperature=1, target_file=None, debug_mode=False,**kwargs):
         super(GradNormBatch, self).__init__()
         self.local_rank = os.environ['LOCAL_RANK']
         classifier['head']['require_features'] = True
@@ -101,7 +101,7 @@ class GradNormBatch(BaseModule):
 
 @OOD.register_module()
 class GradNormBatchScore(BaseModule):
-    def __init__(self, classifier, num_classes, temperature, target_file=None, debug_mode=False,**kwargs):
+    def __init__(self, classifier, num_classes, temperature=1, target_file=None, debug_mode=False,**kwargs):
         super(GradNormBatchScore, self).__init__()
         self.local_rank = os.environ['LOCAL_RANK']
         classifier['head']['require_features'] = True
