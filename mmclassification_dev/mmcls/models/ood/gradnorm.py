@@ -95,7 +95,7 @@ class GradNormBatch(BaseModule):
             S = U * V / 2048
             if self.debug_mode:
                 # print_topk(outputs, softmax=True)
-                print(input.keys())
+                print(input['img_metas'])
                 assert False
         return S
 
