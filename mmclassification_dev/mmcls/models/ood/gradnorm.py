@@ -101,8 +101,8 @@ class GradNormBatch(BaseModule):
             if self.debug_mode:
                 # print_topk(outputs, softmax=True)
                 S_dump = S.cpu().tolist()
-                for id_score, filename_ in zip(S_dump, input['img_metas']['filename']):
-                    filename = os.path.splitext(os.path.basename(filename_))[0] + ".txt"
+                for id_score, filename_ in zip(S_dump, input['img_metas']):
+                    filename = os.path.splitext(os.path.basename(filename_['filename']))[0] + ".txt"
                     with open(os.path.join(dump_path, filename), mode='w') as f:
                         f.write(str(id_score)+'\n')
         return S
