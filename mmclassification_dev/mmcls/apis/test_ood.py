@@ -43,6 +43,7 @@ def single_gpu_test_ood(model,
     if world_size > 1:
         dist.barrier()
     for i, data in enumerate(data_loader):
+        data['name'] = name
         result = model.forward(**data)
         if len(result.shape) == 0:  # handle the situation of batch = 1
             result = result.unsqueeze(0)
@@ -93,7 +94,6 @@ def single_gpu_test_ood_score(model,
     if world_size > 1:
         dist.barrier()
     for i, data in enumerate(data_loader):
-        data['name'] = name
         result, cat_score = model.forward(**data)
         if len(result.shape) == 0:  # handle the situation of batch = 1
             result = result.unsqueeze(0)
