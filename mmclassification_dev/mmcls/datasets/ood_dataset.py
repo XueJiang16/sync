@@ -35,6 +35,7 @@ class OODBaseDataset(Dataset):
         for sample in self.file_list:
             info = {'img_prefix': self.data_prefix}
             info['img_info'] = {'filename': sample}
+            info['img_matas'] = {'filename': sample}
             self.data_infos.append(info)
 
     def __len__(self):
