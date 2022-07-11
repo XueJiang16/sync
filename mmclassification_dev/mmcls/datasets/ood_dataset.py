@@ -16,7 +16,7 @@ from .builder import DATASETS
 from .pipelines import Compose
 
 class OODBaseDataset(Dataset):
-    def __init__(self, name, pipeline):
+    def __init__(self, name, pipeline, len_limit=-1):
         super().__init__()
         self.pipeline = Compose(pipeline)
         self.file_list = []
@@ -28,6 +28,7 @@ class OODBaseDataset(Dataset):
             tv.transforms.Normalize([123.675/255, 116.28/255, 103.53/255],
                                     [58.395/255, 57.12/255, 57.375/255]),
         ])
+        self.len_limit = len_limit
 
     def parse_datainfo(self):
         self.data_infos = []
@@ -37,8 +38,8 @@ class OODBaseDataset(Dataset):
             self.data_infos.append(info)
 
     def __len__(self):
-        # return 1024
-        return len(self.file_list)
+        return self.len_limit if self.len_limit!=-1 else len(self.file_list)
+        # return len(self.file_list)
 
     def prepare_data(self, idx):
         results = copy.deepcopy(self.data_infos[idx])
@@ -56,8 +57,8 @@ class OODBaseDataset(Dataset):
 
 @DATASETS.register_module()
 class TxtDataset(OODBaseDataset):
-    def __init__(self, name, path, data_ann, pipeline):
-        super().__init__(name, pipeline)
+    def __init__(self, name, path, data_ann, pipeline, **kwargs):
+        super().__init__(name, pipeline, **kwargs)
         self.data_prefix = path
         # self.file_list = glob.glob(os.path.join(path, '*'))
         self.data_ann = data_ann
@@ -71,8 +72,8 @@ class TxtDataset(OODBaseDataset):
 @DATASETS.register_module()
 class JsonDataset(OODBaseDataset):
     # INaturalist
-    def __init__(self, name, path, data_ann, pipeline):
-        super().__init__(name, pipeline)
+    def __init__(self, name, path, data_ann, pipeline, **kwargs):
+        super().__init__(name, pipeline, **kwargs)
         # self.file_list = glob.glob(os.path.join(path, '*'))
         self.data_prefix = path
         self.data_ann = data_ann
@@ -93,8 +94,8 @@ class JsonDataset(OODBaseDataset):
 
 @DATASETS.register_module()
 class FolderDataset(OODBaseDataset):
-    def __init__(self, name, path, pipeline, data_ann=None):
-        super().__init__(name, pipeline)
+    def __init__(self, name, path, pipeline, data_ann=None, **kwargs):
+        super().__init__(name, pipeline, **kwargs)
         # self.file_list = glob.glob(os.path.join(path, '*'))
         self.data_prefix = path
         images = os.listdir(path)

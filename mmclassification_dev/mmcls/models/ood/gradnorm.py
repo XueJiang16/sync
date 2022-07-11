@@ -141,4 +141,25 @@ class GradNormBatchScore(BaseModule):
             S = U * V / 2048
         return S, out_softmax.clone()
 
+@OOD.register_module()
+class GradNormCos(GradNorm):
+    def forward(self, **input):
+        self.classifier.zero_grad()
+        img = input['img']
+        assert img.shape[0] == 1, "GradNorm backward implementation only supports batch = 1."
+        outputs = self.classifier(return_loss=False, softmax=False, post_process=False, **input)
+        # print("Self rank: {}, output device = {}".format(self.local_rank, outputs.device))
+        # assert False
+        # outputs, _ = self.classifier.simple_test(softmax=False, **input)
+        targets = self.target
+        outputs = outputs / self.temperature
+        out_softmax = torch.nn.functional.softmax(outputs, dim=1)
+        sim = -out_softmax * targets
+        sim = sim.sum(1) / (torch.norm(out_softmax, dim=1) * torch.norm(targets, dim=1))
+        loss = sim.unsqueeze(1)
+        loss.backward()
+        layer_grad = self.classifier.head.fc.weight.grad.data
+        layer_grad_norm = torch.sum(torch.abs(layer_grad))
+        return layer_grad_norm
+
 
