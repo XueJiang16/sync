@@ -87,6 +87,9 @@ class GradNormBatch(BaseModule):
 
     def forward(self, **input):
         with torch.no_grad():
+            if "dataset_name" in input:
+                dataset_name = input['dataset_name']
+                del input['dataset_name']
             outputs, features = self.classifier(return_loss=False, softmax=False, post_process=False, **input)
             U = torch.norm(features, p=1, dim=1)
             out_softmax = torch.nn.functional.softmax(outputs, dim=1)
@@ -95,7 +98,7 @@ class GradNormBatch(BaseModule):
             S = U * V / 2048
             if self.debug_mode:
                 # print_topk(outputs, softmax=True)
-                print(input['img_metas'])
+                print(dataset_name)
                 assert False
         return S
 
