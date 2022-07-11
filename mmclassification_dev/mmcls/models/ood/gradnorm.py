@@ -89,6 +89,8 @@ class GradNormBatch(BaseModule):
         with torch.no_grad():
             if "dataset_name" in input:
                 dataset_name = input['dataset_name']
+                dump_path = "results/gradnorm_dump/{}".format(dataset_name)
+                os.makedirs(dump_path, exist_ok=True)
                 del input['dataset_name']
             outputs, features = self.classifier(return_loss=False, softmax=False, post_process=False, **input)
             U = torch.norm(features, p=1, dim=1)
@@ -98,8 +100,11 @@ class GradNormBatch(BaseModule):
             S = U * V / 2048
             if self.debug_mode:
                 # print_topk(outputs, softmax=True)
-                print(input['img_metas'])
-                assert False
+                S_dump = S.cpu().tolist()
+                for id_score, filename_ in zip(S_dump, input['img_metas']['filename']):
+                    filename = os.path.splitext(os.path.basename(filename_))[0] + ".txt"
+                    with open(os.path.join(dump_path, filename), mode='w') as f:
+                        f.write(str(id_score)+'\n')
         return S
 
 @OOD.register_module()
