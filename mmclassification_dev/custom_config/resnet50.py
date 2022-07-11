@@ -6,6 +6,7 @@ if custom_name is not None:
     readable_name = '{}_{}_{}_{}'.format(method_name, model_name, train_dataset, custom_name)
 else:
     readable_name ='{}_{}_{}'.format(method_name, model_name, train_dataset)
+quick_test = False
 model = dict(
     type=method_name,
     debug_mode=True,
@@ -30,9 +31,7 @@ model = dict(
             topk=(1, 5))
     )
 )
-pipline =[
-          dict(type='Collect', keys=['img'])
-]
+pipline =[dict(type='Collect', keys=['img'])]
 data = dict(
     samples_per_gpu=32,
     workers_per_gpu=4,
@@ -42,7 +41,7 @@ data = dict(
         path='/data/csxjiang/val',
         data_ann='/data/csxjiang/meta/val_labeled.txt',
         pipeline=pipline,
-        len_limit = 5000,
+        len_limit = 5000 if quick_test else -1,
     ),
     # id_data=dict(
     #     type='JsonDataset',
@@ -65,28 +64,28 @@ data = dict(
             type='FolderDataset',
             path='/data/csxjiang/ood_data/iNaturalist/images',
             pipeline=pipline,
-            len_limit = 1000,
+            len_limit=1000 if quick_test else -1,
         ),
         dict(
             name='SUN',
             type='FolderDataset',
             path='/data/csxjiang/ood_data/SUN/images',
             pipeline=pipline,
-            len_limit=1000,
+            len_limit=1000 if quick_test else -1,
         ),
         dict(
             name='Places',
             type='FolderDataset',
             path='/data/csxjiang/ood_data/Places/images',
             pipeline=pipline,
-            len_limit=1000,
+            len_limit=1000 if quick_test else -1,
         ),
         dict(
             name='Textures',
             type='FolderDataset',
             path='/data/csxjiang/ood_data/Textures/dtd/images_collate',
             pipeline=pipline,
-            len_limit=1000,
+            len_limit=1000 if quick_test else -1,
         ),
     ],
 
