@@ -1,4 +1,4 @@
-method_name = 'GradNormBatch'
+method_name = 'Energy'
 model_name = 'resnet50'
 train_dataset = 'LT_a8'
 custom_name = None
