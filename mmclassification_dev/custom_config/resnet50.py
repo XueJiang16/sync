@@ -1,4 +1,4 @@
-method_name = 'ODINCustom'
+method_name = 'GradNormBatch'
 model_name = 'resnet50'
 train_dataset = 'LT_a8'
 custom_name = None
@@ -8,7 +8,7 @@ else:
     readable_name ='{}_{}_{}'.format(method_name, model_name, train_dataset)
 model = dict(
     type=method_name,
-    debug_mode=False,
+    debug_mode=True,
     num_classes=1000,
     # temperature=1,
     target_file='/data/csxjiang/meta/train_LT_a8.txt',

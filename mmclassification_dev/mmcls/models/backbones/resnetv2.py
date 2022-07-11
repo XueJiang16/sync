@@ -7,6 +7,8 @@ import torch.nn as nn
 import torch.nn.functional as F
 from mmcv.runner import BaseModule
 
+from ..builder import BACKBONES
+
 
 class StdConv2d(nn.Conv2d):
 
@@ -90,7 +92,7 @@ class PreActBottleneck(nn.Module):
                 w = weights[f'{prefix}a/proj/{convname}/kernel']
                 self.downsample.weight.copy_(tf2th(w))
 
-
+@BACKBONES.register_module()
 class ResNetV2(nn.Module):
     """Implementation of Pre-activation (v2) ResNet mode."""
 

@@ -11,7 +11,7 @@ from .utils import print_category, print_topk
 
 @OOD.register_module()
 class GradNorm(BaseModule):
-    def __init__(self, classifier, num_classes, temperature, target_file=None, **kwargs):
+    def __init__(self, classifier, num_classes, temperature=1, target_file=None, **kwargs):
         super(GradNorm, self).__init__()
         self.local_rank = os.environ['LOCAL_RANK']
         self.classifier = build_classifier(classifier)
@@ -56,7 +56,7 @@ class GradNorm(BaseModule):
 
 @OOD.register_module()
 class GradNormBatch(BaseModule):
-    def __init__(self, classifier, num_classes, temperature, target_file=None, debug_mode=False,**kwargs):
+    def __init__(self, classifier, num_classes, temperature=1, target_file=None, debug_mode=False,**kwargs):
         super(GradNormBatch, self).__init__()
         self.local_rank = os.environ['LOCAL_RANK']
         classifier['head']['require_features'] = True
@@ -88,18 +88,20 @@ class GradNormBatch(BaseModule):
     def forward(self, **input):
         with torch.no_grad():
             outputs, features = self.classifier(return_loss=False, softmax=False, post_process=False, **input)
-            if self.debug_mode:
-                print_topk(outputs, softmax=True)
             U = torch.norm(features, p=1, dim=1)
             out_softmax = torch.nn.functional.softmax(outputs, dim=1)
             targets = self.target
             V = torch.norm((targets - out_softmax), p=1, dim=1)
             S = U * V / 2048
+            if self.debug_mode:
+                # print_topk(outputs, softmax=True)
+                print(input.keys())
+                assert False
         return S
 
 @OOD.register_module()
 class GradNormBatchScore(BaseModule):
-    def __init__(self, classifier, num_classes, temperature, target_file=None, debug_mode=False,**kwargs):
+    def __init__(self, classifier, num_classes, temperature=1, target_file=None, debug_mode=False,**kwargs):
         super(GradNormBatchScore, self).__init__()
         self.local_rank = os.environ['LOCAL_RANK']
         classifier['head']['require_features'] = True
