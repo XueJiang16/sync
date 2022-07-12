@@ -73,7 +73,7 @@ def ssim_test(img, img_metas=None, **kwargs):
     for i in range(10):
         crop_x = random.randint(0, 480-crop_size)
         crop_y = random.randint(0, 480-crop_size)
-        crop = img[:, crop_x:crop_x+crop_size, crop_y+crop_size]
+        crop = img[crop_x:crop_x+crop_size, crop_y+crop_size, :]
         crops.append(crop)
     ssim_crops = 0
     for i in range(0,10,2):
