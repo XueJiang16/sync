@@ -73,13 +73,13 @@ def ssim_test(img, img_metas=None, **kwargs):
     crops_mean = []
     crops_std = []
     img = img[0].permute(1,2,0).contiguous().cpu().numpy()
-    # for i in range(img_size//crop_size):
+    # for i in range(10):
     #     crop_x = random.randint(0, 480-crop_size)
     #     crop_y = random.randint(0, 480-crop_size)
     #     crop = img[crop_x:crop_x+crop_size, crop_y:crop_y+crop_size, :]
     #     crops.append(crop)
     ssim_crops = 0
-    # for i in range(0,img_size//crop_size,2):
+    # for i in range(0,10,2):
     #     # psnr_temp = psnr(crops[i], crops[i+1], data_range=img.max() - img.min())
     #     # ssim_crops += psnr_temp if not np.isinf(psnr_temp) else 100
     #     # ssim_crops += ssim(crops[i], crops[i+1], data_range=img.max() - img.min(), channel_axis=2)
