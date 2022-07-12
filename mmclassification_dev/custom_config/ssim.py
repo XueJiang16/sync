@@ -1,7 +1,7 @@
 method_name = 'GradNormBatch'
 model_name = 'resnet50'
 train_dataset = 'LT_a8'
-custom_name = 'mean_std'
+custom_name = 'mean_std_uniform_noise'
 if custom_name is not None:
     readable_name = '{}_{}_{}_{}'.format(method_name, model_name, train_dataset, custom_name)
 else:
@@ -58,37 +58,44 @@ data = dict(
     #         dict(type='ImageToTensor', keys=['img']),
     #         dict(type='Collect', keys=['img'])
     #     ]),
+    # ood_data=[
+    #     dict(
+    #         name='iNaturalist',
+    #         type='FolderDataset',
+    #         path='/data/csxjiang/ood_data/iNaturalist/images',
+    #         pipeline=pipline,
+    #         len_limit=1000 if quick_test else -1,
+    #     ),
+    #     dict(
+    #         name='SUN',
+    #         type='FolderDataset',
+    #         path='/data/csxjiang/ood_data/SUN/images',
+    #         pipeline=pipline,
+    #         len_limit=1000 if quick_test else -1,
+    #     ),
+    #     dict(
+    #         name='Places',
+    #         type='FolderDataset',
+    #         path='/data/csxjiang/ood_data/Places/images',
+    #         pipeline=pipline,
+    #         len_limit=1000 if quick_test else -1,
+    #     ),
+    #     dict(
+    #         name='Textures',
+    #         type='FolderDataset',
+    #         path='/data/csxjiang/ood_data/Textures/dtd/images_collate',
+    #         pipeline=pipline,
+    #         len_limit=1000 if quick_test else -1,
+    #     ),
+    # ],
     ood_data=[
         dict(
-            name='iNaturalist',
-            type='FolderDataset',
-            path='/data/csxjiang/ood_data/iNaturalist/images',
-            pipeline=pipline,
-            len_limit=1000 if quick_test else -1,
-        ),
-        dict(
-            name='SUN',
-            type='FolderDataset',
-            path='/data/csxjiang/ood_data/SUN/images',
-            pipeline=pipline,
-            len_limit=1000 if quick_test else -1,
-        ),
-        dict(
-            name='Places',
-            type='FolderDataset',
-            path='/data/csxjiang/ood_data/Places/images',
-            pipeline=pipline,
-            len_limit=1000 if quick_test else -1,
-        ),
-        dict(
-            name='Textures',
-            type='FolderDataset',
-            path='/data/csxjiang/ood_data/Textures/dtd/images_collate',
-            pipeline=pipline,
-            len_limit=1000 if quick_test else -1,
-        ),
+            name='NoiseUniform',
+            type='NoiseDatasetUniform',
+            length=10000,
+            img_size=480,
+            pipeline=pipline),
     ],
-
 )
 dist_params = dict(backend='nccl')
 log_level = 'CRITICAL'
