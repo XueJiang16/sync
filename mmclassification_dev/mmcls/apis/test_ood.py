@@ -1,5 +1,6 @@
 import os.path as osp
 import pickle
+import random
 import shutil
 import tempfile
 import time
@@ -11,6 +12,8 @@ import torch.distributed as dist
 from mmcv.image import tensor2imgs
 from mmcv.runner import get_dist_info
 import matplotlib.pyplot as plt
+from skimage.metrics import structural_similarity as ssim
+
 
 
 def single_gpu_test_ood(model,
@@ -62,6 +65,73 @@ def single_gpu_test_ood(model,
         dist.barrier()
     results = torch.cat(results).cpu().numpy()
     return results
+
+def ssim_test(img, img_metas=None, **kwargs):
+    crop_size = 48
+    crops = []
+    img = img[0].cpu().numpy()
+    for i in range(10):
+        crop_x = random.randint(0, 480-crop_size)
+        crop_y = random.randint(0, 480-crop_size)
+        crop = img[:, crop_x:crop_x+crop_size, crop_y+crop_size]
+        crops.append(crop)
+    ssim_crops = 0
+    for i in range(0,10,2):
+        ssim_crops += ssim(crops[i], crops[i+1], data_range=crops[i+1].max() - crops[i+1].min())
+    ssim_crops /= 5
+    return ssim_crops
+
+
+def single_gpu_test_ssim(model,
+                        data_loader,
+                        name=''
+                        ):
+    """Test model with local single gpu.
+
+    This method tests model with a single gpu and supports showing results.
+
+    Args:
+        model (:obj:`torch.nn.Module`): Model to be tested.
+        data_loader (:obj:`torch.utils.data.DataLoader`): Pytorch data loader.
+        show (bool): Whether to show the test results. Defaults to False.
+        out_dir (str): The output directory of result plots of all samples.
+            Defaults to None, which means not to write output files.
+        **show_kwargs: Any other keyword arguments for showing results.
+
+    Returns:
+        list: The prediction results.
+    """
+    results = []
+    dataset = data_loader.dataset
+    rank, world_size = get_dist_info()
+    if rank == 0:
+        prog = 0
+        tic = time.time()
+        # prog_bar = mmcv.ProgressBar(len(dataset))
+    if world_size > 1:
+        dist.barrier()
+    for i, data in enumerate(data_loader):
+        data['dataset_name'] = name
+        result = ssim_test(**data)
+        result = torch.tensor(result).to('cuda:{}'.format(rank))
+        if len(result.shape) == 0:  # handle the situation of batch = 1
+            result = result.unsqueeze(0)
+        results.append(result)
+        if rank == 0:
+            batch_size = data['img'].size(0)
+            prog += batch_size * world_size
+            toc = time.time()
+            passed_time = toc - tic
+            inf_speed = passed_time / prog
+            fps = 1 / inf_speed
+            eta = max(0, (len(dataset) - prog)) * inf_speed
+            print("[{} @ {}] {} / {}, fps = {}, eta = {}"
+                  .format(name, int(passed_time), prog, len(dataset), round(fps, 2), round(eta, 2)))
+    if world_size > 1:
+        dist.barrier()
+    results = torch.cat(results).cpu().numpy()
+    return results
+
 
 def single_gpu_test_ood_score(model,
                               data_loader,
