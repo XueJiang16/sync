@@ -81,10 +81,10 @@ def ssim_test(img, img_metas=None, **kwargs):
         # ssim_crops += psnr_temp if not np.isinf(psnr_temp) else 100
         # ssim_crops += ssim(crops[i], crops[i+1], data_range=img.max() - img.min(), channel_axis=2)
         # mean_bias = np.abs(crops[i].mean(axis=2) - crops[i+1].mean(axis=2)).sum()
-        # mean_bias = np.abs(crops[i].mean() - crops[i+1].mean())
+        mean_bias = np.abs(crops[i].mean() - crops[i+1].mean())
         std_bias = np.abs(crops[i].std() - crops[i+1].std())
-        # ssim_crops += (mean_bias + std_bias)
-        ssim_crops += std_bias
+        ssim_crops += (mean_bias + 3*std_bias)
+        # ssim_crops += std_bias
     ssim_crops /= 5
     return ssim_crops
 
