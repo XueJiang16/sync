@@ -77,7 +77,7 @@ def ssim_test(img, img_metas=None, **kwargs):
         crops.append(crop)
     ssim_crops = 0
     for i in range(0,10,2):
-        ssim_crops += ssim(crops[i], crops[i+1], data_range=crops[i+1].max() - crops[i+1].min())
+        ssim_crops += ssim(crops[i], crops[i+1], data_range=crops[i+1].max() - crops[i+1].min(), channel_axis=2)
     ssim_crops /= 5
     return ssim_crops
 
