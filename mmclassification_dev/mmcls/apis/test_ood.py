@@ -78,7 +78,7 @@ def ssim_test(img, img_metas=None, **kwargs):
     ssim_crops = 0
     for i in range(0,10,2):
         psnr_temp = psnr(crops[i], crops[i+1], data_range=img.max() - img.min())
-        ssim_crops += psnr_temp if not np.isnan(psnr_temp) else 100
+        ssim_crops += psnr_temp if not np.isinf(psnr_temp) else 100
         # ssim_crops += ssim(crops[i], crops[i+1], data_range=img.max() - img.min(), channel_axis=2)
     ssim_crops /= 5
     return ssim_crops
