@@ -82,7 +82,7 @@ def ssim_test(img, img_metas=None, **kwargs):
         # ssim_crops += ssim(crops[i], crops[i+1], data_range=img.max() - img.min(), channel_axis=2)
         # mean_bias = np.abs(crops[i].mean(axis=2) - crops[i+1].mean(axis=2)).sum()
         mean_bias = np.abs(crops[i].mean() - crops[i+1].mean())
-        std_bias = crops[i].std() - crops[i+1].std()
+        std_bias = np.abs(crops[i].std() - crops[i+1].std())
         ssim_crops += (mean_bias + std_bias)
         # ssim_crops += mean_bias
     ssim_crops /= 5
