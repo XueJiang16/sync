@@ -69,7 +69,7 @@ def single_gpu_test_ood(model,
 def ssim_test(img, img_metas=None, **kwargs):
     crop_size = 48
     crops = []
-    img = img[0].cpu().numpy()
+    img = img[0].permute(1,2,0).contiguous().cpu().numpy()
     for i in range(10):
         crop_x = random.randint(0, 480-crop_size)
         crop_y = random.randint(0, 480-crop_size)
