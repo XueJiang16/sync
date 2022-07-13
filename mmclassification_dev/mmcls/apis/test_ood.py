@@ -97,7 +97,7 @@ def ssim_test(img, img_metas=None, **kwargs):
         crop = img[h:h+crop_size, w:w+crop_size, :]
         crops_mean.append(crop.mean())
         crops_std.append(crop.std())
-    ssim_crops = np.std(crops_mean) + 2 * np.std(crops_std)
+    ssim_crops = np.std(crops_mean) + 3 * np.std(crops_std)
     return ssim_crops
 
 
