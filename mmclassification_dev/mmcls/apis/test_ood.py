@@ -72,13 +72,13 @@ def ssim_test(img, img_metas=None, **kwargs):
     crops = []
     crops_mean = []
     crops_std = []
-    img = img[0].permute(1,2,0).contiguous().cpu().numpy()
+    # img = img.permute(0, 2, 3, 1).contiguous()
     # for i in range(10):
     #     crop_x = random.randint(0, 480-crop_size)
     #     crop_y = random.randint(0, 480-crop_size)
     #     crop = img[crop_x:crop_x+crop_size, crop_y:crop_y+crop_size, :]
     #     crops.append(crop)
-    ssim_crops = 0
+    # ssim_crops = 0
     # for i in range(0,10,2):
     #     # psnr_temp = psnr(crops[i], crops[i+1], data_range=img.max() - img.min())
     #     # ssim_crops += psnr_temp if not np.isinf(psnr_temp) else 100
@@ -94,17 +94,19 @@ def ssim_test(img, img_metas=None, **kwargs):
         for w in range(img_size//crop_size):
             corner_list.append([h*crop_size, w*crop_size])
     for h,w in corner_list:
-        crop = img[h:h+crop_size, w:w+crop_size, :]
-        crops_mean.append(crop.mean())
-        crops_std.append(crop.std())
-    ssim_crops = np.std(crops_mean) + 3 * np.std(crops_std)
+        crop = img[:, :, h:h+crop_size, w:w+crop_size]
+        crops_mean.append(crop.mean(dim=0).unsqueeze(1))
+        crops_std.append(crop.std(dim=0).unsqueeze(1))
+    crops_mean = torch.cat(crops_mean, dim=1)
+    crops_std = torch.cat(crops_std, dim=1)
+    ssim_crops = torch.std(crops_mean, dim=0) + 3 * torch.std(crops_std, dim=0)
     return ssim_crops
 
 
 def single_gpu_test_ssim(model,
-                        data_loader,
-                        name=''
-                        ):
+                         data_loader,
+                         name=''
+                         ):
     """Test model with local single gpu.
 
     This method tests model with a single gpu and supports showing results.
