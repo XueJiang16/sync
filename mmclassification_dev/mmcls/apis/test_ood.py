@@ -70,9 +70,7 @@ def ssim_test(img, img_metas=None, **kwargs):
     crop_size = 120
     img_size = 480
     crops = []
-    crops_mean_r = []
-    crops_mean_g = []
-    crops_mean_b = []
+    crops_mean = []
     crops_std = []
     img = img[0].permute(1,2,0).contiguous().cpu().numpy()
     # for i in range(10):
@@ -97,12 +95,9 @@ def ssim_test(img, img_metas=None, **kwargs):
             corner_list.append([h*crop_size, w*crop_size])
     for h,w in corner_list:
         crop = img[h:h+crop_size, w:w+crop_size, :]
-        crop_mean = crop.mean(axis=2)
-        crops_mean_r.append(crop_mean[0])
-        crops_mean_g.append(crop_mean[1])
-        crops_mean_b.append(crop_mean[2])
+        crops_mean.append(crop.mean())
         crops_std.append(crop.std())
-    ssim_crops = np.std(crops_mean_r) + np.std(crops_mean_g) + np.std(crops_mean_b) + 3 * np.std(crops_std)
+    ssim_crops = np.std(crops_mean) + 2 * np.std(crops_std)
     return ssim_crops
 
 
