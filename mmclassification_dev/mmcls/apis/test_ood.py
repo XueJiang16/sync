@@ -95,14 +95,12 @@ def ssim_test(img, img_metas=None, **kwargs):
             corner_list.append([h*crop_size, w*crop_size])
     for h,w in corner_list:
         crop = img[:, :, h:h+crop_size, w:w+crop_size]
-        crops_mean.append(crop.mean(dim=(1,2,3)).unsqueeze(1))
-        crops_std.append(crop.std(dim=(1,2,3)).unsqueeze(1))
+        std, mean = torch.std_mean(crop, dim=(1,2,3))
+        crops_mean.append(std.unsqueeze(1))
+        crops_std.append(mean.unsqueeze(1))
     crops_mean = torch.cat(crops_mean, dim=1)
-    print("crops_mean.shape", crops_mean.shape)
     crops_std = torch.cat(crops_std, dim=1)
-    print("crops_std.shape", crops_std.shape)
     ssim_crops = torch.std(crops_mean, dim=1) + 3 * torch.std(crops_std, dim=1)
-    print("ssim_crops.shape", ssim_crops.shape)
     return ssim_crops
 
 
