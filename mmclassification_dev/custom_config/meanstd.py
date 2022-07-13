@@ -1,12 +1,12 @@
 method_name = 'MeanStdDetector'
 model_name = 'resnet50'
 train_dataset = 'LT_a8'
-custom_name = 'GradNormBatch'
+custom_name = 'GradNormBatch_0.6'
 if custom_name is not None:
     readable_name = '{}_{}_{}_{}'.format(method_name, model_name, train_dataset, custom_name)
 else:
     readable_name ='{}_{}_{}'.format(method_name, model_name, train_dataset)
-quick_test = True
+quick_test = False
 model = dict(
     type = method_name,
     crop_size = 120,
