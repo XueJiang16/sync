@@ -102,7 +102,7 @@ def ssim_test(img, img_metas=None, **kwargs):
     crops_std.sort()
     num_crops = len(crops_mean)
     lower_percentile = 0.1
-    upper_percentile = 0.9
+    upper_percentile = 1.0
     lower_bound = int(lower_percentile * num_crops)
     upper_bound = int(upper_percentile * num_crops)
     crops_mean = crops_mean[lower_bound: upper_bound]
