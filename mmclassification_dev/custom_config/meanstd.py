@@ -12,6 +12,7 @@ model = dict(
     crop_size = 120,
     img_size = 480,
     threshold = 0.6,
+    order = 0.5,
     ood_detector = dict(
         type='GradNormBatch',
         debug_mode=True,

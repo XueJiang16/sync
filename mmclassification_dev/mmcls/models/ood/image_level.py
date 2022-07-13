@@ -15,7 +15,7 @@ def no_ood_detector(**kwargs):
 
 @OOD.register_module()
 class MeanStdDetector(BaseModule):
-    def __init__(self, crop_size, img_size, threshold, ood_detector=None, **kwargs):
+    def __init__(self, crop_size, img_size, threshold, order=1, ood_detector=None, **kwargs):
         super(MeanStdDetector, self).__init__()
         self.local_rank = os.environ['LOCAL_RANK']
         self.has_ood_detector = True if ood_detector else False
@@ -26,6 +26,7 @@ class MeanStdDetector(BaseModule):
         self.crop_size = crop_size
         self.img_size = img_size
         self.threshold = threshold
+        self.order = order
 
     def forward(self, **input):
         with torch.no_grad():
@@ -50,7 +51,7 @@ class MeanStdDetector(BaseModule):
             ood_scores = self.ood_detector(**input)
             # ood_scores = ood_scores - ood_scores.min()
             # ood_scores[img_level_confs < self.threshold] *= 0.5
-            img_level_confs = ((1/self.threshold)**2) * torch.pow(img_level_confs, 0.5)
+            img_level_confs = ((1/self.threshold)**(1/self.order)) * torch.pow(img_level_confs, self.order)
             img_level_confs[img_level_confs > 1] = 1
             ood_scores *= img_level_confs
         else:
