@@ -46,7 +46,7 @@ data = dict(
     id_data = dict(
             name='SUN',
             type='FolderDataset',
-            path='/data/csxjiang/ood_data/iNaturalist/images',
+            path='/data/csxjiang/ood_data/SUN/images',
             pipeline=pipline,
             len_limit=1000 if quick_test else -1,
         ),
