@@ -1,7 +1,7 @@
 method_name = 'MeanStdDetector'
 model_name = 'resnet50'
 train_dataset = 'LT_a8'
-custom_name = 'GradNormBatch_0.6'
+custom_name = 'GradNormBatch_0.8'
 if custom_name is not None:
     readable_name = '{}_{}_{}_{}'.format(method_name, model_name, train_dataset, custom_name)
 else:
@@ -11,7 +11,7 @@ model = dict(
     type = method_name,
     crop_size = 120,
     img_size = 480,
-    threshold = 0.6,
+    threshold = 0.8,
     ood_detector = dict(
         type='GradNormBatch',
         debug_mode=True,
