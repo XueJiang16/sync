@@ -97,16 +97,6 @@ def ssim_test(img, img_metas=None, **kwargs):
         crop = img[h:h+crop_size, w:w+crop_size, :]
         crops_mean.append(crop.mean())
         crops_std.append(crop.std())
-    # percentile
-    crops_mean.sort()
-    crops_std.sort()
-    num_crops = len(crops_mean)
-    lower_percentile = 0.05
-    upper_percentile = 0.95
-    lower_bound = int(lower_percentile * num_crops)
-    upper_bound = int(upper_percentile * num_crops)
-    crops_mean = crops_mean[lower_bound: upper_bound]
-    crops_std = crops_std[lower_bound: upper_bound]
     ssim_crops = np.std(crops_mean) + 3 * np.std(crops_std)
     return ssim_crops
 
