@@ -48,7 +48,7 @@ class MeanStdDetector(BaseModule):
             img_level_confs = torch.std(crops_mean, dim=1) + 3 * torch.std(crops_std, dim=1)
         if self.has_ood_detector:
             ood_scores = self.ood_detector(**input)
-            ood_scores = ood_scores - ood_scores.min()
+            # ood_scores = ood_scores - ood_scores.min()
             # ood_scores[img_level_confs < self.threshold] *= 0.5
             img_level_confs = (1/self.threshold) * img_level_confs
             img_level_confs[img_level_confs > 1] = 1
