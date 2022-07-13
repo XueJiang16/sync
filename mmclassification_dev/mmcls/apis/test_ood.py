@@ -101,7 +101,7 @@ def ssim_test(img, img_metas=None, **kwargs):
     print("crops_mean.shape", crops_mean.shape)
     crops_std = torch.cat(crops_std, dim=1)
     print("crops_std.shape", crops_std.shape)
-    ssim_crops = torch.std(crops_mean, dim=0) + 3 * torch.std(crops_std, dim=0)
+    ssim_crops = torch.std(crops_mean, dim=1) + 3 * torch.std(crops_std, dim=1)
     print("ssim_crops.shape", ssim_crops.shape)
     return ssim_crops
 
