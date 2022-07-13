@@ -1,7 +1,7 @@
 method_name = 'GradNormBatch'
 model_name = 'resnet50'
 train_dataset = 'LT_a8'
-custom_name = 'mean_std_sun_textures'
+custom_name = 'mean_std_places_textures'
 if custom_name is not None:
     readable_name = '{}_{}_{}_{}'.format(method_name, model_name, train_dataset, custom_name)
 else:
@@ -44,9 +44,9 @@ data = dict(
     #     len_limit = 5000 if quick_test else -1,
     # ),
     id_data = dict(
-            name='SUN',
+            name='Places',
             type='FolderDataset',
-            path='/data/csxjiang/ood_data/SUN/images',
+            path='/data/csxjiang/ood_data/Places/images',
             pipeline=pipline,
             len_limit=1000 if quick_test else -1,
         ),
