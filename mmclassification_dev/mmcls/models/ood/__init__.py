@@ -3,8 +3,9 @@ from .msp import MSP, MSPCustom
 from .odin import ODIN, ODINCustom
 from .energy import Energy, EnergyCustom
 from .cosine import Cosine
+from .image_level import MeanStdDetector
 
 __all__ = [
     'GradNorm', 'GradNormBatch', 'GradNormBatchScore', 'MSP', 'MSPCustom',
-    'GradNormCos', 'ODIN', 'ODINCustom', 'Energy', 'EnergyCustom', 'Cosine'
+    'GradNormCos', 'ODIN', 'ODINCustom', 'Energy', 'EnergyCustom', 'Cosine', 'MeanStdDetector'
 ]
