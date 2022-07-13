@@ -1,7 +1,7 @@
 method_name = 'GradNormBatch'
 model_name = 'resnet50'
 train_dataset = 'LT_a8'
-custom_name = 'mean_std'
+custom_name = 'mean_std_inat_textures'
 if custom_name is not None:
     readable_name = '{}_{}_{}_{}'.format(method_name, model_name, train_dataset, custom_name)
 else:
@@ -35,14 +35,21 @@ pipline =[dict(type='Collect', keys=['img'])]
 data = dict(
     samples_per_gpu=256,
     workers_per_gpu=4,
-    id_data=dict(
-        name='ImageNet',
-        type='TxtDataset',
-        path='/data/csxjiang/val',
-        data_ann='/data/csxjiang/meta/val_labeled.txt',
-        pipeline=pipline,
-        len_limit = 5000 if quick_test else -1,
-    ),
+    # id_data=dict(
+    #     name='ImageNet',
+    #     type='TxtDataset',
+    #     path='/data/csxjiang/val',
+    #     data_ann='/data/csxjiang/meta/val_labeled.txt',
+    #     pipeline=pipline,
+    #     len_limit = 5000 if quick_test else -1,
+    # ),
+    id_data = dict(
+            name='iNaturalist',
+            type='FolderDataset',
+            path='/data/csxjiang/ood_data/iNaturalist/images',
+            pipeline=pipline,
+            len_limit=1000 if quick_test else -1,
+        ),
     # id_data=dict(
     #     type='JsonDataset',
     #     path='/data/csxjiang/',
