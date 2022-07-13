@@ -14,7 +14,6 @@ class MeanStdDetector(BaseModule):
         super(MeanStdDetector, self).__init__()
         self.local_rank = os.environ['LOCAL_RANK']
         self.ood_detector = build_ood_model(ood_detector)
-        self.ood_detector.init_weights()
         self.crop_size = crop_size
         self.img_size = img_size
         self.threshold = threshold
