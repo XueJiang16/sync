@@ -50,7 +50,7 @@ class MeanStdDetector(BaseModule):
             ood_scores = self.ood_detector(**input)
             # ood_scores = ood_scores - ood_scores.min()
             # ood_scores[img_level_confs < self.threshold] *= 0.5
-            img_level_confs = ((1/self.threshold)**0.5) * torch.pow(img_level_confs, 0.5)
+            img_level_confs = ((1/self.threshold)**2) * torch.pow(img_level_confs, 0.5)
             img_level_confs[img_level_confs > 1] = 1
             ood_scores *= img_level_confs
         else:
