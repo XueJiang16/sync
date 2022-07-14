@@ -71,7 +71,7 @@ class TxtDataset(OODBaseDataset):
         self.data_ann = data_ann
         self.train_label = train_label
         with open(self.data_ann) as f:
-            samples = [x.strip().rsplit(' ', 1)[0] for x in f.readlines()]
+            samples = [x.strip().rsplit(' ', 1) for x in f.readlines()]
         for filename in samples:
             self.file_list.append(filename)
         self.parse_datainfo()
