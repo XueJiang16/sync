@@ -36,8 +36,8 @@ class Cosine(BaseModule):
 
     def forward(self, **input):
         with torch.no_grad():
-            outputs = self.classifier(return_loss=False, softmax=False, post_process=False, **input)
-            # outputs = torch.rand((256, 1000), dtype=torch.float32).to("cuda:{}".format(self.local_rank))
+            # outputs = self.classifier(return_loss=False, softmax=False, post_process=False, **input)
+            outputs = torch.rand((256, 1000), dtype=torch.float32).to("cuda:{}".format(self.local_rank))
             softmax_output = self.criterion(outputs)
             targets = self.target
             sim = -softmax_output * targets
