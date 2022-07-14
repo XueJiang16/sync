@@ -7,12 +7,13 @@ if custom_name is not None:
 else:
     readable_name ='{}_{}_{}'.format(method_name, model_name, train_dataset)
 quick_test = False
+training_file = '/data/csxjiang/meta/train_LT_a8.txt'
 model = dict(
     type=method_name,
     debug_mode=True,
     num_classes=1000,
     # temperature=1,
-    target_file='/data/csxjiang/meta/train_LT_a8.txt',
+    target_file=training_file,
     classifier=dict(
         type='ImageClassifier',
         init_cfg=dict(type='Pretrained', checkpoint='/data/csxjiang/ood_ckpt/ckpt/resnet50_LT_a8/epoch_100.pth'),
@@ -31,7 +32,8 @@ model = dict(
             topk=(1, 5))
     )
 )
-pipline =[dict(type='Collect', keys=['img'])]
+# pipline =[dict(type='Collect', keys=['img'])]
+pipline =[dict(type='Collect', keys=['img', 'type'])]
 data = dict(
     samples_per_gpu=256,
     workers_per_gpu=4,
@@ -41,7 +43,8 @@ data = dict(
         path='/data/csxjiang/val',
         data_ann='/data/csxjiang/meta/val_labeled.txt',
         pipeline=pipline,
-        len_limit = 5000 if quick_test else -1,
+        len_limit=5000 if quick_test else -1,
+        train_label=training_file,
     ),
     # id_data=dict(
     #     type='JsonDataset',

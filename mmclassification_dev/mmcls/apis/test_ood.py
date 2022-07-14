@@ -37,6 +37,7 @@ def single_gpu_test_ood(model,
     """
     model.eval()
     results = []
+    class_types = []
     dataset = data_loader.dataset
     rank, world_size = get_dist_info()
     if rank == 0:
@@ -47,10 +48,13 @@ def single_gpu_test_ood(model,
         dist.barrier()
     for i, data in enumerate(data_loader):
         # data['dataset_name'] = name
-        result = model.forward(**data)
+        result, class_type = model.forward(**data)
         if len(result.shape) == 0:  # handle the situation of batch = 1
             result = result.unsqueeze(0)
+        if len(class_type.shape) == 0:  # handle the situation of batch = 1
+            class_type = class_type.unsqueeze(0)
         results.append(result)
+        class_types.append(class_type)
         if rank == 0:
             batch_size = data['img'].size(0)
             prog += batch_size * world_size
@@ -64,7 +68,8 @@ def single_gpu_test_ood(model,
     if world_size > 1:
         dist.barrier()
     results = torch.cat(results).cpu().numpy()
-    return results
+    class_types = torch.cat(class_types).cpu().numpy()
+    return results, class_types
 
 def ssim_test(img, img_metas=None, **kwargs):
     crop_size = 120

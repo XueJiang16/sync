@@ -11,6 +11,7 @@ from PIL import Image
 import torchvision as tv
 import os
 import copy
+from collections import Counter
 
 # from .base_dataset import BaseDataset
 from .builder import DATASETS
@@ -39,6 +40,8 @@ class OODBaseDataset(Dataset):
             info = dict(img_prefix=self.data_prefix)
             info['img_info'] = {'filename': sample}
             info['filename'] = sample
+            info['type'] = 3  # no type
+            info['label'] = -1  # no label
             self.data_infos.append(info)
 
     def __len__(self):
@@ -61,16 +64,46 @@ class OODBaseDataset(Dataset):
 
 @DATASETS.register_module()
 class TxtDataset(OODBaseDataset):
-    def __init__(self, name, path, data_ann, pipeline, **kwargs):
+    def __init__(self, name, path, data_ann, pipeline, train_label=None, **kwargs):
         super().__init__(name, pipeline, **kwargs)
         self.data_prefix = path
         # self.file_list = glob.glob(os.path.join(path, '*'))
         self.data_ann = data_ann
+        self.train_label = train_label
         with open(self.data_ann) as f:
             samples = [x.strip().rsplit(' ', 1)[0] for x in f.readlines()]
         for filename in samples:
             self.file_list.append(filename)
         self.parse_datainfo()
+
+    def parse_datainfo(self):
+        random.seed(111)
+        random.shuffle(self.file_list)
+        if self.train_label is not None:
+            train_labels = []
+            with open(self.train_label, 'r') as f:
+                for line in f.readlines():
+                    segs = line.strip().split(' ')
+                    train_labels.append(int(segs[-1]))
+            train_label_index = Counter(train_labels)
+
+        for sample in self.file_list:
+            info = dict(img_prefix=self.data_prefix)
+            info['img_info'] = {'filename': sample[0]}
+            info['filename'] = sample[0]
+            gt_label = int(sample[-1])
+            info['label'] = gt_label
+            if self.train_label is not None:
+                freq = train_label_index[gt_label]
+                if freq > 100:
+                    info['type'] = 0  # head
+                elif freq < 20:
+                    info['type'] = 2  # tail
+                else:
+                    info['type'] = 1  # mid
+            else:
+                info['type'] = 3  # no type
+            self.data_infos.append(info)
 
 @DATASETS.register_module()
 class JsonDataset(OODBaseDataset):

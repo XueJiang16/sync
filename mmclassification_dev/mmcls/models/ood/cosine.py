@@ -35,6 +35,9 @@ class Cosine(BaseModule):
 
 
     def forward(self, **input):
+        if "type" in input:
+            type = input['type']
+            del input['type']
         with torch.no_grad():
             outputs = self.classifier(return_loss=False, softmax=False, post_process=False, **input)
             softmax_output = self.criterion(outputs)
@@ -42,5 +45,5 @@ class Cosine(BaseModule):
             sim = -softmax_output * targets
             sim = sim.sum(1) / (torch.norm(softmax_output, dim=1) * torch.norm(targets, dim=1))
             confs = sim
-        return confs
+        return confs, type
 
