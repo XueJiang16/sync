@@ -33,7 +33,7 @@ model = dict(
 )
 pipline =[dict(type='Collect', keys=['img'])]
 data = dict(
-    samples_per_gpu=32,
+    samples_per_gpu=256,
     workers_per_gpu=4,
     id_data=dict(
         name='ImageNet',
