@@ -1,3 +1,4 @@
+import random
 import warnings
 from typing import Callable, Dict, List, Optional, Sequence, Tuple, Union
 
@@ -29,11 +30,13 @@ class OODBaseDataset(Dataset):
                                     [58.395/255, 57.12/255, 57.375/255]),
         ])
         self.len_limit = len_limit
+        self.data_infos = []
 
     def parse_datainfo(self):
-        self.data_infos = []
+        random.seed(111)
+        random.shuffle(self.file_list)
         for sample in self.file_list:
-            info = {'img_prefix': self.data_prefix}
+            info = dict(img_prefix=self.data_prefix)
             info['img_info'] = {'filename': sample}
             info['filename'] = sample
             self.data_infos.append(info)
@@ -67,7 +70,6 @@ class TxtDataset(OODBaseDataset):
             samples = [x.strip().rsplit(' ', 1)[0] for x in f.readlines()]
         for filename in samples:
             self.file_list.append(filename)
-        self.file_list.sort()
         self.parse_datainfo()
 
 @DATASETS.register_module()
