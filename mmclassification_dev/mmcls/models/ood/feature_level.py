@@ -49,10 +49,13 @@ class PatchSim(BaseModule):
                 crops.append(crop_feature)
             input['img'] = img
             patch_sim = 0
+            count = 0
             for i in range(len(crops)-1):
                 for j in range(i+1, len(crops)):
                     tmp = - (crops[i] * crops[j]).sum(dim=1)
                     tmp = tmp / (torch.norm(crops[i], dim=1) * torch.norm(crops[j], dim=1))
                     patch_sim += tmp
+                    count += 1
+            patch_sim /= count
         return patch_sim, type
 
