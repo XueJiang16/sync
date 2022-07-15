@@ -38,6 +38,9 @@ class GradNorm(BaseModule):
             self.target = torch.ones((1, self.num_classes)).to("cuda:{}".format(self.local_rank))
 
     def forward(self, **input):
+        if "type" in input:
+            type = input['type']
+            del input['type']
         self.classifier.zero_grad()
         img = input['img']
         assert img.shape[0] == 1, "GradNorm backward implementation only supports batch = 1."
@@ -52,7 +55,7 @@ class GradNorm(BaseModule):
         loss.backward()
         layer_grad = self.classifier.head.fc.weight.grad.data
         layer_grad_norm = torch.sum(torch.abs(layer_grad))
-        return layer_grad_norm
+        return layer_grad_norm, type
 
 @OOD.register_module()
 class GradNormBatch(BaseModule):
@@ -92,6 +95,9 @@ class GradNormBatch(BaseModule):
                 dump_path = "results/gradnorm_dump/{}".format(dataset_name)
                 os.makedirs(dump_path, exist_ok=True)
                 del input['dataset_name']
+            if "type" in input:
+                type = input['type']
+                del input['type']
             outputs, features = self.classifier(return_loss=False, softmax=False, post_process=False, **input)
             U = torch.norm(features, p=1, dim=1)
             out_softmax = torch.nn.functional.softmax(outputs, dim=1)
@@ -105,7 +111,7 @@ class GradNormBatch(BaseModule):
                     filename = os.path.splitext(os.path.basename(filename_['filename']))[0] + ".txt"
                     with open(os.path.join(dump_path, filename), mode='w') as f:
                         f.write(str(id_score)+'\n')
-        return S
+        return S, type
 
 @OOD.register_module()
 class GradNormBatchScore(BaseModule):
@@ -152,6 +158,9 @@ class GradNormBatchScore(BaseModule):
 @OOD.register_module()
 class GradNormCos(GradNorm):
     def forward(self, **input):
+        if "type" in input:
+            type = input['type']
+            del input['type']
         self.classifier.zero_grad()
         img = input['img']
         assert img.shape[0] == 1, "GradNorm backward implementation only supports batch = 1."
@@ -168,6 +177,6 @@ class GradNormCos(GradNorm):
         loss.backward()
         layer_grad = self.classifier.head.fc.weight.grad.data
         layer_grad_norm = torch.sum(torch.abs(layer_grad))
-        return layer_grad_norm
+        return layer_grad_norm, type
 
 
