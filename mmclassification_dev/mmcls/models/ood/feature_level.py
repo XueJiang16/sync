@@ -59,14 +59,12 @@ class PatchSim(BaseModule):
                     count += 1
             patch_sim /= count
             patch_sim = (patch_sim + 1) / 2
-            # if self.has_ood_detector:
-            #     ood_scores, _ = self.ood_detector(**input)
-            #     patch_sim = ((1 / self.threshold) ** (1 / self.order)) * torch.pow(patch_sim, self.order)
-            #     patch_sim[patch_sim > 1] = 1
-            #     ood_scores *= patch_sim
-            # else:
-            #     ood_scores = patch_sim
-            # 123
-            ood_scores = patch_sim
+            if self.has_ood_detector:
+                ood_scores, _ = self.ood_detector(**input)
+                patch_sim = ((1 / self.threshold) ** (1 / self.order)) * torch.pow(patch_sim, self.order)
+                patch_sim[patch_sim > 1] = 1
+                ood_scores *= patch_sim
+            else:
+                ood_scores = patch_sim
         return ood_scores, type
 
