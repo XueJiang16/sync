@@ -154,6 +154,7 @@ def main():
         # outputs_id_pre = single_gpu_test_ssim(model, data_loader_id, 'ID')
         in_scores = gather_tensors(outputs_id)
         in_scores = np.concatenate(in_scores, axis=0)
+        np.save('patchsim_imagenet.npy', in_scores)
         type_id = gather_tensors(type_id)
         type_id = np.concatenate(type_id, axis=0)
         if os.environ['LOCAL_RANK'] == '0':
@@ -168,6 +169,7 @@ def main():
             # outputs_ood = single_gpu_test_ssim(model, ood_set, ood_name)
             out_scores = gather_tensors(outputs_ood)
             out_scores = np.concatenate(out_scores, axis=0)
+            np.save('patchsim_{}.npy'.format(ood_name), out_scores)
             if os.environ['LOCAL_RANK'] == '0':
                 print("Average OOD {} score:".format(ood_name), out_scores.mean())
             # out_scores_list.append(out_scores)

@@ -66,5 +66,6 @@ class PatchSim(BaseModule):
                 ood_scores *= patch_sim
             else:
                 ood_scores = patch_sim
+            ood_scores = patch_sim
         return ood_scores, type
 
