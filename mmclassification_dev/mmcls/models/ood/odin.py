@@ -22,6 +22,9 @@ class ODIN(BaseModule):
 
 
     def forward(self, **input):
+        if "type" in input:
+            type = input['type']
+            del input['type']
         x = input['img'].requires_grad_(True)
         self.classifier.zero_grad()
         outputs = self.classifier(return_loss=False, softmax=False, post_process=False, **input)
@@ -48,7 +51,7 @@ class ODIN(BaseModule):
             nnOutputs = torch.exp(nnOutputs) / torch.sum(torch.exp(nnOutputs), dim=1, keepdim=True)
             confs, _ = torch.max(nnOutputs, dim=1)
             confs = confs.detach().clone()
-        return confs
+        return confs, type
 
 @OOD.register_module()
 class ODINCustom(BaseModule):
@@ -79,6 +82,9 @@ class ODINCustom(BaseModule):
             self.target = torch.ones((1, self.num_classes)).to("cuda:{}".format(self.local_rank)) / self.num_classes
 
     def forward(self, **input):
+        if "type" in input:
+            type = input['type']
+            del input['type']
         x = input['img'].requires_grad_(True)
         self.classifier.zero_grad()
         outputs = self.classifier(return_loss=False, softmax=False, post_process=False, **input)
@@ -112,7 +118,7 @@ class ODINCustom(BaseModule):
             nnOutputs = sim * nnOutputs
             confs, _ = torch.max(nnOutputs, dim=1)
             confs = confs.detach().clone()
-        return confs
+        return confs, type
 
 
 

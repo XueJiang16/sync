@@ -17,11 +17,14 @@ class MSP(BaseModule):
         self.classifier.eval()
 
     def forward(self, **input):
+        if "type" in input:
+            type = input['type']
+            del input['type']
         with torch.no_grad():
             outputs = self.classifier(return_loss=False, softmax=False, post_process=False, **input)
             out_softmax = torch.nn.functional.softmax(outputs, dim=1)
             confs, _ = torch.max(out_softmax, dim=-1)
-        return confs
+        return confs, type
 
 @OOD.register_module()
 class MSPCustom(BaseModule):
@@ -50,13 +53,16 @@ class MSPCustom(BaseModule):
             self.target = torch.ones((1, self.num_classes)).to("cuda:{}".format(self.local_rank)) / self.num_classes
 
     def forward(self, **input):
+        if "type" in input:
+            type = input['type']
+            del input['type']
         with torch.no_grad():
             outputs, features = self.classifier(return_loss=False, softmax=False, post_process=False, **input)
             out_softmax = torch.nn.functional.softmax(outputs, dim=1)
             targets = self.target
             confs = out_softmax - targets
             confs, _ = torch.max(confs, dim=-1)
-        return confs
+        return confs, type
 
 
 

@@ -29,6 +29,9 @@ class MeanStdDetector(BaseModule):
         self.order = order
 
     def forward(self, **input):
+        if "type" in input:
+            type = input['type']
+            del input['type']
         with torch.no_grad():
             img = input['img']
             crop_size = self.crop_size
@@ -56,5 +59,5 @@ class MeanStdDetector(BaseModule):
             ood_scores *= img_level_confs
         else:
             ood_scores = img_level_confs
-        return ood_scores
+        return ood_scores, type
 
