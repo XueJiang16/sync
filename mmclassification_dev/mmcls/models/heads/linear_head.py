@@ -42,7 +42,7 @@ class LinearClsHead(ClsHead):
             x = x[-1]
         return x
 
-    def simple_test(self, x, softmax=True, post_process=True):
+    def simple_test(self, x, softmax=True, post_process=True, require_features=False):
         """Inference without augmentation.
 
         Args:
@@ -77,7 +77,7 @@ class LinearClsHead(ClsHead):
         if post_process:
             return self.post_process(pred)
         else:
-            if self.require_features:
+            if self.require_features or require_features:
                 return pred, f
             else:
                 return pred

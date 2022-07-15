@@ -140,7 +140,7 @@ class ImageClassifier(BaseClassifier):
 
         return losses
 
-    def simple_test(self, img, img_metas=None, **kwargs):
+    def simple_test(self, img, img_metas=None, require_features=False,**kwargs):
         """Test without augmentation."""
         x = self.extract_feat(img)
 
@@ -148,6 +148,5 @@ class ImageClassifier(BaseClassifier):
             assert 'softmax' not in kwargs, (
                 'Please use `sigmoid` instead of `softmax` '
                 'in multi-label tasks.')
-        res = self.head.simple_test(x, **kwargs)
-
+        res = self.head.simple_test(x, require_features=require_features, **kwargs)
         return res
