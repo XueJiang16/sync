@@ -57,12 +57,12 @@ class PatchSim(BaseModule):
                     if self.mode == 'cosine':
                         tmp = - (crops[i] * crops[j]).sum(dim=1)
                         tmp = tmp / (torch.norm(crops[i], dim=1) * torch.norm(crops[j], dim=1))
+                        tmp = (tmp + 1) / 2
                     elif self.mode == 'euclidean':
                         tmp = torch.norm(crops[i]-crops[j], dim=1)
                     patch_sim += tmp
                     count += 1
             patch_sim /= count
-            patch_sim = (patch_sim + 1) / 2
             ood_scores = patch_sim
             # if self.has_ood_detector:
             #     ood_scores, _ = self.ood_detector(**input)
