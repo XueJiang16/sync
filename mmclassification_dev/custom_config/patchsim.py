@@ -9,7 +9,7 @@ else:
 quick_test = True
 model = dict(
     type = method_name,
-    num_crop = 2,
+    num_crop = 4,
     img_size = 480,
     threshold = 19,
     order = 1,
