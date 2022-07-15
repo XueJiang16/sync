@@ -48,6 +48,7 @@ class PatchSim(BaseModule):
                                                                post_process=False, require_features=True, **input)
                 crops.append(crop_feature)
             input['img'] = img
+            input['type'] = type
             patch_sim = 0
             count = 0
             for i in range(len(crops)-1):
