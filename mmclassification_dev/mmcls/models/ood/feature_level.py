@@ -50,6 +50,8 @@ class PatchSim(BaseModule):
             patch_sim = 0
             for i in range(len(crops)-1):
                 for j in range(i+1, len(crops)):
-                    patch_sim += - crops[i] * crops[j] / (torch.norm(crops[i], dim=1) * torch.norm(crops[j], dim=1))
+                    tmp = - (crops[i] * crops[j]).sum(dim=1)
+                    tmp = tmp / (torch.norm(crops[i], dim=1) * torch.norm(crops[j], dim=1))
+                    patch_sim += tmp
         return patch_sim, type
 
