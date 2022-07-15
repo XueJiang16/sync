@@ -9,9 +9,9 @@ else:
 quick_test = True
 model = dict(
     type = method_name,
-    num_crop = 3,
+    num_crop = 2,
     img_size = 480,
-    threshold = 17,
+    threshold = 19,
     order = 1,
     mode = 'euclidean',
     ood_detector = dict(
