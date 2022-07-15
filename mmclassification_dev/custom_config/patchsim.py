@@ -13,6 +13,7 @@ model = dict(
     img_size = 480,
     threshold = 0.135,
     order = 0.5,
+    mode = 'euclidean',
     ood_detector = dict(
         type='GradNormBatch',
         debug_mode=False,

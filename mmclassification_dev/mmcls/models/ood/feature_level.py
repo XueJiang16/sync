@@ -13,7 +13,7 @@ def no_ood_detector(**kwargs):
 
 @OOD.register_module()
 class PatchSim(BaseModule):
-    def __init__(self, num_crop, img_size, threshold, order=1, ood_detector=None, **kwargs):
+    def __init__(self, num_crop, img_size, threshold, order=1, ood_detector=None, mode='cosine',**kwargs):
         super(PatchSim, self).__init__()
         self.local_rank = os.environ['LOCAL_RANK']
         self.has_ood_detector = True if ood_detector else False
@@ -25,6 +25,7 @@ class PatchSim(BaseModule):
         self.img_size = img_size
         self.threshold = threshold
         self.order = order
+        self.mode = mode
 
 
     def forward(self, **input):
@@ -53,8 +54,11 @@ class PatchSim(BaseModule):
             count = 0
             for i in range(len(crops)-1):
                 for j in range(i+1, len(crops)):
-                    tmp = - (crops[i] * crops[j]).sum(dim=1)
-                    tmp = tmp / (torch.norm(crops[i], dim=1) * torch.norm(crops[j], dim=1))
+                    if self.mode == 'cosine':
+                        tmp = - (crops[i] * crops[j]).sum(dim=1)
+                        tmp = tmp / (torch.norm(crops[i], dim=1) * torch.norm(crops[j], dim=1))
+                    elif self.mode == 'euclidean':
+                        tmp = torch.norm(crops[i]-crops[j], dim=1)
                     patch_sim += tmp
                     count += 1
             patch_sim /= count
