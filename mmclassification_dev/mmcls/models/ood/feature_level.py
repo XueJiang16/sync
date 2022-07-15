@@ -31,6 +31,7 @@ class PatchSim(BaseModule):
         if "type" in input:
             type = input['type']
             del input['type']
+
         with torch.no_grad():
             img = input['img']
             img_size = self.img_size
