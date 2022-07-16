@@ -143,7 +143,7 @@ class ImageClassifier(BaseClassifier):
     def simple_test(self, img, img_metas=None, require_features=False, require_backbone_features=False, **kwargs):
         """Test without augmentation."""
         if require_backbone_features:
-            x_ = self.extract_feat(img, stage='backbone')[-1].clone.detach()
+            x_ = self.extract_feat(img, stage='backbone')[-1].detach().clone()
         x = self.extract_feat(img)
 
 
