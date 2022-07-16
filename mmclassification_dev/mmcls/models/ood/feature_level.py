@@ -73,3 +73,55 @@ class PatchSim(BaseModule):
                 ood_scores = patch_sim
         return ood_scores, type
 
+
+@OOD.register_module()
+class FeatureMapSim(BaseModule):
+    def __init__(self, num_crop, img_size, threshold, order=1, ood_detector=None, mode='cosine',**kwargs):
+        super(FeatureMapSim, self).__init__()
+        self.local_rank = os.environ['LOCAL_RANK']
+        self.has_ood_detector = True if ood_detector else False
+        if self.has_ood_detector:
+            self.ood_detector = build_ood_model(ood_detector)
+        else:
+            self.ood_detector = no_ood_detector
+        self.num_crop = num_crop
+        self.img_size = img_size
+        self.threshold = threshold
+        self.order = order
+        self.mode = mode
+
+
+    def forward(self, **input):
+        if "type" in input:
+            type = input['type']
+            del input['type']
+
+        with torch.no_grad():
+            _, feature_c5 = self.ood_detector.classifier(return_loss=False, softmax=False, post_process=False,
+                                                         require_backbone_features=True, **input)
+            feature_crops = torch.nn.functional.interpolate(feature_c5, size=self.num_crop, mode='bilinear')
+            feature_crops = feature_crops.flatten(dim=2)
+            input['type'] = type
+            patch_sim = 0
+            count = 0
+            for i in range(self.num_crop**2-1):
+                for j in range(i+1, self.num_crop**2):
+                    if self.mode == 'cosine':
+                        tmp = - (feature_crops[:, :, i] * feature_crops[:, :, j]).sum(dim=1)
+                        tmp = tmp / (torch.norm(feature_crops[:, :, i], dim=1) *
+                                     torch.norm(feature_crops[:, :, j], dim=1))
+                        tmp = (tmp + 1) / 2
+                    elif self.mode == 'euclidean':
+                        tmp = torch.norm(feature_crops[:, :, i]-feature_crops[:, :, j], dim=1)
+                    patch_sim += tmp
+                    count += 1
+            patch_sim /= count
+            ood_scores = patch_sim
+            # if self.has_ood_detector:
+            #     ood_scores, _ = self.ood_detector(**input)
+            #     patch_sim = ((1 / self.threshold) ** (self.order)) * torch.pow(patch_sim, self.order)
+            #     patch_sim[patch_sim > 1] = 1
+            #     ood_scores *= patch_sim
+            # else:
+            #     ood_scores = patch_sim
+        return ood_scores, type

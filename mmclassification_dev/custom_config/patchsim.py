@@ -1,7 +1,7 @@
-method_name = 'PatchSim'
+method_name = 'FeatureMapSim'
 model_name = 'resnet50'
 train_dataset = 'LT_a8'
-custom_name = 'GradNormBatch_1order'
+custom_name = 'GradNormBatch'
 if custom_name is not None:
     readable_name = '{}_{}_{}_{}'.format(method_name, model_name, train_dataset, custom_name)
 else:
@@ -9,7 +9,7 @@ else:
 quick_test = True
 model = dict(
     type = method_name,
-    num_crop = 4,
+    num_crop = 3,
     img_size = 480,
     threshold = 19,
     order = 1,

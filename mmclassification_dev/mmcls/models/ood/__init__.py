@@ -4,9 +4,9 @@ from .odin import ODIN, ODINCustom
 from .energy import Energy, EnergyCustom
 from .cosine import Cosine
 from .image_level import MeanStdDetector
-from .feature_level import PatchSim
+from .feature_level import PatchSim, FeatureMapSim
 
 __all__ = [
-    'GradNorm', 'GradNormBatch', 'GradNormBatchScore', 'MSP', 'MSPCustom', 'PatchSim',
+    'GradNorm', 'GradNormBatch', 'GradNormBatchScore', 'MSP', 'MSPCustom', 'PatchSim', 'FeatureMapSim',
     'GradNormCos', 'ODIN', 'ODINCustom', 'Energy', 'EnergyCustom', 'Cosine', 'MeanStdDetector'
 ]
