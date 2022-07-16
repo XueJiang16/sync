@@ -119,6 +119,7 @@ class FeatureMapSim(BaseModule):
                 patch_sim /= count
                 # ood_scores = patch_sim
             elif self.mode == 'std':
+                feature_c5 = feature_c5[:,:,3:12,3:12]
                 feature_crops = feature_c5.flatten(2)
                 patch_sim = feature_crops.std(-1).mean(-1)
             if self.has_ood_detector:
