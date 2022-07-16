@@ -99,24 +99,28 @@ class FeatureMapSim(BaseModule):
         with torch.no_grad():
             _, feature_c5 = self.ood_detector.classifier(return_loss=False, softmax=False, post_process=False,
                                                          require_backbone_features=True, **input)
-            feature_crops = torch.nn.functional.interpolate(feature_c5, size=self.num_crop, mode='bilinear')
-            feature_crops = feature_crops.flatten(2)
-            input['type'] = type
-            patch_sim = 0
-            count = 0
-            for i in range(self.num_crop**2-1):
-                for j in range(i+1, self.num_crop**2):
-                    if self.mode == 'cosine':
-                        tmp = - (feature_crops[:, :, i] * feature_crops[:, :, j]).sum(dim=1)
-                        tmp = tmp / (torch.norm(feature_crops[:, :, i], dim=1) *
-                                     torch.norm(feature_crops[:, :, j], dim=1))
-                        tmp = (tmp + 1) / 2
-                    elif self.mode == 'euclidean':
-                        tmp = torch.norm(feature_crops[:, :, i]-feature_crops[:, :, j], dim=1)
-                    patch_sim += tmp
-                    count += 1
-            patch_sim /= count
-            ood_scores = patch_sim
+            if self.mode != 'std':
+                feature_crops = torch.nn.functional.interpolate(feature_c5, size=self.num_crop, mode='bilinear')
+                feature_crops = feature_crops.flatten(2)
+                input['type'] = type
+                patch_sim = 0
+                count = 0
+                for i in range(self.num_crop**2-1):
+                    for j in range(i+1, self.num_crop**2):
+                        if self.mode == 'cosine':
+                            tmp = - (feature_crops[:, :, i] * feature_crops[:, :, j]).sum(dim=1)
+                            tmp = tmp / (torch.norm(feature_crops[:, :, i], dim=1) *
+                                         torch.norm(feature_crops[:, :, j], dim=1))
+                            tmp = (tmp + 1) / 2
+                        elif self.mode == 'euclidean':
+                            tmp = torch.norm(feature_crops[:, :, i]-feature_crops[:, :, j], dim=1)
+                        patch_sim += tmp
+                        count += 1
+                patch_sim /= count
+                ood_scores = patch_sim
+            elif self.mode == 'std':
+                feature_crops = feature_c5.flatten(2)
+                ood_scores = feature_crops.std(-1).mean(-1)
             # if self.has_ood_detector:
             #     ood_scores, _ = self.ood_detector(**input)
             #     patch_sim = ((1 / self.threshold) ** (self.order)) * torch.pow(patch_sim, self.order)
