@@ -11,6 +11,7 @@ from mmcls.models import build_classifier, build_ood_model    # noqa
 def no_ood_detector(**kwargs):
     raise RuntimeError("No Feature-level OOD Detector Configured!")
 
+
 @OOD.register_module()
 class PatchSim(BaseModule):
     def __init__(self, num_crop, img_size, threshold, order=1, ood_detector=None, mode='cosine',**kwargs):
@@ -26,7 +27,6 @@ class PatchSim(BaseModule):
         self.threshold = threshold
         self.order = order
         self.mode = mode
-
 
     def forward(self, **input):
         if "type" in input:
@@ -90,7 +90,6 @@ class FeatureMapSim(BaseModule):
         self.order = order
         self.mode = mode
 
-
     def forward(self, **input):
         if "type" in input:
             type = input['type']
@@ -127,12 +126,12 @@ class FeatureMapSim(BaseModule):
                 feature_crops = feature_c5.flatten(2)
                 patch_mean = feature_crops.mean(-1).unsqueeze(-1)  # (N, C, H*W) -> (N, C)
                 patch_sim = torch.abs(feature_crops - patch_mean).mean(dim=(-1, -2))
+            # ood_scores = patch_sim
+        if self.has_ood_detector:
+            ood_scores, _ = self.ood_detector(**input)
+            patch_sim = ((1 / self.threshold) ** (self.order)) * torch.pow(patch_sim, self.order)
+            patch_sim[patch_sim > 1] = 1
+            ood_scores *= patch_sim
+        else:
             ood_scores = patch_sim
-        # if self.has_ood_detector:
-        #     ood_scores, _ = self.ood_detector(**input)
-        #     patch_sim = ((1 / self.threshold) ** (self.order)) * torch.pow(patch_sim, self.order)
-        #     patch_sim[patch_sim > 1] = 1
-        #     ood_scores *= patch_sim
-        # else:
-        #     ood_scores = patch_sim
         return ood_scores, type
