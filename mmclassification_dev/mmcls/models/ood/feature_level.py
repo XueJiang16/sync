@@ -124,6 +124,7 @@ class FeatureMapSim(BaseModule):
                 patch_sim = feature_crops.std(-1).mean(-1)
             elif self.mode == 'mean':
                 # feature_c5 = feature_c5[:,:,1:6,1:6]
+                print("foo")
                 feature_crops = feature_c5.flatten(2)
                 patch_mean = feature_crops.mean(-1)
                 patch_sim = torch.abs(feature_crops - patch_mean).mean(dim=(-1, -2))
