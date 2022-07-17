@@ -11,7 +11,7 @@ model = dict(
     type = method_name,
     num_crop = 3,
     img_size = 224,
-    threshold = 0.5,
+    threshold = 0.4,
     order = 2,
     mode = 'mean',
     ood_detector = dict(
@@ -19,7 +19,7 @@ model = dict(
         debug_mode=False,
         num_classes=1000,
         # temperature=1,
-        target_file='/data/csxjiang/meta/train_LT_a8.txt',
+        target_file=None,
         classifier=dict(
             type='ImageClassifier',
             init_cfg=dict(type='Pretrained', checkpoint='/data/csxjiang/ood_ckpt/pytorch_official/resnet50_custom.pth'),
