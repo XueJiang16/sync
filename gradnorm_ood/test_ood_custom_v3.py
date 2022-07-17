@@ -114,11 +114,11 @@ def run_eval_custom(model, in_loader, out_loader, logger, args, num_classes):
 
     if args.score == 'MSP':
         logger.info("Processing in-distribution data...")
-        # in_scores, id_labels = iterate_data_msp(in_loader, model)
-        in_scores, id_labels = iterate_data_msp_custom(in_loader, model, target)
+        in_scores, id_labels = iterate_data_msp(in_loader, model)
+        # in_scores, id_labels = iterate_data_msp_custom(in_loader, model, target)
         logger.info("Processing out-of-distribution data...")
-        # out_scores, _ = iterate_data_msp(out_loader, model)
-        out_scores, _ = iterate_data_msp_custom(out_loader, model, target)
+        out_scores, _ = iterate_data_msp(out_loader, model)
+        # out_scores, _ = iterate_data_msp_custom(out_loader, model, target)
     elif args.score == 'ODIN':
         logger.info("Processing in-distribution data...")
         in_scores, id_labels = iterate_data_odin(in_loader, model, args.epsilon_odin, args.temperature_odin)
@@ -251,73 +251,73 @@ def run_eval_custom(model, in_loader, out_loader, logger, args, num_classes):
         auroc, aupr_in, aupr_out, fpr95 = get_measures(in_examples, out_examples)
 
         #head-tail eval
-        head_examples = []
-        mid_examples = []
-        tail_examples = []
-        head_cls = []
-        mid_cls = []
-        tail_cls = []
-        for i in range(in_examples.shape[0]):
-            if id_cls[i] >= 100:
-                head_examples.append(in_examples[i])
-                head_cls.append(id_cls[i])
-            elif 20 < id_cls[i] < 100:
-                mid_examples.append(in_examples[i])
-                mid_cls.append(id_cls[i])
-            elif 0 <= id_cls[i] <= 20:
-                tail_examples.append(in_examples[i])
-                tail_cls.append(id_cls[i])
-            else:
-                raise ValueError("Unknown id class type {}".format(id_cls[i]))
-        out_examples = out_examples.tolist()
-        random.shuffle(out_examples)
-        auroc_head, aupr_in_head, aupr_out_head, fpr95_head = [0,0,0,0]
-        if len(head_examples) > 0:
-            head_examples = np.stack(head_examples,axis=0)
-            head_ratio = int(head_examples.shape[0] / in_examples.shape[0] * len(out_examples))
-            head_out_examples = np.array(out_examples[0:head_ratio])
-            # plt.figure(2)
-            # plt.scatter(head_examples, head_cls)
-            # plt.savefig('./test_head_{}.jpg'.format(a))
-            auroc_head, aupr_in_head, aupr_out_head, fpr95_head = get_measures(head_examples, head_out_examples)
-            # head_examples_ = head_examples>thr
-            # head_acc = np.sum(head_examples_)/len(head_examples_)
-
-        auroc_mid, aupr_in_mid, aupr_out_mid, fpr95_mid = [0,0,0,0]
-        if len(mid_examples) > 0:
-            mid_examples = np.stack(mid_examples,axis=0)
-            mid_ratio = int(mid_examples.shape[0] / in_examples.shape[0] * len(out_examples))
-            mid_out_examples = np.array(out_examples[0:mid_ratio])
-            # plt.figure(3)
-            # plt.scatter(mid_examples, mid_cls)
-            # plt.savefig('./test_mid_{}.jpg'.format(a))
-            auroc_mid, aupr_in_mid, aupr_out_mid, fpr95_mid = get_measures(mid_examples, mid_out_examples)
-            # mid_examples_ = mid_examples > thr
-            # mid_acc = np.sum(mid_examples_) / len(mid_examples_)
-
-        auroc_tail, aupr_in_tail, aupr_out_tail, fpr95_tail=[0,0,0,0]
-        if len(tail_examples) > 0:
-            tail_examples = np.stack(tail_examples,axis=0)
-            tail_ratio = int(tail_examples.shape[0] / in_examples.shape[0] * len(out_examples))
-            tail_out_examples = np.array(out_examples[0:tail_ratio])
-            # plt.figure(4)
-            # plt.scatter(tail_examples, tail_cls)
-            # plt.savefig('./test_tail_{}.jpg'.format(a))
-            auroc_tail, aupr_in_tail, aupr_out_tail, fpr95_tail = get_measures(tail_examples, tail_out_examples)
+        # head_examples = []
+        # mid_examples = []
+        # tail_examples = []
+        # head_cls = []
+        # mid_cls = []
+        # tail_cls = []
+        # for i in range(in_examples.shape[0]):
+        #     if id_cls[i] >= 100:
+        #         head_examples.append(in_examples[i])
+        #         head_cls.append(id_cls[i])
+        #     elif 20 < id_cls[i] < 100:
+        #         mid_examples.append(in_examples[i])
+        #         mid_cls.append(id_cls[i])
+        #     elif 0 <= id_cls[i] <= 20:
+        #         tail_examples.append(in_examples[i])
+        #         tail_cls.append(id_cls[i])
+        #     else:
+        #         raise ValueError("Unknown id class type {}".format(id_cls[i]))
+        # out_examples = out_examples.tolist()
+        # random.shuffle(out_examples)
+        # auroc_head, aupr_in_head, aupr_out_head, fpr95_head = [0,0,0,0]
+        # if len(head_examples) > 0:
+        #     head_examples = np.stack(head_examples,axis=0)
+        #     head_ratio = int(head_examples.shape[0] / in_examples.shape[0] * len(out_examples))
+        #     head_out_examples = np.array(out_examples[0:head_ratio])
+        #     # plt.figure(2)
+        #     # plt.scatter(head_examples, head_cls)
+        #     # plt.savefig('./test_head_{}.jpg'.format(a))
+        #     auroc_head, aupr_in_head, aupr_out_head, fpr95_head = get_measures(head_examples, head_out_examples)
+        #     # head_examples_ = head_examples>thr
+        #     # head_acc = np.sum(head_examples_)/len(head_examples_)
+        #
+        # auroc_mid, aupr_in_mid, aupr_out_mid, fpr95_mid = [0,0,0,0]
+        # if len(mid_examples) > 0:
+        #     mid_examples = np.stack(mid_examples,axis=0)
+        #     mid_ratio = int(mid_examples.shape[0] / in_examples.shape[0] * len(out_examples))
+        #     mid_out_examples = np.array(out_examples[0:mid_ratio])
+        #     # plt.figure(3)
+        #     # plt.scatter(mid_examples, mid_cls)
+        #     # plt.savefig('./test_mid_{}.jpg'.format(a))
+        #     auroc_mid, aupr_in_mid, aupr_out_mid, fpr95_mid = get_measures(mid_examples, mid_out_examples)
+        #     # mid_examples_ = mid_examples > thr
+        #     # mid_acc = np.sum(mid_examples_) / len(mid_examples_)
+        #
+        # auroc_tail, aupr_in_tail, aupr_out_tail, fpr95_tail=[0,0,0,0]
+        # if len(tail_examples) > 0:
+        #     tail_examples = np.stack(tail_examples,axis=0)
+        #     tail_ratio = int(tail_examples.shape[0] / in_examples.shape[0] * len(out_examples))
+        #     tail_out_examples = np.array(out_examples[0:tail_ratio])
+        #     # plt.figure(4)
+        #     # plt.scatter(tail_examples, tail_cls)
+        #     # plt.savefig('./test_tail_{}.jpg'.format(a))
+        #     auroc_tail, aupr_in_tail, aupr_out_tail, fpr95_tail = get_measures(tail_examples, tail_out_examples)
             # tail_examples_ = tail_examples > thr
             # tail_acc = np.sum(tail_examples_) / len(tail_examples_)
         # in_examples_ = in_examples > thr
         # overall_acc = np.sum(in_examples_) / len(in_examples_)
         # correct_sample = id_cls[in_examples_].astype('int')
         # print(error_sample)
-        ood_data = args.out_datadir.split('/')[-1]
-        s_path = 'dis_file/others/{}/{}/'.format(args.score, ood_data)
-        os.makedirs(s_path, exist_ok=True)
-        np.save(s_path +'id_rw.npy', in_examples)
-        np.save(s_path +'head_rw.npy', head_examples)
-        np.save(s_path +'mid_rw.npy', mid_examples)
-        np.save(s_path +'tail_rw.npy', tail_examples)
-        np.save(s_path +'ood_rw.npy', out_examples)
+        # ood_data = args.out_datadir.split('/')[-1]
+        # s_path = 'dis_file/others/{}/{}/'.format(args.score, ood_data)
+        # os.makedirs(s_path, exist_ok=True)
+        # np.save(s_path +'id_rw.npy', in_examples)
+        # np.save(s_path +'head_rw.npy', head_examples)
+        # np.save(s_path +'mid_rw.npy', mid_examples)
+        # np.save(s_path +'tail_rw.npy', tail_examples)
+        # np.save(s_path +'ood_rw.npy', out_examples)
 
         # res = Counter(correct_sample)
         # info=dict()
@@ -340,24 +340,24 @@ def run_eval_custom(model, in_loader, out_loader, logger, args, num_classes):
         logger.info('AUPR (Out): {}'.format(aupr_out))
         logger.info('FPR95: {}'.format(fpr95))
         logger.info('quick data: {},{},{},{}'.format(auroc,aupr_in,aupr_out,fpr95))
-        logger.info('============Head Results for {}============'.format(args.score))
-        logger.info('AUROC: {}'.format(auroc_head))
-        logger.info('AUPR (In): {}'.format(aupr_in_head))
-        logger.info('AUPR (Out): {}'.format(aupr_out_head))
-        logger.info('FPR95: {}'.format(fpr95_head))
-        logger.info('quick data: {},{},{},{}'.format(auroc_head,aupr_in_head,aupr_out_head,fpr95_head))
-        logger.info('============Mid Results for {}============'.format(args.score))
-        logger.info('AUROC: {}'.format(auroc_mid))
-        logger.info('AUPR (In): {}'.format(aupr_in_mid))
-        logger.info('AUPR (Out): {}'.format(aupr_out_mid))
-        logger.info('FPR95: {}'.format(fpr95_mid))
-        logger.info('quick data: {},{},{},{}'.format(auroc_mid,aupr_in_mid,aupr_out_mid,fpr95_mid))
-        logger.info('============Tail Results for {}============'.format(args.score))
-        logger.info('AUROC: {}'.format(auroc_tail))
-        logger.info('AUPR (In): {}'.format(aupr_in_tail))
-        logger.info('AUPR (Out): {}'.format(aupr_out_tail))
-        logger.info('FPR95: {}'.format(fpr95_tail))
-        logger.info('quick data: {},{},{},{}'.format(auroc_tail,aupr_in_tail,aupr_out_tail,fpr95_tail))
+        # logger.info('============Head Results for {}============'.format(args.score))
+        # logger.info('AUROC: {}'.format(auroc_head))
+        # logger.info('AUPR (In): {}'.format(aupr_in_head))
+        # logger.info('AUPR (Out): {}'.format(aupr_out_head))
+        # logger.info('FPR95: {}'.format(fpr95_head))
+        # logger.info('quick data: {},{},{},{}'.format(auroc_head,aupr_in_head,aupr_out_head,fpr95_head))
+        # logger.info('============Mid Results for {}============'.format(args.score))
+        # logger.info('AUROC: {}'.format(auroc_mid))
+        # logger.info('AUPR (In): {}'.format(aupr_in_mid))
+        # logger.info('AUPR (Out): {}'.format(aupr_out_mid))
+        # logger.info('FPR95: {}'.format(fpr95_mid))
+        # logger.info('quick data: {},{},{},{}'.format(auroc_mid,aupr_in_mid,aupr_out_mid,fpr95_mid))
+        # logger.info('============Tail Results for {}============'.format(args.score))
+        # logger.info('AUROC: {}'.format(auroc_tail))
+        # logger.info('AUPR (In): {}'.format(aupr_in_tail))
+        # logger.info('AUPR (Out): {}'.format(aupr_out_tail))
+        # logger.info('FPR95: {}'.format(fpr95_tail))
+        # logger.info('quick data: {},{},{},{}'.format(auroc_tail,aupr_in_tail,aupr_out_tail,fpr95_tail))
         logger.flush()
 
 

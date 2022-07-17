@@ -1,5 +1,5 @@
 # list_method=( 'MSP' 'ODIN' 'Energy' 'new' 'GradNorm')
-list_method=('new')
+list_method=('MSP')
 
 list_dataset=('SUN' 'Places' 'Textures' 'iNaturalist')
 # list_dataset=('Textures')
@@ -10,8 +10,8 @@ for dataset in ${list_dataset[*]}
 do
 # for i in {1,2,3,4,5,6,7,8,9,10}
 # do
-./custom_test_v3.sh $method $dataset /mapai/haowenguo/ckpt/ood_ckpt/LT_a8/epoch_100.pth \
-    checkpoint0524/resnet101/LT_a8/ /mapai/haowenguo/ILSVRC/Data/CLS-LOC/meta/train_LT_a8.txt 8 \
+./custom_test_v3.sh $method $dataset /data/csxjiang/ood_ckpt/pytorch_official/resnet50_custom.pth \
+    checkpoint_balanced/resnet101/ /data/csxjiang/meta/train_labeled.txt 0
 # ./custom_test_v4.sh $method $dataset /mapai/haowenguo/ckpt/ood_ckpt/ckpt/inat/epoch_90.pth \
 #     checkpoint0524/inat_res101_90/$method /mapai/haowenguo/data/ood_data/inat/train2018.json 0 
 # ./custom_test_v4.sh $method $dataset /mapai/haowenguo/ckpt/ood_ckpt/ckpt/inat/epoch_95.pth \
