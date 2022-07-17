@@ -119,14 +119,15 @@ class FeatureMapSim(BaseModule):
                 patch_sim /= count
                 # ood_scores = patch_sim
             elif self.mode == 'std':
-                feature_c5 = feature_c5[:,:,3:12,3:12]
+                # feature_c5 = feature_c5[:,:,1:6,1:6]
                 feature_crops = feature_c5.flatten(2)
                 patch_sim = feature_crops.std(-1).mean(-1)
-            if self.has_ood_detector:
-                ood_scores, _ = self.ood_detector(**input)
-                patch_sim = ((1 / self.threshold) ** (self.order)) * torch.pow(patch_sim, self.order)
-                patch_sim[patch_sim > 1] = 1
-                ood_scores *= patch_sim
-            else:
-                ood_scores = patch_sim
+            ood_scores = patch_sim
+            # if self.has_ood_detector:
+            #     ood_scores, _ = self.ood_detector(**input)
+            #     patch_sim = ((1 / self.threshold) ** (self.order)) * torch.pow(patch_sim, self.order)
+            #     patch_sim[patch_sim > 1] = 1
+            #     ood_scores *= patch_sim
+            # else:
+            #     ood_scores = patch_sim
         return ood_scores, type

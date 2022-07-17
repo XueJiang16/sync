@@ -10,7 +10,7 @@ quick_test = True
 model = dict(
     type = method_name,
     num_crop = 3,
-    img_size = 480,
+    img_size = 224,
     threshold = 0.5,
     order = 2,
     mode = 'std',
@@ -22,7 +22,7 @@ model = dict(
         target_file='/data/csxjiang/meta/train_LT_a8.txt',
         classifier=dict(
             type='ImageClassifier',
-            init_cfg=dict(type='Pretrained', checkpoint='/data/csxjiang/ood_ckpt/ckpt/resnet50_LT_a8/epoch_100.pth'),
+            init_cfg=dict(type='Pretrained', checkpoint='/data/csxjiang/ood_ckpt/pytorch_official/resnet50_custom.pth'),
             backbone=dict(
                 type='ResNet',
                 depth=50,
@@ -36,7 +36,7 @@ model = dict(
                 in_channels=2048,
                 loss=dict(type='CrossEntropyLoss', loss_weight=1.0),
                 topk=(1, 5))
-    )
+)
     )
 )
 pipline =[dict(type='Collect', keys=['img', 'type'])]
