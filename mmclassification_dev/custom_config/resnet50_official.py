@@ -16,7 +16,7 @@ model = dict(
     # target_file='/data/csxjiang/meta/train_LT_a8.txt',
     classifier=dict(
         type='ImageClassifier',
-        init_cfg=dict(type='Pretrained', checkpoint='/data/csxjiang/ood_ckpt/mmcls_offical/resnet50_8xb32_in1k_20210831-ea4938fc.pth'),
+        init_cfg=dict(type='Pretrained', checkpoint='/data/csxjiang/ood_ckpt/pytorch_official/resnet50-19c8e357.pth'),
         backbone=dict(
             type='ResNet',
             depth=50,
