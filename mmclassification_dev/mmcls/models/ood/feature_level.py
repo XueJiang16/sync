@@ -127,12 +127,12 @@ class FeatureMapSim(BaseModule):
                 feature_crops = feature_c5.flatten(2)
                 patch_mean = feature_crops.mean(-1).unsqueeze(-1)  # (N, C, H*W) -> (N, C)
                 patch_sim = torch.abs(feature_crops - patch_mean).mean(dim=(-1, -2))
-            # ood_scores = patch_sim
-        if self.has_ood_detector:
-            ood_scores, _ = self.ood_detector(**input)
-            patch_sim = ((1 / self.threshold) ** (self.order)) * torch.pow(patch_sim, self.order)
-            patch_sim[patch_sim > 1] = 1
-            ood_scores *= patch_sim
-        else:
             ood_scores = patch_sim
+        # if self.has_ood_detector:
+        #     ood_scores, _ = self.ood_detector(**input)
+        #     patch_sim = ((1 / self.threshold) ** (self.order)) * torch.pow(patch_sim, self.order)
+        #     patch_sim[patch_sim > 1] = 1
+        #     ood_scores *= patch_sim
+        # else:
+        #     ood_scores = patch_sim
         return ood_scores, type
