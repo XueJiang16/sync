@@ -100,7 +100,7 @@ class FeatureMapSim(BaseModule):
             _, feature_c5 = self.ood_detector.classifier(return_loss=False, softmax=False, post_process=False,
                                                          require_backbone_features=True, **input)
             input['type'] = type
-            if self.mode != 'std':
+            if self.mode in ['cosine', 'euclidean']:
                 feature_crops = torch.nn.functional.interpolate(feature_c5, size=self.num_crop, mode='bilinear')
                 feature_crops = feature_crops.flatten(2)
                 patch_sim = 0
@@ -124,7 +124,6 @@ class FeatureMapSim(BaseModule):
                 patch_sim = feature_crops.std(-1).mean(-1)
             elif self.mode == 'mean':
                 # feature_c5 = feature_c5[:,:,1:6,1:6]
-                print("foo")
                 feature_crops = feature_c5.flatten(2)
                 patch_mean = feature_crops.mean(-1)
                 patch_sim = torch.abs(feature_crops - patch_mean).mean(dim=(-1, -2))
