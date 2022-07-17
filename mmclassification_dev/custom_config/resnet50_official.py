@@ -1,4 +1,4 @@
-method_name = 'Energy'
+method_name = 'MSP'
 model_name = 'resnet50'
 train_dataset = 'Balance'
 custom_name = "Official"
@@ -6,7 +6,7 @@ if custom_name is not None:
     readable_name = '{}_{}_{}_{}'.format(method_name, model_name, train_dataset, custom_name)
 else:
     readable_name ='{}_{}_{}'.format(method_name, model_name, train_dataset)
-quick_test = False
+quick_test = True
 # training_file = '/data/csxjiang/meta/train_labeled.txt'
 model = dict(
     type=method_name,
