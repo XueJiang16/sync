@@ -44,8 +44,8 @@ data = dict(
         pipeline=pipline),
     ood_data=[
         dict(
-            name='NoiseUniform',
-            type='NoiseDatasetUniform',
+            name='NoiseColorBand',
+            type='NoiseDatasetColorBand',
             length=10000,
             img_size=224,
             pipeline=pipline),
