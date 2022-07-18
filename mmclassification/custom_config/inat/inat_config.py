@@ -21,7 +21,7 @@ data = dict(
     workers_per_gpu=2,
     train=dict(
         type='INaturalist',
-        data_prefix='/data/csxjiang/train_val2018',
+        data_prefix='/data/csxjiang/',
         ann_file=
         '/data/csxjiang/ood_data/inat/train2018.json',
         pipeline=[
@@ -39,7 +39,7 @@ data = dict(
         ]),
     val=dict(
         type='INaturalist',
-        data_prefix='/data/csxjiang/train_val2018',
+        data_prefix='/data/csxjiang/',
         ann_file=
         '/data/csxjiang/ood_data/inat/val2018.json',
         pipeline=[
@@ -56,7 +56,7 @@ data = dict(
         ]),
     test=dict(
         type='INaturalist',
-        data_prefix='/data/csxjiang/train_val2018',
+        data_prefix='/data/csxjiang/',
         ann_file=
         '/data/csxjiang/ood_data/inat/val2018.json',
         pipeline=[
