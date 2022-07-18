@@ -1,4 +1,4 @@
-method_name = 'GradNormBatch'
+method_name = 'Cosine'
 model_name = 'resnet101'
 train_dataset = 'LT_a8'
 custom_name = None
@@ -7,8 +7,8 @@ if custom_name is not None:
 else:
     readable_name ='{}_{}_{}'.format(method_name, model_name, train_dataset)
 quick_test = False
-# training_file = None
-training_file = '/data/csxjiang/meta/train_LT_a8.txt'
+training_file = None
+# training_file = '/data/csxjiang/meta/train_LT_a8.txt'
 model = dict(
     type=method_name,
     num_classes=1000,
