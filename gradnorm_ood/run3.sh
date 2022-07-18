@@ -4,9 +4,9 @@
 
 
 # list_method=( 'MSP' 'ODIN' 'Energy' 'new' 'GradNorm' 'Mahalanobis')
-list_method=('GradNorm')
+list_method=('ODIN')
 
-list_dataset=('SUN' 'Places' 'Textures' 'iNaturalist')
+list_dataset=('iNaturalist' 'SUN' 'Places' 'Textures' )
 # # list_ckpt=('mobile_LT_a8/epoch_600' 'resnet152_LT_a8/epoch_100' 'resnet50_LT_a8/epoch_100')
 for method in ${list_method[*]}
 do
@@ -21,8 +21,8 @@ do
 #     checkpoint0512/inat_res101_plus2/$method /mapai/haowenguo/ILSVRC/Data/CLS-LOC/meta/train_LT_a8.txt 0 \
 #bash ./custom_test_v3_.sh $method $dataset ./ood_ckpt/ckpt/mobile_LT_a8/epoch_600.pth \
 #    test/mobile/$method ./meta/train_LT_a8.txt 8 \
-bash ./custom_test_v3_.sh $method $dataset ./ood_ckpt/ckpt/resnet50_LT_a8/epoch_100.pth \
-    checkpoint0628/res50/$method ./meta/train_LT_a8.txt 8
+bash ./custom_test_v3_.sh $method $dataset /data/csxjiang/ood_ckpt/ood_ckpt_other/LT_a8/epoch_100.pth \
+    checkpoint0718/res101/$method ./meta/train_LT_a8.txt 8
 # done
 done
 done

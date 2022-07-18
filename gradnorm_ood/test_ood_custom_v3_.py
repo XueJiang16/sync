@@ -166,11 +166,11 @@ def run_eval_custom(model, in_loader, out_loader, logger, args, num_classes):
         # out_scores, _ = iterate_data_msp_custom(out_loader, model, target)
     elif args.score == 'ODIN':
         logger.info("Processing in-distribution data...")
-        in_scores, id_labels = iterate_data_odin(in_loader, model, args.epsilon_odin, args.temperature_odin)
-        # in_scores, id_labels = iterate_data_odin_custom(in_loader, model, args.epsilon_odin, args.temperature_odin, target, mode='linear')
+        # in_scores, id_labels = iterate_data_odin(in_loader, model, args.epsilon_odin, args.temperature_odin)
+        in_scores, id_labels = iterate_data_odin_custom(in_loader, model, args.epsilon_odin, args.temperature_odin, target, mode='linear')
         logger.info("Processing out-of-distribution data...")
-        out_scores, _ = iterate_data_odin(out_loader, model, args.epsilon_odin, args.temperature_odin)
-        # out_scores, _ = iterate_data_odin_custom(out_loader, model, args.epsilon_odin, args.temperature_odin, target, mode='linear')
+        # out_scores, _ = iterate_data_odin(out_loader, model, args.epsilon_odin, args.temperature_odin)
+        out_scores, _ = iterate_data_odin_custom(out_loader, model, args.epsilon_odin, args.temperature_odin, target, mode='linear')
     elif args.score == 'Energy':
         logger.info("Processing in-distribution data...")
         # in_scores, id_labels = iterate_data_energy_custom(in_loader, model, args.temperature_energy, target,
