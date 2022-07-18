@@ -1,4 +1,4 @@
-method_name = 'GradNormBatch'
+method_name = 'MSPCustom'
 model_name = 'resnet101'
 train_dataset = 'inat'
 custom_name = None
