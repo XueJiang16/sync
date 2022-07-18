@@ -1,6 +1,6 @@
 method_name = 'GradNormBatch'
 model_name = 'resnet50'
-train_dataset = 'LT_a8'
+train_dataset = 'Balance'
 custom_name = "NoiseUniform"
 if custom_name is not None:
     readable_name = '{}_{}_{}_{}'.format(method_name, model_name, train_dataset, custom_name)
@@ -8,13 +8,13 @@ else:
     readable_name ='{}_{}_{}'.format(method_name, model_name, train_dataset)
 model = dict(
     type=method_name,
-    debug_mode=True,
+    debug_mode=False,
     num_classes=1000,
     temperature=1,
-    target_file='/data/csxjiang/meta/train_LT_a8.txt',
+    # target_file='/data/csxjiang/meta/train_LT_a8.txt',
     classifier=dict(
         type='ImageClassifier',
-        init_cfg=dict(type='Pretrained', checkpoint='/data/csxjiang/ood_ckpt/ckpt/resnet50_LT_a8/epoch_100.pth'),
+        init_cfg=dict(type='Pretrained', checkpoint='/data/csxjiang/ood_ckpt/pytorch_official/resnet50_custom.pth'),
         backbone=dict(
             type='ResNet',
             depth=50,
@@ -31,7 +31,7 @@ model = dict(
     )
 )
 pipline =[
-    dict(type='Collect', keys=['img'])
+    dict(type='Collect', keys=['img', 'type'])
 ]
 data = dict(
     samples_per_gpu=256,
