@@ -1,4 +1,4 @@
-method_name = 'MSP'
+method_name = 'ODIN'
 model_name = 'resnet50'
 train_dataset = 'Balance'
 custom_name = "Official"
