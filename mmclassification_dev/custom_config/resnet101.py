@@ -1,4 +1,4 @@
-method_name = 'ODIN'
+method_name = 'ODINCustom'
 model_name = 'resnet101'
 train_dataset = 'LT_a8'
 custom_name = None
