@@ -31,7 +31,7 @@ model = dict(
     )
 )
 pipline =[
-    dict(type='Collect', keys=['img', 'type'])
+    dict(type='Collect', keys=['img'])
 ]
 data = dict(
     samples_per_gpu=256,
