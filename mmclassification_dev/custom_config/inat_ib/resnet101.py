@@ -1,4 +1,4 @@
-method_name = 'ODIN'
+method_name = 'Energy'
 model_name = 'resnet101'
 train_dataset = 'inat'
 custom_name = None
