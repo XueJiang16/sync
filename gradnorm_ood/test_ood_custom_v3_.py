@@ -174,7 +174,7 @@ def run_eval_custom(model, in_loader, out_loader, logger, args, num_classes):
         logger.info("Processing in-distribution data...")
         in_scores, id_labels = iterate_data_energy_custom(in_loader, model, args.temperature_energy, target,
                                                            mode='linear')
-        in_scores, id_labels = iterate_data_energy(in_loader, model, args.temperature_energy)
+        # in_scores, id_labels = iterate_data_energy(in_loader, model, args.temperature_energy)
         logger.info("Processing out-of-distribution data...")
         out_scores, _ = iterate_data_energy_custom(out_loader, model, args.temperature_energy, target,
                                                    mode='linear')
