@@ -5,7 +5,8 @@ model = dict(
         depth=101,
         num_stages=4,
         out_indices=(3, ),
-        style='pytorch',),
+        style='pytorch',
+    ),
         # init_cfg=dict(type='Pretrained', checkpoint='/mapai/wilberwang/pretrained/resnet/resnet101-5d3b4d8f.pth')),
     neck=dict(type='GlobalAveragePooling'),
     head=dict(
@@ -20,9 +21,9 @@ data = dict(
     workers_per_gpu=2,
     train=dict(
         type='INaturalist',
-        data_prefix='/mapai/haowenguo/data/ood_data/inat',
+        data_prefix='/data/csxjiang/train_val2018',
         ann_file=
-        '/mapai/haowenguo/data/ood_data/inat/train2018.json',
+        '/data/csxjiang/ood_data/inat/train2018.json',
         pipeline=[
             dict(type='LoadImageFromFile'),
             dict(type='RandomResizedCrop', size=224),
@@ -38,9 +39,9 @@ data = dict(
         ]),
     val=dict(
         type='INaturalist',
-        data_prefix='/mapai/haowenguo/data/ood_data/inat',
+        data_prefix='/data/csxjiang/train_val2018',
         ann_file=
-        '/mapai/haowenguo/data/ood_data/inat/val2018.json',
+        '/data/csxjiang/ood_data/inat/val2018.json',
         pipeline=[
             dict(type='LoadImageFromFile'),
             dict(type='Resize', size=(256, -1)),
@@ -55,9 +56,9 @@ data = dict(
         ]),
     test=dict(
         type='INaturalist',
-        data_prefix='/mapai/haowenguo/data/ood_data/inat',
+        data_prefix='/data/csxjiang/train_val2018',
         ann_file=
-        '/mapai/haowenguo/data/ood_data/inat/val2018.json',
+        '/data/csxjiang/ood_data/inat/val2018.json',
         pipeline=[
             dict(type='LoadImageFromFile'),
             dict(type='Resize', size=(256, -1)),
@@ -70,8 +71,8 @@ data = dict(
             dict(type='ImageToTensor', keys=['img']),
             dict(type='Collect', keys=['img'])
         ]))
-evaluation = dict(interval=1, metric='accuracy')
-optimizer = dict(type='SGD', lr=0.1, momentum=0.9, weight_decay=0.0001)
+evaluation = dict(interval=10, metric='accuracy')
+optimizer = dict(type='SGD', lr=0.05, momentum=0.9, weight_decay=0.0001)
 optimizer_config = dict(grad_clip=None)
 lr_config = dict(policy='step', step=[30, 60, 90])
 runner = dict(type='EpochBasedRunner', max_epochs=100)
