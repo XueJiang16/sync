@@ -5,8 +5,8 @@ model = dict(
         depth=101,
         num_stages=4,
         out_indices=(3, ),
-        style='pytorch',
-        init_cfg=dict(type='Pretrained', checkpoint='/mapai/wilberwang/pretrained/resnet/resnet101-5d3b4d8f.pth')),
+        style='pytorch',),
+        # init_cfg=dict(type='Pretrained', checkpoint='/mapai/wilberwang/pretrained/resnet/resnet101-5d3b4d8f.pth')),
     neck=dict(type='GlobalAveragePooling'),
     head=dict(
         type='LinearClsHead',
