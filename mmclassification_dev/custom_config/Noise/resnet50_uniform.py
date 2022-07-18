@@ -47,7 +47,7 @@ data = dict(
             name='NoiseUniform',
             type='NoiseDatasetUniform',
             length=10000,
-            img_size=480,
+            img_size=224,
             pipeline=pipline),
     ],
 
