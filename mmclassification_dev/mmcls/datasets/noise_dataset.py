@@ -19,7 +19,7 @@ from .pipelines import Compose
 
 
 class NoiseDataset(Dataset):
-    def __init__(self, name, pipeline, length, img_size=480):
+    def __init__(self, name, pipeline, length, img_size=224):
         super().__init__()
         self.pipeline = Compose(pipeline)
         self.data_prefix = None
@@ -39,6 +39,7 @@ class NoiseDataset(Dataset):
         for _ in range(self.length):
             info = {'img_prefix': ""}
             info['img_info'] = {'filename': ""}
+            info['type'] = 3 # no type
             self.data_infos.append(info)
 
     def __len__(self):
