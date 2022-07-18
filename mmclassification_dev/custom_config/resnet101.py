@@ -1,4 +1,4 @@
-method_name = 'ODINCustom'
+method_name = 'Energy'
 model_name = 'resnet101'
 train_dataset = 'LT_a8'
 custom_name = None
