@@ -1,12 +1,18 @@
-method_name = 'MSPCustom'
+method_name = 'MSP'
 model_name = 'resnet101'
 train_dataset = 'LT_a8'
-readable_name ='{}_{}_{}'.format(method_name, model_name, train_dataset)
+custom_name = None
+if custom_name is not None:
+    readable_name = '{}_{}_{}_{}'.format(method_name, model_name, train_dataset, custom_name)
+else:
+    readable_name ='{}_{}_{}'.format(method_name, model_name, train_dataset)
+quick_test = False
+training_file = '/data/csxjiang/meta/train_LT_a8.txt'
 model = dict(
     type=method_name,
     num_classes=1000,
-    temperature=1,
-    target_file='/data/csxjiang/meta/train_LT_a8.txt',
+    # temperature=1,
+    target_file=training_file,
     classifier=dict(
         type='ImageClassifier',
         init_cfg=dict(type='Pretrained', checkpoint='/data/csxjiang/ood_ckpt/ood_ckpt_other/LT_a8/epoch_100.pth'),
@@ -25,9 +31,8 @@ model = dict(
             topk=(1, 5))
     )
 )
-pipline =[
-          dict(type='Collect', keys=['img'])
-]
+# pipline =[dict(type='Collect', keys=['img'])]
+pipline =[dict(type='Collect', keys=['img', 'type'])]
 data = dict(
     samples_per_gpu=256,
     workers_per_gpu=4,
@@ -36,7 +41,10 @@ data = dict(
         type='TxtDataset',
         path='/data/csxjiang/val',
         data_ann='/data/csxjiang/meta/val_labeled.txt',
-        pipeline=pipline),
+        pipeline=pipline,
+        len_limit=5000 if quick_test else -1,
+        train_label=training_file,
+    ),
     # id_data=dict(
     #     type='JsonDataset',
     #     path='/data/csxjiang/',
@@ -57,26 +65,34 @@ data = dict(
             name='iNaturalist',
             type='FolderDataset',
             path='/data/csxjiang/ood_data/iNaturalist/images',
-            pipeline=pipline),
+            pipeline=pipline,
+            len_limit=1000 if quick_test else -1,
+        ),
         dict(
             name='SUN',
             type='FolderDataset',
             path='/data/csxjiang/ood_data/SUN/images',
-            pipeline=pipline),
+            pipeline=pipline,
+            len_limit=1000 if quick_test else -1,
+        ),
         dict(
             name='Places',
             type='FolderDataset',
             path='/data/csxjiang/ood_data/Places/images',
-            pipeline=pipline),
+            pipeline=pipline,
+            len_limit=1000 if quick_test else -1,
+        ),
         dict(
             name='Textures',
             type='FolderDataset',
             path='/data/csxjiang/ood_data/Textures/dtd/images_collate',
-            pipeline=pipline),
+            pipeline=pipline,
+            len_limit=1000 if quick_test else -1,
+        ),
     ],
 
 )
 dist_params = dict(backend='nccl')
 log_level = 'CRITICAL'
 # log_level = 'INFO'
-work_dir = './results/'
+work_dir = './results/reproduce'
