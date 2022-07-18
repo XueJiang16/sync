@@ -41,11 +41,10 @@ class IDDataset(torch.utils.data.Dataset):
             self.file_list.append(os.path.join(path, filename))
             self.label_list.append(int(gt_label))
         self.file_list.sort()
-        print(self.file_list[:2])
 
     def __len__(self):
-        # return len(self.file_list)
-        return 2
+        return len(self.file_list)
+        # return 2
 
     def __getitem__(self, item):
         path = self.file_list[item]
