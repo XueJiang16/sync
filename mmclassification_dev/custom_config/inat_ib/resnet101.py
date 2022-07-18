@@ -10,7 +10,7 @@ quick_test = False
 training_file = None
 model = dict(
     type=method_name,
-    num_classes=8042,
+    num_classes=8142,
     # temperature=1,
     target_file=training_file,
     classifier=dict(
@@ -25,7 +25,7 @@ model = dict(
         neck=dict(type='GlobalAveragePooling'),
         head=dict(
             type='LinearClsHead',
-            num_classes=8042,
+            num_classes=8142,
             in_channels=2048,
             loss=dict(type='CrossEntropyLoss', loss_weight=1.0),
             topk=(1, 5))
