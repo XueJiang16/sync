@@ -4,7 +4,7 @@
 
 
 # list_method=( 'MSP' 'ODIN' 'Energy' 'new' 'GradNorm' 'Mahalanobis')
-list_method=('ODIN')
+list_method=('Energy')
 
 list_dataset=('iNaturalist' 'SUN' 'Places' 'Textures' )
 # # list_ckpt=('mobile_LT_a8/epoch_600' 'resnet152_LT_a8/epoch_100' 'resnet50_LT_a8/epoch_100')
