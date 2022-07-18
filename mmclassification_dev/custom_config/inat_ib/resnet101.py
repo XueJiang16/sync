@@ -1,4 +1,4 @@
-method_name = 'Energy'
+method_name = 'GradNormBatch'
 model_name = 'resnet101'
 train_dataset = 'inat'
 custom_name = None
@@ -8,6 +8,7 @@ else:
     readable_name ='{}_{}_{}'.format(method_name, model_name, train_dataset)
 quick_test = False
 training_file = None
+# training_file = '/data/csxjiang/ood_data/inat/train2018.txt'
 model = dict(
     type=method_name,
     num_classes=8142,
