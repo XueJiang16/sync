@@ -13,7 +13,7 @@ model = dict(
     img_size = 224,
     threshold = 0.87,
     order = 1,
-    mode = 'mean',
+    mode = 'fuse_mean',
     ood_detector = dict(
         type='GradNormBatch',
         debug_mode=False,
@@ -43,7 +43,7 @@ model = dict(
 )
 pipline =[dict(type='Collect', keys=['img', 'type'])]
 data = dict(
-    samples_per_gpu=16,
+    samples_per_gpu=32,
     workers_per_gpu=4,
     # id_data=dict(
     #     name='ImageNet',
