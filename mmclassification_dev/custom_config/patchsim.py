@@ -22,11 +22,11 @@ model = dict(
         target_file=None,
         classifier=dict(
             type='ImageClassifier',
-            init_cfg=dict(type='Pretrained', checkpoint='/data/csxjiang/ood_ckpt/ckpt/resnet50_LT_a8/epoch_100.pth'),
+            init_cfg=dict(type='Pretrained', checkpoint='/home/csxjiang/sync/mmclassification/ckpt/inat/epoch_80.pth'),
             # init_cfg=dict(type='Pretrained', checkpoint='/data/csxjiang/ood_ckpt/pytorch_official/resnet50_custom.pth'),
             backbone=dict(
                 type='ResNet',
-                depth=50,
+                depth=101,
                 num_stages=4,
                 out_indices=(3,),
                 style='pytorch'),
