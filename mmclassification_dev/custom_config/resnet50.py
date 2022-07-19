@@ -21,7 +21,7 @@ model = dict(
         # init_cfg=dict(type='Pretrained', checkpoint='/data/csxjiang/ood_ckpt/ckpt/resnet50_LT_a8/epoch_100.pth'),
         backbone=dict(
             type='ResNet',
-            depth=101,
+            depth=152,
             num_stages=4,
             out_indices=(3,),
             style='pytorch'),
