@@ -58,7 +58,7 @@ data = dict(
         path='/data/csxjiang/val',
         data_ann='/data/csxjiang/meta/val_labeled.txt',
         pipeline=pipline,
-        len_limit = 5000 if quick_test else -1,
+        len_limit = 1000 if quick_test else -1,
     ),
     ood_data=[
         dict(
@@ -66,7 +66,7 @@ data = dict(
             type='FolderDataset',
             path='/data/csxjiang/ood_data/iNaturalist/images',
             pipeline=pipline,
-            len_limit=1000 if quick_test else -1,
+            len_limit=5000 if quick_test else -1,
         ),
         dict(
             name='SUN',
