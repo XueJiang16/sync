@@ -13,7 +13,7 @@ model = dict(
     img_size = 224,
     threshold = 0.4,
     order = 1,
-    mode = 'mean',
+    mode = 'fuse_mean',
     ood_detector = dict(
         type='GradNormBatch',
         debug_mode=False,
@@ -22,8 +22,8 @@ model = dict(
         target_file=None,
         classifier=dict(
             type='ImageClassifier',
-            init_cfg=dict(type='Pretrained', checkpoint='/home/csxjiang/sync/mmclassification/ckpt/inat/epoch_80.pth'),
-            # init_cfg=dict(type='Pretrained', checkpoint='/data/csxjiang/ood_ckpt/pytorch_official/resnet50_custom.pth'),
+            # init_cfg=dict(type='Pretrained', checkpoint='/home/csxjiang/sync/mmclassification/ckpt/inat/epoch_80.pth'),
+            init_cfg=dict(type='Pretrained', checkpoint='/data/csxjiang/ood_ckpt/pytorch_official/resnet50_custom.pth'),
             backbone=dict(
                 type='ResNet',
                 depth=101,
@@ -58,7 +58,7 @@ data = dict(
         path='/data/csxjiang/val',
         data_ann='/data/csxjiang/meta/val_labeled.txt',
         pipeline=pipline,
-        len_limit = 1000 if quick_test else -1,
+        len_limit = 5000 if quick_test else -1,
     ),
     ood_data=[
         dict(
@@ -66,7 +66,7 @@ data = dict(
             type='FolderDataset',
             path='/data/csxjiang/ood_data/iNaturalist/images',
             pipeline=pipline,
-            len_limit=5000 if quick_test else -1,
+            len_limit=1000 if quick_test else -1,
         ),
         dict(
             name='SUN',
