@@ -13,7 +13,7 @@ model = dict(
     img_size = 224,
     threshold = 0.4,
     order = 1,
-    mode = 'std',
+    mode = 'extract_feature_sim',
     ood_detector = dict(
         type='ODIN',
         debug_mode=False,
@@ -46,11 +46,19 @@ data = dict(
     id_data=dict(
         name='ImageNet',
         type='TxtDataset',
-        path='/data/csxjiang/val',
-        data_ann='/data/csxjiang/meta/val_labeled.txt',
+        path='/data/csxjiang/ILSVRC/Data/CLS-LOC/train',
+        data_ann='/data/csxjiang/meta/train_labeled.txt',
         pipeline=pipline,
         len_limit = 5000 if quick_test else -1,
     ),
+    # id_data=dict(
+    #     name='ImageNet',
+    #     type='TxtDataset',
+    #     path='/data/csxjiang/val',
+    #     data_ann='/data/csxjiang/meta/val_labeled.txt',
+    #     pipeline=pipline,
+    #     len_limit = 5000 if quick_test else -1,
+    # ),
     ood_data=[
         dict(
             name='iNaturalist',

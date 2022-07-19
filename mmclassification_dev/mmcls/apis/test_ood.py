@@ -53,7 +53,7 @@ def single_gpu_test_ood(model,
             result = result.unsqueeze(0)
         if len(class_type.shape) == 0:  # handle the situation of batch = 1
             class_type = class_type.unsqueeze(0)
-        results.append(result)
+        results.append(result.unsqueeze(0))  #############
         class_types.append(class_type)
         if rank == 0:
             batch_size = data['img'].size(0)
@@ -67,7 +67,13 @@ def single_gpu_test_ood(model,
                   .format(name, int(passed_time), prog, len(dataset), round(fps, 2), round(eta, 2)))
     if world_size > 1:
         dist.barrier()
-    results = torch.cat(results).cpu().numpy()
+    results = torch.cat(results)
+    results = results.mean(0)
+    if rank == 0:
+        time.sleep(2)
+    print(results.cpu().tolist())
+    time.sleep(10)
+    assert False
     class_types = torch.cat(class_types).cpu().numpy()
     return results, class_types
 
