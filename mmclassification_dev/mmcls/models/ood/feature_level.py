@@ -136,7 +136,7 @@ class FeatureMapSim(BaseModule):
                 channel_sim = torch.abs(feature_crops - channel_mean).mean(dim=(-1, -2))
                 spatial_mean = feature_crops.mean(-1).unsqueeze(-1)  # (N, C, H*W) -> (N, C, 1)
                 spatial_sim = torch.abs(feature_crops - spatial_mean).mean(dim=(-1, -2))
-                patch_sim = channel_sim + spatial_sim
+                patch_sim = 0.5 * channel_sim + spatial_sim
             elif self.mode == 'extract_feature_sim':
                 # (N, C, H*W) -> (N, C) -> (C,) -> argsort -> topK_idx -> id_ood_inference -> feature_crops[:, topK_idx]
                 feature_crops = feature_c5.flatten(2)
