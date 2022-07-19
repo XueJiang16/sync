@@ -1,4 +1,4 @@
-method_name = 'Energy'
+method_name = 'ODIN'
 model_name = 'resnet50'
 train_dataset = 'Balance'
 custom_name = None
@@ -37,7 +37,7 @@ model = dict(
 # pipline =[dict(type='Collect', keys=['img'])]
 pipline =[dict(type='Collect', keys=['img', 'type'])]
 data = dict(
-    samples_per_gpu=16,
+    samples_per_gpu=4,
     workers_per_gpu=4,
     id_data=dict(
         name='ImageNet',
