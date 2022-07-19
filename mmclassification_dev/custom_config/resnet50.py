@@ -17,10 +17,11 @@ model = dict(
     target_file=training_file,
     classifier=dict(
         type='ImageClassifier',
-        init_cfg=dict(type='Pretrained', checkpoint='/data/csxjiang/ood_ckpt/ckpt/resnet50_LT_a8/epoch_100.pth'),
+        init_cfg=dict(type='Pretrained', checkpoint='/data/csxjiang/ood_ckpt/pytorch_official/resnet50_custom.pth'),
+        # init_cfg=dict(type='Pretrained', checkpoint='/data/csxjiang/ood_ckpt/ckpt/resnet50_LT_a8/epoch_100.pth'),
         backbone=dict(
             type='ResNet',
-            depth=50,
+            depth=101,
             num_stages=4,
             out_indices=(3,),
             style='pytorch'),
@@ -36,7 +37,7 @@ model = dict(
 # pipline =[dict(type='Collect', keys=['img'])]
 pipline =[dict(type='Collect', keys=['img', 'type'])]
 data = dict(
-    samples_per_gpu=256,
+    samples_per_gpu=16,
     workers_per_gpu=4,
     id_data=dict(
         name='ImageNet',
