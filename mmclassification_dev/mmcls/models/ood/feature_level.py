@@ -168,8 +168,6 @@ class FeatureMapSim(BaseModule):
                 # feature_c5 = feature_c5[:,:,1:6,1:6]
                 feature_crops = feature_c5.flatten(2)
                 feature_crops = feature_crops[:, target_channel]
-                print(feature_crops.shape)
-                assert False
                 patch_mean = feature_crops.mean(-1).unsqueeze(-1)  # (N, C, H*W) -> (N, C)
                 patch_sim = torch.abs(feature_crops - patch_mean).mean(dim=(-1, -2))  # for ID: .mean(dim=-2)
             elif self.mode == 'extract_feature_sim':

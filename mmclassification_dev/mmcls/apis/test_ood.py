@@ -68,7 +68,7 @@ def single_gpu_test_ood(model,
                   .format(name, int(passed_time), prog, len(dataset), round(fps, 2), round(eta, 2)))
     if world_size > 1:
         dist.barrier()
-    results = torch.cat(results)
+    results = torch.cat(results).cpu().numpy()
     # results = results.mean(0)
     # if rank == 0:
     #     time.sleep(2)
