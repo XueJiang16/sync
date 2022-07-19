@@ -136,18 +136,18 @@ class FeatureMapSim(BaseModule):
                 channel_sim = torch.abs(feature_crops - channel_mean).mean(dim=(-1, -2))
                 spatial_mean = feature_crops.mean(-1).unsqueeze(-1)  # (N, C, H*W) -> (N, C, 1)
                 spatial_sim = torch.abs(feature_crops - spatial_mean).mean(dim=(-1, -2))
-                patch_sim = 0.5 * channel_sim + spatial_sim
+                patch_sim = channel_sim + spatial_sim
             elif self.mode == 'extract_feature_sim':
                 # (N, C, H*W) -> (N, C) -> (C,) -> argsort -> topK_idx -> id_ood_inference -> feature_crops[:, topK_idx]
                 feature_crops = feature_c5.flatten(2)
                 patch_mean = feature_crops.mean(-1).unsqueeze(-1)  # (N, C, H*W) -> (N, C, 1)
                 patch_sim = torch.abs(feature_crops - patch_mean).mean(dim=(0, 2))  # for ID: .mean(dim=(0, 2))
             ood_scores = patch_sim
-        # if self.has_ood_detector:
-        #     ood_scores, _ = self.ood_detector(**input)
-        #     patch_sim = ((1 / self.threshold) ** (self.order)) * torch.pow(patch_sim, self.order)
-        #     patch_sim[patch_sim > 1] = 1
-        #     ood_scores *= patch_sim
-        # else:
-        #     ood_scores = patch_sim
+        if self.has_ood_detector:
+            ood_scores, _ = self.ood_detector(**input)
+            patch_sim = ((1 / self.threshold) ** (self.order)) * torch.pow(patch_sim, self.order)
+            patch_sim[patch_sim > 1] = 1
+            ood_scores *= patch_sim
+        else:
+            ood_scores = patch_sim
         return ood_scores, type
