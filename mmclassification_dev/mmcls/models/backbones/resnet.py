@@ -316,7 +316,13 @@ class RandomBlock(BaseModule):
                  norm_cfg=dict(type='BN'),
                  act_cfg=dict(type='ReLU', inplace=True),
                  drop_path_rate=0.0,
-                 init_cfg=None):
+                 init_cfg=[
+                     dict(type='Kaiming', layer=['Conv2d'], mode='fan_in'),
+                     dict(
+                         type='Constant',
+                         val=1,
+                         layer=['_BatchNorm', 'GroupNorm'])
+                 ]):
         super(RandomBlock, self).__init__(init_cfg=init_cfg)
         assert style in ['pytorch', 'caffe']
 
