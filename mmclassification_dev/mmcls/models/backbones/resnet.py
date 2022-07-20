@@ -1,5 +1,6 @@
 # Copyright (c) OpenMMLab. All rights reserved.
 
+import torch
 import torch.nn as nn
 import torch.utils.checkpoint as cp
 from mmcv.cnn import (ConvModule, build_activation_layer, build_conv_layer,
@@ -817,10 +818,15 @@ class ResNet(BaseBackbone):
         for i, layer_name in enumerate(self.res_layers):
             res_layer = getattr(self, layer_name)
             x = res_layer(x)
-            if self.num_random_block:
+            if self.num_random_block !=0:
                 if i == 2:
-                    random_layer = getattr(self, "random_block")
-                    x = random_layer(x)
+                    if self.num_random_block > 0:
+                        random_layer = getattr(self, "random_block")
+                        x = random_layer(x)
+                    elif self.num_random_block == -1:
+                        x = x + ((torch.rand_like(x) - 0.5) / 5)
+                    else:
+                        raise NotImplementedError
             if i in self.out_indices:
                 outs.append(x)
         return tuple(outs)

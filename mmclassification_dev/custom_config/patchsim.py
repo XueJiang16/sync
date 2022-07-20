@@ -7,7 +7,7 @@ if custom_name is not None:
 else:
     readable_name ='{}_{}_{}'.format(method_name, model_name, train_dataset)
 quick_test = True
-noise_engine = 'uniform'
+noise_engine = None
 model = dict(
     type = method_name,
     num_crop = 3,
@@ -32,7 +32,7 @@ model = dict(
                 num_stages=4,
                 out_indices=(3,),
                 style='pytorch',
-                random_block=0),
+                random_block=-1),
             neck=dict(type='GlobalAveragePooling'),
             head=dict(
                 type='LinearClsHead',
