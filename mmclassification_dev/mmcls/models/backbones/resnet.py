@@ -642,6 +642,7 @@ class ResNet(BaseBackbone):
                  drop_path_rate=0.0
                  ):
         super(ResNet, self).__init__(init_cfg)
+        assert False
         if depth not in self.arch_settings:
             raise KeyError(f'invalid depth {depth} for resnet')
         self.depth = depth
