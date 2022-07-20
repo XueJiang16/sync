@@ -431,6 +431,12 @@ class RandomBlock(BaseModule):
 
         return out
 
+    def init_weights(self):
+        super(RandomBlock, self).init_weights()
+        for m in self.modules():
+            constant_init(m, 0.02)
+
+
 
 def get_expansion(block, expansion=None):
     """Get the expansion of a residual block.
@@ -634,8 +640,8 @@ class ResNet(BaseBackbone):
                  with_cp=False,
                  zero_init_residual=True,
                  init_cfg=[
-                     dict(type='Constant', layer=['Conv2d'], val=0.5),
-                     # dict(type='Kaiming', layer=['Conv2d'], mode='fan_in'),
+                     # dict(type='Constant', layer=['Conv2d'], val=0.5),
+                     dict(type='Kaiming', layer=['Conv2d'], mode='fan_in'),
                      dict(
                          type='Constant',
                          val=1,
