@@ -433,7 +433,7 @@ class RandomBlock(BaseModule):
         #     out = _inner_forward(x)
         #
         # out = self.relu(out)
-        k = 2.25
+        k = 2.50
         out = self.relu(x + (torch.rand_like(x) - 0.5) / k)  # (torch.rand_like(x) - 0.5) ~ U[-0.5, 0.5)
 
         return out
