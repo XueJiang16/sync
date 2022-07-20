@@ -417,10 +417,15 @@ class RandomBlock(BaseModule):
                 identity = self.downsample(x)
 
             out = self.drop_path(out)
+            print("Block val:", out.mean())
 
             out += identity
+            print("After Block:", out.mean())
+            assert False
 
             return out
+
+        print("Before Block:", x.mean())
 
         if self.with_cp and x.requires_grad:
             out = cp.checkpoint(_inner_forward, x)

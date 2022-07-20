@@ -25,9 +25,9 @@ model = dict(
             type='ImageClassifier',
             # init_cfg=dict(type='Pretrained', checkpoint='/home/csxjiang/sync/mmclassification/ckpt/inat/epoch_80.pth'),
             # init_cfg=None,
-            # init_cfg=dict(type='Pretrained', checkpoint='/data/csxjiang/ood_ckpt/pytorch_official/resnet50_custom.pth'),
-            init_cfg=dict(type='Pretrained',
-                          checkpoint='/home/csxjiang/sync/mmclassification_dev/resnet50_random_block_rand_like_0.033.pth'),
+            init_cfg=dict(type='Pretrained', checkpoint='/data/csxjiang/ood_ckpt/pytorch_official/resnet50_custom.pth'),
+            # init_cfg=dict(type='Pretrained',
+            #               checkpoint='/home/csxjiang/sync/mmclassification_dev/resnet50_random_block_rand_like_0.033.pth'),
             backbone=dict(
                 type='ResNet',
                 depth=50,
@@ -47,7 +47,7 @@ model = dict(
 )
 pipline =[dict(type='Collect', keys=['img', 'type'])]
 data = dict(
-    samples_per_gpu=32,
+    samples_per_gpu=256,
     workers_per_gpu=4,
     # id_data=dict(
     #     name='ImageNet',
