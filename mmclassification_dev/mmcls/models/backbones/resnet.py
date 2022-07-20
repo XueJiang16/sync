@@ -316,13 +316,7 @@ class RandomBlock(BaseModule):
                  norm_cfg=dict(type='BN'),
                  act_cfg=dict(type='ReLU', inplace=True),
                  drop_path_rate=0.0,
-                 init_cfg=[
-                     dict(type='Kaiming', layer=['Conv2d'], mode='fan_in'),
-                     dict(
-                         type='Constant',
-                         val=1,
-                         layer=['_BatchNorm', 'GroupNorm'])
-                 ]):
+                 init_cfg=None):
         super(RandomBlock, self).__init__(init_cfg=init_cfg)
         assert style in ['pytorch', 'caffe']
 
@@ -640,7 +634,7 @@ class ResNet(BaseBackbone):
                  with_cp=False,
                  zero_init_residual=True,
                  init_cfg=[
-                     dict(type='Kaiming', layer=['Conv2d']),
+                     dict(type='Kaiming', layer=['Conv2d'], mode='fan_in'),
                      dict(
                          type='Constant',
                          val=1,
