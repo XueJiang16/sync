@@ -96,6 +96,8 @@ class FeatureMapSim(BaseModule):
             del input['type']
 
         with torch.no_grad():
+            print(self.ood_detector.classifier)
+            assert False
             _, feature_c5 = self.ood_detector.classifier(return_loss=False, softmax=False, post_process=False,
                                                          require_backbone_features=True, **input)
             input['type'] = type
