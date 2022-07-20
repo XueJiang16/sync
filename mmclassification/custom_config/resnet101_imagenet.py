@@ -73,13 +73,13 @@ evaluation = dict(interval=10, metric='accuracy')
 optimizer = dict(type='SGD', lr=0.1, momentum=0.9, weight_decay=0.0001)
 optimizer_config = dict(grad_clip=None)
 lr_config = dict(policy='step', step=[30, 60, 90])
-runner = dict(type='EpochBasedRunner', max_epochs=100)
+runner = dict(type='EpochBasedRunner', max_epochs=0)
 checkpoint_config = dict(interval=50)
 log_config = dict(interval=100, hooks=[dict(type='TextLoggerHook')])
 dist_params = dict(backend='nccl')
 log_level = 'INFO'
-load_from = None
-resume_from = '/data/csxjiang/ood_ckpt/pytorch_official/resnet50_custom.pth'
+load_from = '/data/csxjiang/ood_ckpt/pytorch_official/resnet50_custom.pth'
+resume_from = None
 workflow = [('test', 1)]
 work_dir = './ckpt/'
 
