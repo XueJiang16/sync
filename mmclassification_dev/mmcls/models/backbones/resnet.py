@@ -823,8 +823,6 @@ class ResNet(BaseBackbone):
                     if self.num_random_block > 0:
                         random_layer = getattr(self, "random_block")
                         x = random_layer(x)
-                    elif self.num_random_block == -1:
-                        x = x + ((torch.rand_like(x) - 0.5) / 5)
                     else:
                         raise NotImplementedError
             if i in self.out_indices:

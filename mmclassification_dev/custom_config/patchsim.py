@@ -14,7 +14,7 @@ model = dict(
     img_size = 224,
     threshold = 0.4,
     order = 1,
-    mode = 'mean',
+    mode = 'fuse_mean',
     ood_detector = dict(
         type='Energy',
         debug_mode=False,
@@ -32,7 +32,7 @@ model = dict(
                 num_stages=4,
                 out_indices=(3,),
                 style='pytorch',
-                random_block=-1),
+                random_block=17),
             neck=dict(type='GlobalAveragePooling'),
             head=dict(
                 type='LinearClsHead',
