@@ -19,9 +19,9 @@ data = dict(
     workers_per_gpu=2,
     train=dict(
         type='ImageNet',
-        data_prefix='/mapai/haowenguo/ILSVRC/Data/CLS-LOC/train',
+        data_prefix='/data/csxjiang/ILSVRC/Data/CLS-LOC/train',
         ann_file=
-        '/mapai/haowenguo/ILSVRC/Data/CLS-LOC/meta/train_labeled.txt',
+        '/data/csxjiang/meta/train_labeled.txt',
         pipeline=[
             dict(type='LoadImageFromFile'),
             dict(type='RandomResizedCrop', size=224),
@@ -37,7 +37,7 @@ data = dict(
         ]),
     val=dict(
         type='ImageNet',
-        data_prefix='/mapai/haowenguo/ILSVRC/Data/CLS-LOC/val',
+        data_prefix='/data/csxjiang/ILSVRC/Data/CLS-LOC/val',
         ann_file=
         '/mapai/haowenguo/ILSVRC/Data/CLS-LOC/meta/val_labeled.txt',
         pipeline=[
@@ -54,7 +54,7 @@ data = dict(
         ]),
     test=dict(
         type='ImageNet',
-        data_prefix='/mapai/haowenguo/ILSVRC/Data/CLS-LOC/val',
+        data_prefix='/data/csxjiang/ILSVRC/Data/CLS-LOC/val',
         ann_file=
         '/mapai/haowenguo/ILSVRC/Data/CLS-LOC/meta/val_labeled.txt',
         pipeline=[
