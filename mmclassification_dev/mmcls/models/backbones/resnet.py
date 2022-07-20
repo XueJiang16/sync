@@ -316,7 +316,7 @@ class RandomBlock(BaseModule):
                  act_cfg=dict(type='ReLU', inplace=True),
                  drop_path_rate=0.0,
                  init_cfg=None):
-        super(Bottleneck, self).__init__(init_cfg=init_cfg)
+        super(RandomBlock, self).__init__(init_cfg=init_cfg)
         assert style in ['pytorch', 'caffe']
 
         self.in_channels = in_channels
