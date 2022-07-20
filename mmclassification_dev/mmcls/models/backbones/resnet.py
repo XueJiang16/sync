@@ -354,7 +354,7 @@ class RandomBlock(BaseModule):
             kernel_size=1,
             stride=self.conv1_stride,
             bias=False)
-        if self.self.with_bn:
+        if self.with_bn:
             self.add_module(self.norm1_name, norm1)
         self.conv2 = build_conv_layer(
             conv_cfg,
@@ -365,7 +365,7 @@ class RandomBlock(BaseModule):
             padding=dilation,
             dilation=dilation,
             bias=False)
-        if self.self.with_bn:
+        if self.with_bn:
             self.add_module(self.norm2_name, norm2)
         self.conv3 = build_conv_layer(
             conv_cfg,
