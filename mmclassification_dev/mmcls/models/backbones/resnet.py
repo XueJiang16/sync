@@ -623,6 +623,7 @@ class ResNet(BaseBackbone):
                  dilations=(1, 1, 1, 1),
                  out_indices=(3, ),
                  style='pytorch',
+                 random_block=0,
                  deep_stem=False,
                  avg_down=False,
                  frozen_stages=-1,
@@ -638,8 +639,8 @@ class ResNet(BaseBackbone):
                          val=1,
                          layer=['_BatchNorm', 'GroupNorm'])
                  ],
-                 drop_path_rate=0.0,
-                 random_block=0):
+                 drop_path_rate=0.0
+                 ):
         super(ResNet, self).__init__(init_cfg)
         if depth not in self.arch_settings:
             raise KeyError(f'invalid depth {depth} for resnet')
