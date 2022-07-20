@@ -623,7 +623,7 @@ class ResNet(BaseBackbone):
                  dilations=(1, 1, 1, 1),
                  out_indices=(3, ),
                  style='pytorch',
-                 random_block=17,
+                 random_block=0,
                  deep_stem=False,
                  avg_down=False,
                  frozen_stages=-1,
@@ -708,7 +708,7 @@ class ResNet(BaseBackbone):
                         avg_down=self.avg_down,
                         with_cp=with_cp,
                         conv_cfg=conv_cfg,
-                        with_bn=True,
+                        with_bn=False,
                         norm_cfg=norm_cfg,
                         drop_path_rate=drop_path_rate)
                     layer_name = f'random_block'
