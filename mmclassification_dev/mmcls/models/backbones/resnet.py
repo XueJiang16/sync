@@ -278,6 +278,159 @@ class Bottleneck(BaseModule):
         return out
 
 
+class RandomBlock(BaseModule):
+    """RandomBlock block for ResNet.
+
+    Args:
+        in_channels (int): Input channels of this block.
+        out_channels (int): Output channels of this block.
+        expansion (int): The ratio of ``out_channels/mid_channels`` where
+            ``mid_channels`` is the input/output channels of conv2. Default: 4.
+        stride (int): stride of the block. Default: 1
+        dilation (int): dilation of convolution. Default: 1
+        downsample (nn.Module, optional): downsample operation on identity
+            branch. Default: None.
+        style (str): ``"pytorch"`` or ``"caffe"``. If set to "pytorch", the
+            stride-two layer is the 3x3 conv layer, otherwise the stride-two
+            layer is the first 1x1 conv layer. Default: "pytorch".
+        with_cp (bool): Use checkpoint or not. Using checkpoint will save some
+            memory while slowing down the training speed.
+        conv_cfg (dict, optional): dictionary to construct and config conv
+            layer. Default: None
+        norm_cfg (dict): dictionary to construct and config norm layer.
+            Default: dict(type='BN')
+    """
+
+    def __init__(self,
+                 in_channels,
+                 out_channels,
+                 expansion=4,
+                 stride=1,
+                 dilation=1,
+                 downsample=None,
+                 style='pytorch',
+                 with_cp=False,
+                 conv_cfg=None,
+                 with_bn=True,
+                 norm_cfg=dict(type='BN'),
+                 act_cfg=dict(type='ReLU', inplace=True),
+                 drop_path_rate=0.0,
+                 init_cfg=None):
+        super(Bottleneck, self).__init__(init_cfg=init_cfg)
+        assert style in ['pytorch', 'caffe']
+
+        self.in_channels = in_channels
+        self.out_channels = out_channels
+        self.expansion = expansion
+        assert out_channels % expansion == 0
+        self.mid_channels = out_channels // expansion
+        self.stride = stride
+        self.dilation = dilation
+        self.style = style
+        self.with_cp = with_cp
+        self.conv_cfg = conv_cfg
+        self.norm_cfg = norm_cfg
+        self.with_bn = with_bn
+
+        if self.style == 'pytorch':
+            self.conv1_stride = 1
+            self.conv2_stride = stride
+        else:
+            self.conv1_stride = stride
+            self.conv2_stride = 1
+
+        if self.with_bn:
+            self.norm1_name, norm1 = build_norm_layer(
+                norm_cfg, self.mid_channels, postfix=1)
+            self.norm2_name, norm2 = build_norm_layer(
+                norm_cfg, self.mid_channels, postfix=2)
+            self.norm3_name, norm3 = build_norm_layer(
+                norm_cfg, out_channels, postfix=3)
+
+        self.conv1 = build_conv_layer(
+            conv_cfg,
+            in_channels,
+            self.mid_channels,
+            kernel_size=1,
+            stride=self.conv1_stride,
+            bias=False)
+        if self.self.with_bn:
+            self.add_module(self.norm1_name, norm1)
+        self.conv2 = build_conv_layer(
+            conv_cfg,
+            self.mid_channels,
+            self.mid_channels,
+            kernel_size=3,
+            stride=self.conv2_stride,
+            padding=dilation,
+            dilation=dilation,
+            bias=False)
+        if self.self.with_bn:
+            self.add_module(self.norm2_name, norm2)
+        self.conv3 = build_conv_layer(
+            conv_cfg,
+            self.mid_channels,
+            out_channels,
+            kernel_size=1,
+            bias=False)
+        if self.with_bn:
+            self.add_module(self.norm3_name, norm3)
+
+        self.relu = build_activation_layer(act_cfg)
+        self.downsample = downsample
+        self.drop_path = DropPath(drop_prob=drop_path_rate
+                                  ) if drop_path_rate > eps else nn.Identity()
+
+    @property
+    def norm1(self):
+        return getattr(self, self.norm1_name)
+
+    @property
+    def norm2(self):
+        return getattr(self, self.norm2_name)
+
+    @property
+    def norm3(self):
+        return getattr(self, self.norm3_name)
+
+    def forward(self, x):
+
+        def _inner_forward(x):
+            identity = x
+
+            out = self.conv1(x)
+            if self.with_bn:
+                out = self.norm1(out)
+            out = self.relu(out)
+
+            out = self.conv2(out)
+            if self.with_bn:
+                out = self.norm2(out)
+            out = self.relu(out)
+
+            out = self.conv3(out)
+            if self.with_bn:
+                out = self.norm3(out)
+
+            if self.downsample is not None:
+                identity = self.downsample(x)
+
+            out = self.drop_path(out)
+
+            out += identity
+
+            return out
+
+        if self.with_cp and x.requires_grad:
+            out = cp.checkpoint(_inner_forward, x)
+        else:
+            out = _inner_forward(x)
+
+        out = self.relu(out)
+
+        return out
+
+
 def get_expansion(block, expansion=None):
     """Get the expansion of a residual block.
 
@@ -485,7 +638,8 @@ class ResNet(BaseBackbone):
                          val=1,
                          layer=['_BatchNorm', 'GroupNorm'])
                  ],
-                 drop_path_rate=0.0):
+                 drop_path_rate=0.0,
+                 random_block=0):
         super(ResNet, self).__init__(init_cfg)
         if depth not in self.arch_settings:
             raise KeyError(f'invalid depth {depth} for resnet')
@@ -511,6 +665,7 @@ class ResNet(BaseBackbone):
         self.block, stage_blocks = self.arch_settings[depth]
         self.stage_blocks = stage_blocks[:num_stages]
         self.expansion = get_expansion(self.block, expansion)
+        self.num_random_block = random_block
 
         self._make_stem_layer(in_channels, stem_channels)
 
@@ -534,11 +689,31 @@ class ResNet(BaseBackbone):
                 conv_cfg=conv_cfg,
                 norm_cfg=norm_cfg,
                 drop_path_rate=drop_path_rate)
-            _in_channels = _out_channels
-            _out_channels *= 2
             layer_name = f'layer{i + 1}'
             self.add_module(layer_name, res_layer)
             self.res_layers.append(layer_name)
+            # add random block in C4
+            if i == 2:
+                if self.num_random_block > 0:
+                    random_layer = self.make_res_layer(
+                        block=RandomBlock,
+                        num_blocks=self.num_random_block,
+                        in_channels=_out_channels,
+                        out_channels=_out_channels,
+                        expansion=4,
+                        stride=1,
+                        dilation=1,
+                        style=self.style,
+                        avg_down=self.avg_down,
+                        with_cp=with_cp,
+                        conv_cfg=conv_cfg,
+                        with_bn=True,
+                        norm_cfg=norm_cfg,
+                        drop_path_rate=drop_path_rate)
+                    layer_name = f'random_block'
+                    self.add_module(layer_name, random_layer)
+            _in_channels = _out_channels
+            _out_channels *= 2
 
         self._freeze_stages()
 
@@ -641,6 +816,10 @@ class ResNet(BaseBackbone):
         for i, layer_name in enumerate(self.res_layers):
             res_layer = getattr(self, layer_name)
             x = res_layer(x)
+            if self.num_random_block:
+                if i == 2:
+                    random_layer = getattr(self, "random_block")
+                    x = random_layer(x)
             if i in self.out_indices:
                 outs.append(x)
         return tuple(outs)
