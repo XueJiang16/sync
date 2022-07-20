@@ -634,7 +634,8 @@ class ResNet(BaseBackbone):
                  with_cp=False,
                  zero_init_residual=True,
                  init_cfg=[
-                     dict(type='Kaiming', layer=['Conv2d'], mode='fan_in'),
+                     dict(type='UniformInit', layer=['Conv2d']),
+                     # dict(type='Kaiming', layer=['Conv2d'], mode='fan_in'),
                      dict(
                          type='Constant',
                          val=1,
