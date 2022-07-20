@@ -12,6 +12,7 @@ from mmcv import DictAction
 from mmcv.parallel import MMDataParallel, MMDistributedDataParallel
 from mmcv.runner import (get_dist_info, init_dist, load_checkpoint,
                          wrap_fp16_model)
+from mmcv.runner.checkpoint import save_checkpoint
 
 from mmcls.apis import single_gpu_test_ood, single_gpu_test_ood_score, single_gpu_test_ssim
 from mmcls.datasets import build_dataloader, build_dataset
@@ -137,8 +138,8 @@ def main():
         model = build_ood_model(cfg.model)
         model.init_weights()
         if os.environ['LOCAL_RANK'] == '0':
-            torch.save(model, 'resnet50_random_block.pth')
-            assert False
+            save_checkpoint(model.ood_detector.classifier, 'resnet50_random_block.pth')
+        assert False
         model = MMDataParallel(model, device_ids=cfg.gpu_ids)
         # model.to("cuda:{}".format(os.environ['LOCAL_RANK']))
 
