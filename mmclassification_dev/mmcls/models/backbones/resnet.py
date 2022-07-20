@@ -396,44 +396,44 @@ class RandomBlock(BaseModule):
 
     def forward(self, x):
 
-        def _inner_forward(x):
-            identity = x
-
-            out = self.conv1(x)
-            if self.with_bn:
-                out = self.norm1(out)
-            out = self.relu(out)
-
-            out = self.conv2(out)
-            if self.with_bn:
-                out = self.norm2(out)
-            out = self.relu(out)
-
-            out = self.conv3(out)
-            if self.with_bn:
-                out = self.norm3(out)
-
-            if self.downsample is not None:
-                identity = self.downsample(x)
-
-            out = self.drop_path(out)
-            print("Block val:", out.abs().mean())
-
-            out += identity
-            print("After Block:", out.mean())
-            assert False
-
-            return out
-
-        print("Before Block:", x.mean())
-
-        if self.with_cp and x.requires_grad:
-            out = cp.checkpoint(_inner_forward, x)
-        else:
-            out = _inner_forward(x)
-
-        out = self.relu(out)
-        # out = self.relu(x + torch.rand_like(x) / 2000)
+        # def _inner_forward(x):
+        #     identity = x
+        #
+        #     out = self.conv1(x)
+        #     if self.with_bn:
+        #         out = self.norm1(out)
+        #     out = self.relu(out)
+        #
+        #     out = self.conv2(out)
+        #     if self.with_bn:
+        #         out = self.norm2(out)
+        #     out = self.relu(out)
+        #
+        #     out = self.conv3(out)
+        #     if self.with_bn:
+        #         out = self.norm3(out)
+        #
+        #     if self.downsample is not None:
+        #         identity = self.downsample(x)
+        #
+        #     out = self.drop_path(out)
+        #     print("Block val:", out.abs().mean())
+        #
+        #     out += identity
+        #     print("After Block:", out.mean())
+        #     assert False
+        #
+        #     return out
+        #
+        # print("Before Block:", x.mean())
+        #
+        # if self.with_cp and x.requires_grad:
+        #     out = cp.checkpoint(_inner_forward, x)
+        # else:
+        #     out = _inner_forward(x)
+        #
+        # out = self.relu(out)
+        out = self.relu(x + torch.rand_like(x) / 50)
 
         return out
 
