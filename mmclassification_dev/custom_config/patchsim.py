@@ -7,6 +7,7 @@ if custom_name is not None:
 else:
     readable_name ='{}_{}_{}'.format(method_name, model_name, train_dataset)
 quick_test = True
+noise_engine = 'uniform'
 model = dict(
     type = method_name,
     num_crop = 3,
@@ -31,7 +32,7 @@ model = dict(
                 num_stages=4,
                 out_indices=(3,),
                 style='pytorch',
-                random_block=17),
+                random_block=0),
             neck=dict(type='GlobalAveragePooling'),
             head=dict(
                 type='LinearClsHead',
@@ -56,6 +57,7 @@ data = dict(
     # ),
     id_data=dict(
         name='ImageNet',
+        noise_engine=noise_engine,
         type='TxtDataset',
         path='/data/csxjiang/val',
         data_ann='/data/csxjiang/meta/val_labeled.txt',
@@ -65,6 +67,7 @@ data = dict(
     ood_data=[
         dict(
             name='iNaturalist',
+            noise_engine=noise_engine,
             type='FolderDataset',
             path='/data/csxjiang/ood_data/iNaturalist/images',
             pipeline=pipline,
@@ -72,6 +75,7 @@ data = dict(
         ),
         dict(
             name='SUN',
+            noise_engine=noise_engine,
             type='FolderDataset',
             path='/data/csxjiang/ood_data/SUN/images',
             pipeline=pipline,
@@ -79,6 +83,7 @@ data = dict(
         ),
         dict(
             name='Places',
+            noise_engine=noise_engine,
             type='FolderDataset',
             path='/data/csxjiang/ood_data/Places/images',
             pipeline=pipline,
@@ -86,6 +91,7 @@ data = dict(
         ),
         dict(
             name='Textures',
+            noise_engine=noise_engine,
             type='FolderDataset',
             path='/data/csxjiang/ood_data/Textures/dtd/images_collate',
             pipeline=pipline,

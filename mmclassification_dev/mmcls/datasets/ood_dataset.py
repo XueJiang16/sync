@@ -6,6 +6,7 @@ import mmcv
 import numpy as np
 from mmcv import FileClient
 from torch.utils.data import Dataset
+import torch
 import json
 from PIL import Image
 import torchvision as tv
@@ -18,7 +19,7 @@ from .builder import DATASETS
 from .pipelines import Compose
 
 class OODBaseDataset(Dataset):
-    def __init__(self, name, pipeline, len_limit=-1):
+    def __init__(self, name, pipeline, noise_engine=None, len_limit=-1):
         super().__init__()
         self.pipeline = Compose(pipeline)
         self.file_list = []
@@ -32,6 +33,7 @@ class OODBaseDataset(Dataset):
             tv.transforms.Normalize([123.675/255, 116.28/255, 103.53/255],
                                     [58.395/255, 57.12/255, 57.375/255]),
         ])
+        self.noise_engine = noise_engine
         self.len_limit = len_limit
         self.data_infos = []
 
@@ -57,6 +59,8 @@ class OODBaseDataset(Dataset):
             sample = sample.convert('RGB')
         if self.transform is not None:
             sample = self.transform(sample)
+        if self.noise_engine == "uniform":
+            sample = sample + ((torch.rand_like(sample) - 0.5) / 5)
         results['img'] = sample
         return self.pipeline(results)
 
