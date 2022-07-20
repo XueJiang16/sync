@@ -26,7 +26,8 @@ model = dict(
             # init_cfg=dict(type='Pretrained', checkpoint='/home/csxjiang/sync/mmclassification/ckpt/inat/epoch_80.pth'),
             # init_cfg=None,
             # init_cfg=dict(type='Pretrained', checkpoint='/data/csxjiang/ood_ckpt/pytorch_official/resnet50_custom.pth'),
-            init_cfg=dict(type='Pretrained', checkpoint='/home/csxjiang/sync/mmclassification_dev/resnet50_random_block_modified.pth'),
+            init_cfg=dict(type='Pretrained',
+                          checkpoint='/home/csxjiang/sync/mmclassification_dev/resnet50_random_block_modified_0.01.pth'),
             backbone=dict(
                 type='ResNet',
                 depth=50,
