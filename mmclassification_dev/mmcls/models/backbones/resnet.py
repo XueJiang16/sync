@@ -431,12 +431,6 @@ class RandomBlock(BaseModule):
 
         return out
 
-    def init_weights(self):
-        super(RandomBlock, self).init_weights()
-        for m in self.modules():
-            constant_init(m, 0.02)
-
-
 
 def get_expansion(block, expansion=None):
     """Get the expansion of a residual block.

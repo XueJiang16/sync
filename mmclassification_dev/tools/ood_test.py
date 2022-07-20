@@ -136,6 +136,9 @@ def main():
 
         model = build_ood_model(cfg.model)
         model.init_weights()
+        if os.environ['LOCAL_RANK'] == '0':
+            torch.save(model, 'resnet50_random_block.pth')
+            assert False
         model = MMDataParallel(model, device_ids=cfg.gpu_ids)
         # model.to("cuda:{}".format(os.environ['LOCAL_RANK']))
 
