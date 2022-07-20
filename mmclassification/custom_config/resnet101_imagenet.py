@@ -21,7 +21,7 @@ data = dict(
         type='ImageNet',
         data_prefix='/mapai/haowenguo/ILSVRC/Data/CLS-LOC/train',
         ann_file=
-        '/mapai/haowenguo/ILSVRC/Data/CLS-LOC/meta/train_labeled_10percent.txt',
+        '/mapai/haowenguo/ILSVRC/Data/CLS-LOC/meta/train_labeled.txt',
         pipeline=[
             dict(type='LoadImageFromFile'),
             dict(type='RandomResizedCrop', size=224),
@@ -79,7 +79,7 @@ log_config = dict(interval=100, hooks=[dict(type='TextLoggerHook')])
 dist_params = dict(backend='nccl')
 log_level = 'INFO'
 load_from = None
-resume_from = None
+resume_from = '/data/csxjiang/ood_ckpt/pytorch_official/resnet50_custom.pth'
 workflow = [('test', 1)]
 work_dir = './ckpt/'
 

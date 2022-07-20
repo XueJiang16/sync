@@ -20,4 +20,5 @@
 # bash ./tools/dist_train.sh custom_config/mobilenet3_large.py 8
 # bash ./tools/dist_train.sh custom_config/resnet152.py 8
 # bash ./tools/dist_train.sh custom_config/resnet50.py 8
-bash ./tools/dist_test.sh custom_config/resnet101_imagenet.py /data/csxjiang/ood_ckpt/pytorch_official/resnet50_custom.pth 2
+#bash ./tools/dist_test.sh custom_config/resnet101_imagenet.py /data/csxjiang/ood_ckpt/pytorch_official/resnet50_custom.pth 2
+bash ./tools/dist_train.sh custom_config/resnet101_imagenet.py 2
