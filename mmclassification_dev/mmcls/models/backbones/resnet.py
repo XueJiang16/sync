@@ -623,7 +623,7 @@ class ResNet(BaseBackbone):
                  dilations=(1, 1, 1, 1),
                  out_indices=(3, ),
                  style='pytorch',
-                 random_block=0,
+                 random_block=17,
                  deep_stem=False,
                  avg_down=False,
                  frozen_stages=-1,
