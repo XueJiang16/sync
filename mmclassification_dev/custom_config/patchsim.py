@@ -27,11 +27,11 @@ model = dict(
             init_cfg=dict(type='Pretrained', checkpoint='/data/csxjiang/ood_ckpt/pytorch_official/resnet50_custom.pth'),
             backbone=dict(
                 type='ResNet',
-                depth=50,
+                depth=101,
                 num_stages=4,
                 out_indices=(3,),
                 style='pytorch',
-                random_block=17),
+                random_block=0),
             neck=dict(type='GlobalAveragePooling'),
             head=dict(
                 type='LinearClsHead',
