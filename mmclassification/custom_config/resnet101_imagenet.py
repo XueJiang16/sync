@@ -39,7 +39,7 @@ data = dict(
         type='ImageNet',
         data_prefix='/data/csxjiang/ILSVRC/Data/CLS-LOC/val',
         ann_file=
-        '/mapai/haowenguo/ILSVRC/Data/CLS-LOC/meta/val_labeled.txt',
+        '/data/csxjiang/meta/val_labeled.txt',
         pipeline=[
             dict(type='LoadImageFromFile'),
             dict(type='Resize', size=(256, -1)),
@@ -56,7 +56,7 @@ data = dict(
         type='ImageNet',
         data_prefix='/data/csxjiang/ILSVRC/Data/CLS-LOC/val',
         ann_file=
-        '/mapai/haowenguo/ILSVRC/Data/CLS-LOC/meta/val_labeled.txt',
+        '/data/csxjiang/meta/val_labeled.txt',
         pipeline=[
             dict(type='LoadImageFromFile'),
             dict(type='Resize', size=(256, -1)),
