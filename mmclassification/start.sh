@@ -13,10 +13,11 @@
 # bash ./tools/dist_train.sh custom_config/BLT_a2.py 8
 # bash ./tools/dist_train.sh custom_config/BLT_a8.py 8
 # for i in {1,2,4,5,7,8,9,10}
-for i in {1,2,3}
-do
-bash ./tools/dist_train.sh custom_config/LT_repeat${i}_a8.py 4
-done
+#for i in {1,2,3}
+#do
+#bash ./tools/dist_train.sh custom_config/LT_repeat${i}_a8.py 4
+#done
 # bash ./tools/dist_train.sh custom_config/mobilenet3_large.py 8
 # bash ./tools/dist_train.sh custom_config/resnet152.py 8
 # bash ./tools/dist_train.sh custom_config/resnet50.py 8
+bash ./tools/dist_test.sh resnet101_imagenet.py /data/csxjiang/ood_ckpt/pytorch_official/resnet50_custom.pth 2
