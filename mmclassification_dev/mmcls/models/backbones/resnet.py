@@ -708,7 +708,7 @@ class ResNet(BaseBackbone):
                         avg_down=self.avg_down,
                         with_cp=with_cp,
                         conv_cfg=conv_cfg,
-                        with_bn=True,
+                        with_bn=False,
                         norm_cfg=norm_cfg,
                         drop_path_rate=drop_path_rate)
                     layer_name = f'random_block'
