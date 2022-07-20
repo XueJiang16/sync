@@ -60,7 +60,7 @@ class OODBaseDataset(Dataset):
         if self.transform is not None:
             sample = self.transform(sample)
         if self.noise_engine == "uniform":
-            sample = sample + ((torch.rand_like(sample) - 0.5) / 5)
+            sample = sample + ((torch.rand_like(sample) - 0.5) / 3)
         results['img'] = sample
         return self.pipeline(results)
 
