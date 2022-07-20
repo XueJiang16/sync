@@ -31,7 +31,7 @@ model = dict(
                 num_stages=4,
                 out_indices=(3,),
                 style='pytorch',
-                random_block=17),
+                ),
             neck=dict(type='GlobalAveragePooling'),
             head=dict(
                 type='LinearClsHead',
