@@ -19,9 +19,7 @@ class ImageClassifier(BaseClassifier):
 
         if pretrained is not None:
             self.init_cfg = dict(type='Pretrained', checkpoint=pretrained)
-        print(backbone)
         self.backbone = build_backbone(backbone)
-        assert False
 
         if neck is not None:
             self.neck = build_neck(neck)
