@@ -34,8 +34,8 @@ model = dict(
                 num_stages=4,
                 out_indices=(3,),
                 style='pytorch',
-                random_block=17,
-                random_block_k=20,
+                random_block=0,
+                random_block_k=2.5,
             ),
             neck=dict(type='GlobalAveragePooling'),
             head=dict(
