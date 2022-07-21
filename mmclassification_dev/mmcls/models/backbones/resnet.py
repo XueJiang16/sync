@@ -280,6 +280,18 @@ class Bottleneck(BaseModule):
 
 
 class RandomBlock(BaseModule):
+
+    def __init__(self, k):
+        super(RandomBlock, self).__init__()
+        self.k = k
+
+    def forward(self, x):
+        # (torch.rand_like(x) - 0.5) ~ U[-0.5, 0.5)
+        out = torch.nn.functional.relu(x + (torch.rand_like(x) - 0.5) / self.k)
+        return out
+
+
+class RandomBlockOrig(BaseModule):
     """RandomBlock block for ResNet.
 
     Args:
@@ -317,7 +329,7 @@ class RandomBlock(BaseModule):
                  act_cfg=dict(type='ReLU', inplace=True),
                  drop_path_rate=0.0,
                  init_cfg=None):
-        super(RandomBlock, self).__init__(init_cfg=init_cfg)
+        super(RandomBlockOrig, self).__init__(init_cfg=init_cfg)
         assert style in ['pytorch', 'caffe']
 
         self.in_channels = in_channels
@@ -396,46 +408,43 @@ class RandomBlock(BaseModule):
 
     def forward(self, x):
 
-        # def _inner_forward(x):
-        #     identity = x
-        #
-        #     out = self.conv1(x)
-        #     if self.with_bn:
-        #         out = self.norm1(out)
-        #     out = self.relu(out)
-        #
-        #     out = self.conv2(out)
-        #     if self.with_bn:
-        #         out = self.norm2(out)
-        #     out = self.relu(out)
-        #
-        #     out = self.conv3(out)
-        #     if self.with_bn:
-        #         out = self.norm3(out)
-        #
-        #     if self.downsample is not None:
-        #         identity = self.downsample(x)
-        #
-        #     out = self.drop_path(out)
-        #     print("Block val:", out.abs().mean())
-        #
-        #     out += identity
-        #     print("After Block:", out.mean())
-        #     assert False
-        #
-        #     return out
-        #
-        # print("Before Block:", x.mean())
-        #
-        # if self.with_cp and x.requires_grad:
-        #     out = cp.checkpoint(_inner_forward, x)
-        # else:
-        #     out = _inner_forward(x)
-        #
-        # out = self.relu(out)
-        k = 2.50
-        out = self.relu(x + (torch.rand_like(x) - 0.5) / k)  # (torch.rand_like(x) - 0.5) ~ U[-0.5, 0.5)
+        def _inner_forward(x):
+            identity = x
 
+            out = self.conv1(x)
+            if self.with_bn:
+                out = self.norm1(out)
+            out = self.relu(out)
+
+            out = self.conv2(out)
+            if self.with_bn:
+                out = self.norm2(out)
+            out = self.relu(out)
+
+            out = self.conv3(out)
+            if self.with_bn:
+                out = self.norm3(out)
+
+            if self.downsample is not None:
+                identity = self.downsample(x)
+
+            out = self.drop_path(out)
+            print("Block val:", out.abs().mean())
+
+            out += identity
+            print("After Block:", out.mean())
+            assert False
+
+            return out
+
+        print("Before Block:", x.mean())
+
+        if self.with_cp and x.requires_grad:
+            out = cp.checkpoint(_inner_forward, x)
+        else:
+            out = _inner_forward(x)
+
+        out = self.relu(out)
         return out
 
 
@@ -632,6 +641,7 @@ class ResNet(BaseBackbone):
                  out_indices=(3, ),
                  style='pytorch',
                  random_block=0,
+                 random_block_k=2.5,
                  deep_stem=False,
                  avg_down=False,
                  frozen_stages=-1,
@@ -676,6 +686,7 @@ class ResNet(BaseBackbone):
         self.stage_blocks = stage_blocks[:num_stages]
         self.expansion = get_expansion(self.block, expansion)
         self.num_random_block = random_block
+        self.random_block_k = random_block_k
 
         self._make_stem_layer(in_channels, stem_channels)
 
@@ -705,23 +716,25 @@ class ResNet(BaseBackbone):
             # add random block in C4
             if i == 2:
                 if self.num_random_block > 0:
-                    random_layer = self.make_res_layer(
-                        block=RandomBlock,
-                        num_blocks=self.num_random_block,
-                        in_channels=_out_channels,
-                        out_channels=_out_channels,
-                        expansion=4,
-                        stride=1,
-                        dilation=1,
-                        style=self.style,
-                        avg_down=self.avg_down,
-                        with_cp=with_cp,
-                        conv_cfg=conv_cfg,
-                        with_bn=False,
-                        norm_cfg=norm_cfg,
-                        drop_path_rate=drop_path_rate)
-                    layer_name = f'random_block'
-                    self.add_module(layer_name, random_layer)
+                    # random_layer = self.make_res_layer(
+                    #     block=RandomBlock,
+                    #     num_blocks=self.num_random_block,
+                    #     in_channels=_out_channels,
+                    #     out_channels=_out_channels,
+                    #     expansion=4,
+                    #     stride=1,
+                    #     dilation=1,
+                    #     style=self.style,
+                    #     avg_down=self.avg_down,
+                    #     with_cp=with_cp,
+                    #     conv_cfg=conv_cfg,
+                    #     with_bn=False,
+                    #     norm_cfg=norm_cfg,
+                    #     drop_path_rate=drop_path_rate)
+                    for j in range(self.num_random_block):
+                        random_layer = RandomBlock(k=self.random_block_k)
+                        layer_name = f'random_block{j+1}'
+                        self.add_module(layer_name, random_layer)
             _in_channels = _out_channels
             _out_channels *= 2
 
@@ -829,8 +842,9 @@ class ResNet(BaseBackbone):
             if self.num_random_block !=0:
                 if i == 2:
                     if self.num_random_block > 0:
-                        random_layer = getattr(self, "random_block")
-                        x = random_layer(x)
+                        for j in range(self.num_random_block):
+                            random_layer = getattr(self, f'random_block{j+1}')
+                            x = random_layer(x)
                     else:
                         raise NotImplementedError
             if i in self.out_indices:
