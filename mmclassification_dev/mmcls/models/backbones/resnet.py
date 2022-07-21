@@ -852,7 +852,7 @@ class ResNet(BaseBackbone):
                             print(f"After Random Block {j+1}:", x.mean())
                     else:
                         raise NotImplementedError
-                assert False
+                    assert False
             if i in self.out_indices:
                 outs.append(x)
         return tuple(outs)
