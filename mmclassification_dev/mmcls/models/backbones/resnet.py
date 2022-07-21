@@ -655,7 +655,6 @@ class ResNet(BaseBackbone):
                  with_cp=False,
                  zero_init_residual=True,
                  init_cfg=[
-                     # dict(type='Constant', layer=['Conv2d'], val=0.5),
                      dict(type='Kaiming', layer=['Conv2d'], mode='fan_in'),
                      dict(
                          type='Constant',
@@ -845,12 +844,15 @@ class ResNet(BaseBackbone):
             x = res_layer(x)
             if self.num_random_block !=0:
                 if i == 2:
+                    print("Before Random Block:", x.mean())
                     if self.num_random_block > 0:
                         for j in range(self.num_random_block):
                             random_layer = getattr(self, f'random_block{j+1}')
                             x = random_layer(x)
+                            print(f"After Random Block {j+1}:", x.mean())
                     else:
                         raise NotImplementedError
+                assert False
             if i in self.out_indices:
                 outs.append(x)
         return tuple(outs)
