@@ -718,7 +718,7 @@ class ResNet(BaseBackbone):
             self.add_module(layer_name, res_layer)
             self.res_layers.append(layer_name)
             # add random block in C4
-            if i == 1:
+            if i == 2:
                 if self.num_random_block > 0:
                     # random_layer = self.make_res_layer(
                     #     block=RandomBlock,
@@ -844,7 +844,7 @@ class ResNet(BaseBackbone):
             res_layer = getattr(self, layer_name)
             x = res_layer(x)
             if self.num_random_block !=0:
-                if i == 1:
+                if i == 2:
                     if self.num_random_block > 0:
                         for j in range(self.num_random_block):
                             random_layer = getattr(self, f'random_block{j+1}')
