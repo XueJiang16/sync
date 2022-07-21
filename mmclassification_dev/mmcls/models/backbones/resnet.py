@@ -288,7 +288,8 @@ class RandomBlock(BaseModule):
     def forward(self, x):
         # (torch.rand_like(x) - 0.5) ~ U[-0.5, 0.5)
         # print("Signal norm:", x.abs().mean())
-        noise = (torch.rand_like(x) - 0.5) / self.k
+        # noise = (torch.rand_like(x) - 0.5) / self.k
+        noise = torch.randn_like(x) / self.k
         # print("Noise norm:", noise.abs().mean())
         # assert False
         out = torch.nn.functional.relu(x + noise)
@@ -844,15 +845,14 @@ class ResNet(BaseBackbone):
             x = res_layer(x)
             if self.num_random_block !=0:
                 if i == 2:
-                    print("Before Random Block:", x.mean())
+                    # print("Before Random Block:", x.mean())
                     if self.num_random_block > 0:
                         for j in range(self.num_random_block):
                             random_layer = getattr(self, f'random_block{j+1}')
                             x = random_layer(x)
-                            print(f"After Random Block {j+1}:", x.mean())
+                            # print(f"After Random Block {j+1}:", x.mean())
                     else:
                         raise NotImplementedError
-                    assert False
             if i in self.out_indices:
                 outs.append(x)
         return tuple(outs)
