@@ -1,7 +1,7 @@
 method_name = 'FeatureMapSim'
 model_name = 'resnet50'
 train_dataset = 'Balance'
-custom_name = 'Energy'
+custom_name = 'ODIN'
 if custom_name is not None:
     readable_name = '{}_{}_{}_{}'.format(method_name, model_name, train_dataset, custom_name)
 else:
@@ -16,7 +16,7 @@ model = dict(
     order = 1,
     mode = 'mean',
     ood_detector = dict(
-        type='Energy',
+        type='ODIN',
         debug_mode=False,
         num_classes=1000,
         # temperature=1,
@@ -49,7 +49,7 @@ model = dict(
 )
 pipline =[dict(type='Collect', keys=['img', 'type'])]
 data = dict(
-    samples_per_gpu=256,
+    samples_per_gpu=64,
     workers_per_gpu=4,
     # id_data=dict(
     #     name='ImageNet',

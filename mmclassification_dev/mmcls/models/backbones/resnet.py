@@ -287,7 +287,8 @@ class RandomBlock(BaseModule):
 
     def forward(self, x):
         # (torch.rand_like(x) - 0.5) ~ U[-0.5, 0.5)
-        out = torch.nn.functional.relu(x + (torch.rand_like(x) - 0.5) / self.k)
+        noise = (torch.rand_like(x) - 0.5) / self.k
+        out = torch.nn.functional.relu(x + noise)
         return out
 
 

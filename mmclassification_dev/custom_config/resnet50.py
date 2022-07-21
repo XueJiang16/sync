@@ -1,4 +1,4 @@
-method_name = 'ODIN'
+method_name = 'GradNormBatch'
 model_name = 'resnet50'
 train_dataset = 'Balance'
 custom_name = None
@@ -21,10 +21,13 @@ model = dict(
         # init_cfg=dict(type='Pretrained', checkpoint='/data/csxjiang/ood_ckpt/ckpt/resnet50_LT_a8/epoch_100.pth'),
         backbone=dict(
             type='ResNet',
-            depth=152,
+            depth=50,
             num_stages=4,
             out_indices=(3,),
-            style='pytorch'),
+            style='pytorch',
+            random_block=1,
+            random_block_k=2.5,
+        ),
         neck=dict(type='GlobalAveragePooling'),
         head=dict(
             type='LinearClsHead',
