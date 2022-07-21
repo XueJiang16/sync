@@ -1,7 +1,7 @@
 method_name = 'FeatureMapSim'
 model_name = 'resnet50'
 train_dataset = 'Balance'
-custom_name = 'GradNormBatch'
+custom_name = 'MSP'
 if custom_name is not None:
     readable_name = '{}_{}_{}_{}'.format(method_name, model_name, train_dataset, custom_name)
 else:
@@ -16,7 +16,7 @@ model = dict(
     order = 1,
     mode = 'mean',
     ood_detector = dict(
-        type='GradNormBatch',
+        type='MSP',
         debug_mode=False,
         num_classes=1000,
         # temperature=1,
@@ -34,7 +34,7 @@ model = dict(
                 num_stages=4,
                 out_indices=(3,),
                 style='pytorch',
-                random_block=1,
+                random_block=0,
                 random_block_k=2.5,
             ),
             neck=dict(type='GlobalAveragePooling'),
