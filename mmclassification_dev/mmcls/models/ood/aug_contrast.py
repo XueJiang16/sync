@@ -27,5 +27,5 @@ class AugContrast(BaseModule):
             input["img"] = input["img"] + (torch.rand_like(input["img"])-0.5) / 5
             outputs_aug, feature_c5_aug = self.classifier(return_loss=False, softmax=True, post_process=False,
                                                           require_backbone_features=True, **input)
-            confs = -torch.abs(feature_c5_orig - feature_c5_aug).sum(-1)
+            confs = -torch.abs(feature_c5_orig - feature_c5_aug).sum((1,2,3))
         return confs, type
