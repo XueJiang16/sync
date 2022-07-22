@@ -22,8 +22,8 @@ class AugContrast(BaseModule):
             type = input['type']
             del input['type']
         with torch.no_grad():
-            outputs_orig = self.classifier(return_loss=False, softmax=False, post_process=False, **input)
+            outputs_orig = self.classifier(return_loss=False, softmax=True, post_process=False, **input)
             input["img"] = input["img"] + (torch.rand_like(input["img"])-0.5) / 5
-            outputs_aug = self.classifier(return_loss=False, softmax=False, post_process=False, **input)
+            outputs_aug = self.classifier(return_loss=False, softmax=True, post_process=False, **input)
             confs = -torch.abs(outputs_orig - outputs_aug).sum(-1)
         return confs, type
