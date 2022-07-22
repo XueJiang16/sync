@@ -64,7 +64,6 @@ class LinearClsHead(ClsHead):
         """
         x = self.pre_logits(x)
         if self.require_features or require_features:
-            assert softmax is False
             f = x.detach().clone()
         cls_score = self.fc(x)
 
