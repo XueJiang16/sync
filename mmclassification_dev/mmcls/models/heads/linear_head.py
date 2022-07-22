@@ -63,7 +63,7 @@ class LinearClsHead(ClsHead):
                   float and the dimensions are ``(num_samples, num_classes)``.
         """
         x = self.pre_logits(x)
-        if self.require_features:
+        if self.require_features or require_features:
             assert softmax is False
             f = x.detach().clone()
         cls_score = self.fc(x)
